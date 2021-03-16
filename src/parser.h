@@ -8,7 +8,7 @@
 
 struct Grammar {
   std::string start;
-  std::set<std::string> not_terminals;
+  std::set<std::string> non_terminals;
   std::set<std::string> terminals;
   // symbol -> symbol list
   std::map<std::string, std::vector<std::string>> productions;
@@ -22,7 +22,7 @@ struct Item {
 
 class Parser {
  public:
-  Parser(std::string filename);
+  Parser(const std::string &filename);
 
  private:
   Grammar grammar;
@@ -33,6 +33,8 @@ class Parser {
   std::map<std::pair<int, std::string>, int> goto_table;
   // (row_no, symbol) -> (type, row_no)
   std::map<std::pair<int, std::string>, std::pair<int, int>> action_table;
+  void load_grammar(const std::string& filename);
+  void print_grammar();
 };
 
 #endif
