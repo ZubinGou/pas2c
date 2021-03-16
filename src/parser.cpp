@@ -20,7 +20,6 @@ void Parser::load_grammar(const std::string& filename) {
   for (auto& symbol : grammar_json["T"]) {
     grammar.terminals.insert(symbol.get<string>());
   }
-  regex reg("\\s+");
   for (auto& prod : grammar_json["P"].items()) {
     for (auto& symbols_list : prod.value()) {
       grammar.productions[prod.key()] = symbols_list.get<vector<string>>();
