@@ -39,7 +39,7 @@ struct ItemElement {
 
 class Parser {
  public:
-  enum ActionType { ACC, R, S };
+  enum ActionType { ACC = 1, R, S };
   inline static const std::string EPSILON = "e";
   inline static const std::string START = "S'";
 

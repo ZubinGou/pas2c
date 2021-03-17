@@ -20,6 +20,7 @@ Parser::Parser(const std::string& filename) {
   print_item_family();
 
   get_table();
+  print_table();
 }
 
 void Parser::load_grammar(const std::string& filename) {
@@ -42,6 +43,7 @@ void Parser::load_grammar(const std::string& filename) {
     }
   }
   grammar.non_terminals.insert(START);
+  grammar.terminals.insert("$");
   grammar.productions_map[START].push_back(vector<string>{grammar.start});
   grammar.productions.push_back(
       make_pair(START, vector<string>{grammar.start}));
@@ -257,6 +259,50 @@ void Parser::get_table() {
       }
     }
   }
+}
+
+void Parser::print_table() {
+  for (size_t i = 0; i < grammar.terminals.size() / 2; i++) printf("\t");
+  printf("action");
+  for (size_t i = 0;
+       i < grammar.non_terminals.size() / 2 + grammar.terminals.size() / 2 - 1; i++)
+    printf("\t");
+  printf("|\tgoto\n");
+
+  printf("\t");
+  for (auto const& t : grammar.terminals) {
+    cout << t << "\t";
+  }
+  printf("| ");
+  for (auto const& n : grammar.non_terminals) {
+    cout << n << "\t";
+  }
+  printf("\n");
+
+  for (size_t i = 0; i < item_family.size(); i++) {
+    cout << i << "\t";
+    for (auto& t : grammar.terminals) {
+      auto action = action_table[make_pair(i, t)].first;
+      if (action == R) {
+        cout << 'R' << action_table[make_pair(i, t)].second << "\t";
+      } else if (action == S) {
+        cout << 'S' << action_table[make_pair(i, t)].second << "\t";
+      } else if (action == ACC) {
+        cout << "ACC\t";
+      } else {
+        cout << "\t";
+      }
+    }
+    cout << "| ";
+    for (const auto& n : grammar.non_terminals) {
+      if (goto_table.find(make_pair(i, n)) != goto_table.end())
+        cout << goto_table[make_pair(i, n)] << "\t";
+      else
+        printf("\t");
+    }
+    cout << endl;
+  }
+  cout << endl;
 }
 
 void Parser::print_item(set<ItemElement>& item) {
