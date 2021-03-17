@@ -11,7 +11,7 @@ struct Grammar {
   std::set<std::string> non_terminals;
   std::set<std::string> terminals;
   // symbol -> symbol list
-  std::map<std::string, std::vector<std::string>> productions;
+  std::map<std::string, std::vector<std::vector<std::string>>> productions;
 };
 
 struct Item {
@@ -22,19 +22,27 @@ struct Item {
 
 class Parser {
  public:
+  inline static const std::string EPSILON = "e";
+
   Parser(const std::string &filename);
 
  private:
   Grammar grammar;
   std::vector<std::set<Item>> item_set;
   std::map<std::string, std::set<std::string>> first_set;  // symbol -> symbol set
-  std::map<std::string, std::set<std::string>> follow_set;
+  // std::map<std::string, std::set<std::string>> follow_set;
   // (row_no, symbol) -> row_no
   std::map<std::pair<int, std::string>, int> goto_table;
   // (row_no, symbol) -> (type, row_no)
   std::map<std::pair<int, std::string>, std::pair<int, int>> action_table;
+
   void load_grammar(const std::string& filename);
   void print_grammar();
+
+  void get_first_set();
+  void print_first_set();
+
+  bool is_terminal(const std::string&);
 };
 
 #endif

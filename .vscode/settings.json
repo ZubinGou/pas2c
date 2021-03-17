@@ -2,5 +2,6 @@
     "files.associations": {
         "vector": "cpp",
         "*.tcc": "cpp"
-    }
+    },
+    "C_Cpp.clang_format_fallbackStyle": "Goggle"
 }
