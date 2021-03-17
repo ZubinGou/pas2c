@@ -3,5 +3,6 @@
         "vector": "cpp",
         "*.tcc": "cpp"
     },
-    "C_Cpp.clang_format_fallbackStyle": "Goggle"
+    "C_Cpp.clang_format_fallbackStyle": "Google",
+    "C_Cpp.default.cppStandard": "c++17"
 }
