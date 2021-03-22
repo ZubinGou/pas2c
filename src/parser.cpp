@@ -9,18 +9,22 @@
 using namespace std;
 using json = nlohmann::json;
 
-Parser::Parser(const std::string& filename) {
+Parser::Parser(const std::string& filename, const std::string& inputfile) {
+  
   load_grammar(filename);
-  print_grammar();
+  // print_grammar();
 
   get_first_set();
-  print_first_set();
+  // print_first_set();
 
   get_item_family();
-  print_item_family();
+  // print_item_family();
 
   get_table();
-  print_table();
+  // print_table();
+  
+  Lexer Lex(inputfile);
+  token_list = Lex.get_token_list();
 }
 
 void Parser::load_grammar(const std::string& filename) {
@@ -208,7 +212,7 @@ void Parser::get_item_family() {
   item_family.push_back(start_item);
   size_t item_idx = 0;
   while (item_idx < item_family.size()) {
-    cout << item_idx << endl;
+    // cout << item_idx << endl;
     const auto item = item_family[item_idx];
     set<string> next_symbols;
     for (auto& ele : item) {
@@ -333,3 +337,4 @@ void Parser::print_item_family() {
 bool Parser::is_terminal(const string& symbol) {
   return grammar.terminals.find(symbol) != grammar.terminals.end();
 }
+

@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include "lexer.h"
 
 struct Grammar {
   std::string start;
@@ -43,7 +44,7 @@ class Parser {
   inline static const std::string EPSILON = "e";
   inline static const std::string START = "S'";
 
-  Parser(const std::string& filename);
+  Parser(const std::string& filename, const std::string& inputfile);
 
  private:
   Grammar grammar;
@@ -58,6 +59,8 @@ class Parser {
       action_table;
   // for filling action and goto
   std::map<std::pair<std::size_t, std::string>, std::size_t> item_edges;
+  // from lexer
+  std::vector<Token> token_list;
 
   void load_grammar(const std::string& filename);
   void print_grammar();
@@ -79,6 +82,8 @@ class Parser {
 
   bool is_terminal(const std::string&);
   bool is_epsilon_(const std::string&);  // if there's epsilon in first set
+
+  
 };
 
 #endif
