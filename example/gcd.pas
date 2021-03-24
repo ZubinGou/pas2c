@@ -9,4 +9,3 @@ program example(input, output);
         read(x, y);
         write(gcd(x, y))
     end.
-
