@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 #include <vector>
+
 #include "lexer.h"
 
 struct Grammar {
@@ -38,6 +39,16 @@ struct ItemElement {
   }
 };
 
+struct AnalysisState {  // used for log
+ public:
+  AnalysisState(std::vector<std::pair<int, std::string>> stack, int input_ip,
+                std::pair<int, std::size_t> act)
+      : stack(stack), input_ip(input_ip), action(act){};
+  std::vector<std::pair<int, std::string>> stack;
+  int input_ip;
+  std::pair<int, std::size_t> action;
+};
+
 class Parser {
  public:
   enum ActionType { ACC = 1, R, S };
@@ -61,6 +72,7 @@ class Parser {
   std::map<std::pair<std::size_t, std::string>, std::size_t> item_edges;
   // from lexer
   std::vector<Token> token_list;
+  std::vector<AnalysisState> analysis_log;
 
   void load_grammar(const std::string& filename);
   void print_grammar();
@@ -83,7 +95,8 @@ class Parser {
   bool is_terminal(const std::string&);
   bool is_epsilon_(const std::string&);  // if there's epsilon in first set
 
-  
+  void analyze();
+  void print_analysis_log();
 };
 
 #endif
