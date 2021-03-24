@@ -265,7 +265,8 @@ void Parser::print_table() {
   for (size_t i = 0; i < grammar.terminals.size() / 2; i++) printf("\t");
   printf("action");
   for (size_t i = 0;
-       i < grammar.non_terminals.size() / 2 + grammar.terminals.size() / 2 - 1; i++)
+       i < grammar.non_terminals.size() / 2 + grammar.terminals.size() / 2 - 1;
+       i++)
     printf("\t");
   printf("|\tgoto\n");
 
