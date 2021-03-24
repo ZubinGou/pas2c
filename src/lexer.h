@@ -2,9 +2,9 @@
 #define LEXER_H
 
 #include <fstream>
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
 
 struct Token {
  public:
@@ -57,15 +57,63 @@ class Lexer {
 
   inline static const std::set<char> SEPARATION_CHAR = {'(', ')', '[', ']',
                                                         ',', ';', ':'};
-  inline static const std::set<std::string> RESERVED_WORDS = {"and", "array", 
-    "begin", "case", "const", "div", "do", "downto", "else", "end", "file", 
-    "for", "function", "goto", "if", "in", "label", "mod", "nil", "not", "of",
-    "or", "packed", "procedure", "program", "record", "repeat", "set", "then", 
-    "to", "type", "until", "var", "while", "with", "wxports", "shr", "string",
-    "asm", "object", "unit", "constructor", "implementation", "destructor", "uses",
-    "inherited", "inline", "interface", "library", "xor", "shl", "operator", "read",
-    "write", "uminus"};
-  inline static const std::set<std::string> IDENTIFIER = {"integer", "real", "char", "boolean", "text"};
+  inline static const std::set<std::string> RESERVED_WORDS = {"and",
+                                                              "array",
+                                                              "begin",
+                                                              "case",
+                                                              "const",
+                                                              "div",
+                                                              "do",
+                                                              "downto",
+                                                              "else",
+                                                              "end",
+                                                              "file",
+                                                              "for",
+                                                              "function",
+                                                              "goto",
+                                                              "if",
+                                                              "in",
+                                                              "label",
+                                                              "mod",
+                                                              "nil",
+                                                              "not",
+                                                              "of",
+                                                              "or",
+                                                              "packed",
+                                                              "procedure",
+                                                              "program",
+                                                              "record",
+                                                              "repeat",
+                                                              "set",
+                                                              "then",
+                                                              "to",
+                                                              "type",
+                                                              "until",
+                                                              "var",
+                                                              "while",
+                                                              "with",
+                                                              "wxports",
+                                                              "shr",
+                                                              "string",
+                                                              "asm",
+                                                              "object",
+                                                              "unit",
+                                                              "constructor",
+                                                              "implementation",
+                                                              "destructor",
+                                                              "uses",
+                                                              "inherited",
+                                                              "inline",
+                                                              "interface",
+                                                              "library",
+                                                              "xor",
+                                                              "shl",
+                                                              "operator",
+                                                              "read",
+                                                              "write",
+                                                              "uminus"};
+  inline static const std::set<std::string> IDENTIFIER = {
+      "integer", "real", "char", "boolean", "text"};
 };
 
 #endif
