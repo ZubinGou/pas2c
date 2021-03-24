@@ -102,7 +102,7 @@ void Parser::get_first_set() {
         for (auto& symbol : rhs) {
           const auto& now_set = first_set[symbol];
           for (auto& first_symbol : now_set) {
-            if (first_symbol != EPSILON && is_terminal(first_symbol)) {
+            if (is_terminal(first_symbol)) {
               auto result = first_set[lhs].insert(first_symbol);
               is_update |= result.second;
             }
@@ -119,7 +119,7 @@ void Parser::get_first_set() {
 set<string> Parser::get_first_for_symbols(vector<string>& symbols) {
   set<string> ret;
   for (auto& symbol : symbols) {
-    if (is_terminal(symbol) && symbol != EPSILON) {
+    if (is_terminal(symbol)) {
       ret.insert(symbol);
       return ret;
     } else if (first_set[symbol].find(EPSILON) == first_set[symbol].end()) {
@@ -155,7 +155,7 @@ void Parser::get_closure(set<ItemElement>& item) {
         continue;
       }
       auto& rhs = element.production.second;
-      if (!is_terminal(rhs[element.dot_position])) {  // non terminal
+      if (is_non_terminal(rhs[element.dot_position])) {  // non terminal
         vector<string> slice_symbols(rhs.begin() + element.dot_position + 1,
                                      rhs.end());
         auto lookaheads = get_first_for_symbols(slice_symbols);
@@ -195,13 +195,15 @@ set<ItemElement> Parser::get_next_item(const set<ItemElement>& item,
   return next_item;
 }
 
-bool Parser::is_new_item(const std::set<ItemElement>& new_item) {
+int Parser::is_new_item(const std::set<ItemElement>& new_item) {
+  int cnt = 0;
   for (auto& item : item_family) {
     if (item == new_item) {
-      return false;
+      return cnt;
     }
+    cnt++;
   }
-  return true;
+  return -1;
 }
 
 void Parser::get_item_family() {
@@ -218,7 +220,8 @@ void Parser::get_item_family() {
     const auto item = item_family[item_idx];
     set<string> next_symbols;
     for (auto& ele : item) {
-      if (ele.dot_position < ele.production.second.size()) {
+      if (ele.dot_position < ele.production.second.size() &&
+          ele.production.second[ele.dot_position] != EPSILON) {
         // there is symbols after .
         auto& next_symbol = ele.production.second[ele.dot_position];
         next_symbols.insert(next_symbol);
@@ -226,9 +229,13 @@ void Parser::get_item_family() {
     }
     for (auto& s : next_symbols) {
       auto next_item = get_next_item(item, s);
+      auto next_item_idx = is_new_item(next_item);
       if (!next_item.empty() && is_new_item(next_item)) {
-        item_family.push_back(next_item);
-        item_edges[make_pair(item_idx, s)] = item_family.size() - 1;
+        if (next_item_idx == -1) {
+          item_family.push_back(next_item);
+          next_item_idx = item_family.size() - 1;
+        }
+        item_edges[make_pair(item_idx, s)] = next_item_idx;
       }
     }
     item_idx++;
@@ -238,14 +245,16 @@ void Parser::get_item_family() {
 void Parser::get_table() {
   // fill goto table
   for (auto& [key, to] : item_edges) {
-    if (!is_terminal(key.second)) {
+    if (is_non_terminal(key.second)) {
       goto_table[key] = to;
     }
   }
   // fill action table
   for (size_t i = 0; i < item_family.size(); i++) {
     for (auto& ele : item_family[i]) {
-      if (ele.dot_position == ele.production.second.size()) {  // reduce
+      if (ele.dot_position == ele.production.second.size() ||
+          ele.production.second[0] ==
+              EPSILON) {  // reduce, especially when symbol is epsilon
         if (ele.production.first == grammar.start) {
           action_table[make_pair(i, ele.lookahead)] = make_pair(ACC, -1);
         } else {
@@ -268,21 +277,22 @@ void Parser::get_table() {
 }
 
 void Parser::print_table() {
-  for (size_t i = 0; i < grammar.terminals.size() / 2; i++) printf("\t");
+  // freopen("debug.txt", "w", stdout);
+  for (size_t i = 0; i < grammar.terminals.size() / 2; i++) printf("\t\t");
   printf("action");
   for (size_t i = 0;
        i < grammar.non_terminals.size() / 2 + grammar.terminals.size() / 2 - 1;
        i++)
-    printf("\t");
-  printf("|\tgoto\n");
+    printf("\t\t");
+  printf("|\t\tgoto\n");
 
-  printf("\t");
+  printf("\t\t");
   for (auto const& t : grammar.terminals) {
-    cout << t << "\t";
+    cout << t << "\t\t";
   }
   printf("| ");
   for (auto const& n : grammar.non_terminals) {
-    cout << n << "\t";
+    cout << n << "\t\t";
   }
   printf("\n");
 
@@ -291,25 +301,26 @@ void Parser::print_table() {
     for (auto& t : grammar.terminals) {
       auto action = action_table[make_pair(i, t)].first;
       if (action == R) {
-        cout << 'R' << action_table[make_pair(i, t)].second << "\t";
+        cout << 'R' << action_table[make_pair(i, t)].second << "\t\t";
       } else if (action == S) {
-        cout << 'S' << action_table[make_pair(i, t)].second << "\t";
+        cout << 'S' << action_table[make_pair(i, t)].second << "\t\t";
       } else if (action == ACC) {
-        cout << "ACC\t";
+        cout << "ACC\t\t";
       } else {
-        cout << "\t";
+        cout << "\t\t";
       }
     }
     cout << "| ";
     for (const auto& n : grammar.non_terminals) {
       if (goto_table.find(make_pair(i, n)) != goto_table.end())
-        cout << goto_table[make_pair(i, n)] << "\t";
+        cout << goto_table[make_pair(i, n)] << "\t\t";
       else
-        printf("\t");
+        printf("\t\t");
     }
     cout << endl;
   }
   cout << endl;
+  // fclose(stdout);
 }
 
 void Parser::print_item(set<ItemElement>& item) {
@@ -341,6 +352,10 @@ bool Parser::is_terminal(const string& symbol) {
   return grammar.terminals.find(symbol) != grammar.terminals.end();
 }
 
+bool Parser::is_non_terminal(const string& symbol) {
+  return grammar.non_terminals.find(symbol) != grammar.non_terminals.end();
+}
+
 void Parser::analyze() {
   std::vector<std::pair<int, std::string>> analysis_stack;
   std::vector<std::string> input_list;
@@ -350,20 +365,38 @@ void Parser::analyze() {
   input_list.push_back("$");
 
   while (true) {
-    // cout << ip << endl;
     pair<int, string> stack_top = analysis_stack.back();
     string cur_sign = input_list[ip];
     int action = action_table[make_pair(stack_top.first, cur_sign)].first;
     int num = action_table[make_pair(stack_top.first, cur_sign)].second;
+    // if (S == action) {
+    //   cout << "S" << num << " " << cur_sign << endl;
+    //   cout << "before" << endl;
+    //   print_item(item_family[stack_top.first]);
+    //   cout << "after" << endl;
+    //   print_item(item_family[num]);
+    //   printf("\n");
+    // } else if (R == action) {
+    //   cout << "R" << num << " " << cur_sign << endl;
+    //   cout << "before" << endl;
+    //   print_item(item_family[stack_top.first]);
+    //   cout << grammar.productions[num].first << " -> ";
+    //   for (auto& rhs : grammar.productions[num].second) {
+    //     cout << rhs << " ";
+    //   }
+    //   cout << endl << endl;
+    // }
     analysis_log.push_back(
-        AnalysisState(analysis_stack, ip, action_table[make_pair(stack_top.first, cur_sign)]));
-    // cout << action << endl;
+        AnalysisState(analysis_stack, ip,
+                      action_table[make_pair(stack_top.first, cur_sign)]));
     if (S == action) {  // Shift
       analysis_stack.push_back(make_pair(num, cur_sign));
       ip++;
     } else if (R == action) {  // Reduce
-      for (auto it : grammar.productions[num].second) {
-        analysis_stack.pop_back();
+      if (grammar.productions[num].second[0] != EPSILON) {
+        for (auto it : grammar.productions[num].second) {
+          analysis_stack.pop_back();
+        }
       }
       string tmp = grammar.productions[num].first;
       analysis_stack.push_back(make_pair(

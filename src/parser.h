@@ -84,7 +84,8 @@ class Parser {
   void get_closure(std::set<ItemElement>&);
   std::set<ItemElement> get_next_item(const std::set<ItemElement>&,
                                       const std::string&);
-  bool is_new_item(const std::set<ItemElement>&);
+  int is_new_item(const std::set<ItemElement>&);  // return -1 if it's a new
+                                                  // item, otherwise return idx.
   void get_item_family();
   void print_item_family();
   void print_item(std::set<ItemElement>&);
@@ -93,6 +94,7 @@ class Parser {
   void print_table();
 
   bool is_terminal(const std::string&);
+  bool is_non_terminal(const std::string&);
   bool is_epsilon_(const std::string&);  // if there's epsilon in first set
 
   void analyze();
