@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "lexer.h"
+#include "syntaxtree.h"
 
 struct Grammar {
   std::string start;
@@ -41,10 +42,10 @@ struct ItemElement {
 
 struct AnalysisState {  // used for log
  public:
-  AnalysisState(std::vector<std::pair<int, std::string>> stack, int input_ip,
+  AnalysisState(std::vector<std::pair<int, Token>> stack, int input_ip,
                 std::pair<int, std::size_t> act)
       : stack(stack), input_ip(input_ip), action(act){};
-  std::vector<std::pair<int, std::string>> stack;
+  std::vector<std::pair<int, Token>> stack;
   int input_ip;
   std::pair<int, std::size_t> action;
 };
@@ -56,6 +57,7 @@ class Parser {
   inline static const std::string START = "S'";
 
   Parser(const std::string& filename, const std::string& inputfile);
+  SyntaxTree generate_tree();
 
  private:
   Grammar grammar;
@@ -73,6 +75,7 @@ class Parser {
   // from lexer
   std::vector<Token> token_list;
   std::vector<AnalysisState> analysis_log;
+  std::vector<std::vector<std::pair<bool, Token>>> nodes_list;
 
   void load_grammar(const std::string& filename);
   void print_grammar();

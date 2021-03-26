@@ -26,7 +26,19 @@ Parser::Parser(const std::string& filename, const std::string& inputfile) {
   token_list = Lex.get_token_list();
 
   analyze();
-  print_analysis_log();
+  // print_analysis_log();
+}
+
+SyntaxTree Parser::generate_tree() {
+  SyntaxTree tree;
+  Token token;
+  token.renew("programstruct", 0, 0, "", 0);
+  vector<pair<bool, Token>> nodes;
+  nodes.push_back(make_pair(false, token));
+  tree.insert_nodes(nodes);
+  for (auto nodes : nodes_list) tree.insert_nodes(nodes);
+  tree.print_nodes();
+  return tree;
 }
 
 void Parser::load_grammar(const std::string& filename) {
@@ -357,54 +369,57 @@ bool Parser::is_non_terminal(const string& symbol) {
 }
 
 void Parser::analyze() {
-  std::vector<std::pair<int, std::string>> analysis_stack;
-  std::vector<std::string> input_list;
+  std::vector<std::pair<int, Token>> analysis_stack;
   int ip = 0;
-  analysis_stack.push_back(make_pair(0, ""));
-  for (auto it : token_list) input_list.push_back(it.type);
-  input_list.push_back("$");
+  Token tmp;
+  tmp.renew("", 0, 0, "", 0);
+  analysis_stack.push_back(make_pair(0, tmp));
+  tmp.renew("$", 0, 0, "$", 0);
+  token_list.push_back(tmp);
 
   while (true) {
-    pair<int, string> stack_top = analysis_stack.back();
-    string cur_sign = input_list[ip];
-    int action = action_table[make_pair(stack_top.first, cur_sign)].first;
-    int num = action_table[make_pair(stack_top.first, cur_sign)].second;
+    pair<int, Token> stack_top = analysis_stack.back();
+    Token cur_token = token_list[ip];
+    int action = action_table[make_pair(stack_top.first, cur_token.type)].first;
+    int num = action_table[make_pair(stack_top.first, cur_token.type)].second;
+    // cout << "stack:" << endl;
+    // for (auto stk : analysis_stack)
+    //   cout << "  " << stk.first << " " << stk.second.type << endl;
+    // cout << "token: " << cur_token.type << endl;
+    // cout << "action:" << action;
     // if (S == action) {
-    //   cout << "S" << num << " " << cur_sign << endl;
-    //   cout << "before" << endl;
-    //   print_item(item_family[stack_top.first]);
-    //   cout << "after" << endl;
-    //   print_item(item_family[num]);
-    //   printf("\n");
+    //   cout << " S" << num << endl;
     // } else if (R == action) {
-    //   cout << "R" << num << " " << cur_sign << endl;
-    //   cout << "before" << endl;
-    //   print_item(item_family[stack_top.first]);
-    //   cout << grammar.productions[num].first << " -> ";
-    //   for (auto& rhs : grammar.productions[num].second) {
-    //     cout << rhs << " ";
-    //   }
-    //   cout << endl << endl;
+    //   cout << " R" << num << endl;
     // }
-    analysis_log.push_back(
-        AnalysisState(analysis_stack, ip,
-                      action_table[make_pair(stack_top.first, cur_sign)]));
+    // cout << endl;
+    analysis_log.push_back(AnalysisState(
+        analysis_stack, ip,
+        action_table[make_pair(stack_top.first, cur_token.type)]));
     if (S == action) {  // Shift
-      analysis_stack.push_back(make_pair(num, cur_sign));
+      analysis_stack.push_back(make_pair(num, cur_token));
       ip++;
     } else if (R == action) {  // Reduce
+      vector<pair<bool, Token>> nodes;
       if (grammar.productions[num].second[0] != EPSILON) {
         for (auto it : grammar.productions[num].second) {
+          nodes.insert(nodes.begin(),
+                       make_pair(is_terminal(analysis_stack.back().second.type),
+                                 analysis_stack.back().second));
           analysis_stack.pop_back();
         }
+        nodes_list.insert(nodes_list.begin(), nodes);
       }
       string tmp = grammar.productions[num].first;
+      Token tmp_token;
+      tmp_token.renew(tmp, 0, 0, "", 0);
       analysis_stack.push_back(make_pair(
-          goto_table[make_pair(analysis_stack.back().first, tmp)], tmp));
+          goto_table[make_pair(analysis_stack.back().first, tmp)], tmp_token));
     } else if (ACC == action) {  // Accept
+      cout << endl << "accept" << endl;
       break;
     } else {
-      cout << "error" << endl;
+      cout << endl << "error" << endl;
       break;
     }
   }
@@ -415,12 +430,9 @@ void Parser::print_analysis_log() {
     cout << "--------------------------------" << endl;
     cout << "Stack:" << endl;
     for (auto stk : it.stack)
-      cout << "  " << stk.first << " " << stk.second << endl;
+      cout << "  " << stk.first << " " << stk.second.type << endl;
     cout << "Input:" << endl;
     vector<Token> input(token_list.begin() + it.input_ip, token_list.end());
-    Token tk;
-    tk.renew("$", 0, 0, "$", 0);
-    input.push_back(tk);
     for (auto ipt : input) {
       cout << "  [" << ipt.type << " ";
       if (ipt.str_value == "")

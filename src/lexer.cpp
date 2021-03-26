@@ -363,9 +363,10 @@ void Lexer::print_token_list() {
 }
 
 void Lexer::print_error_list() {
-  cout << endl << "Error List:" << endl;
+  cout << endl << "Lexical Errors:" << endl;
   for (auto it : error_list) {
     cout << "line " << it.line << ", column " << it.col << ": " << it.content
          << endl;
   }
+  cout << endl;
 }
