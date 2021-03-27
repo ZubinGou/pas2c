@@ -408,18 +408,22 @@ void Parser::analyze() {
                                  analysis_stack.back().second));
           analysis_stack.pop_back();
         }
-        nodes_list.insert(nodes_list.begin(), nodes);
+      } else {
+        Token eps;
+        eps.renew("e", 0, 0, "", 0);
+        nodes.insert(nodes.begin(), make_pair(true, eps));
       }
+      nodes_list.insert(nodes_list.begin(), nodes);
       string tmp = grammar.productions[num].first;
       Token tmp_token;
       tmp_token.renew(tmp, 0, 0, "", 0);
       analysis_stack.push_back(make_pair(
           goto_table[make_pair(analysis_stack.back().first, tmp)], tmp_token));
     } else if (ACC == action) {  // Accept
-      cout << endl << "accept" << endl;
+      cout << "[Syntax] Accept." << endl << endl;
       break;
     } else {
-      cout << endl << "error" << endl;
+      cout << "[Syntax] Meet errors." << endl << endl;
       break;
     }
   }

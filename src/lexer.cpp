@@ -1,9 +1,9 @@
 #include "lexer.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <cstdlib>
 
 using namespace std;
 
@@ -249,9 +249,9 @@ bool Lexer::get_token(Token& token) {
       }
     }
 
-    else if (3 == state) {  // last character is 
-      if (isdigit(cur_line[col_pos-1])) {
-        cur_word += cur_line[col_pos-1];
+    else if (3 == state) {  // last character is
+      if (isdigit(cur_line[col_pos - 1])) {
+        cur_word += cur_line[col_pos - 1];
         col_pos++;
         if (col_pos == int(cur_line.length())) {
           token.renew("num", line_pos, last_col_pos, "",
@@ -363,10 +363,14 @@ void Lexer::print_token_list() {
 }
 
 void Lexer::print_error_list() {
-  cout << endl << "Lexical Errors:" << endl;
-  for (auto it : error_list) {
-    cout << "line " << it.line << ", column " << it.col << ": " << it.content
-         << endl;
+  if (error_list.size() == 0)
+    cout << endl << "[Lexer] No Errors." << endl;
+  else {
+    cout << endl << "[Lexer] Have Errors:" << endl;
+    for (auto it : error_list) {
+      cout << "line " << it.line << ", column " << it.col << ": " << it.content
+           << endl;
+    }
   }
   cout << endl;
 }

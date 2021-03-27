@@ -42,11 +42,14 @@ void SyntaxTree::insert_nodes(std::vector<std::pair<bool, Token>> nodes) {
     }
   }
   // cout << "cur_node: " << cur_node << endl;
+  // print_nodes().;
+  // getchar();
 }
 
 void SyntaxTree::print_nodes() {
+  cout << "Syntax Tree:" << endl;
   for (auto node : this->node_dic) {
-    cout << "node " << setw(2) << node.id << ": ";
+    cout << "node " << setw(3) << node.id << ": ";
     string sign = "[" + node.type + "," + to_string(node.num_value) + "," +
                   node.str_value + "," + to_string(node.line) + "," +
                   to_string(node.col) + "]";
@@ -56,7 +59,7 @@ void SyntaxTree::print_nodes() {
       cout << setw(20) << "terminal";
     else
       cout << setw(20) << "non-terminal";
-    cout << setw(15) << "father: " << node.father << "   son: ";
+    cout << setw(15) << "father: " << setw(3) << node.father << "   son: ";
     for (auto it : node.son) cout << it << " ";
     cout << endl;
   }
