@@ -1,4 +1,4 @@
-#include "syntaxtree.h"
+#include "syntax_tree.h"
 
 #include <algorithm>
 #include <iomanip>

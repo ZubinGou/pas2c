@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "lexer.h"
-#include "syntaxtree.h"
+#include "syntax_tree.h"
 
 struct Grammar {
   std::string start;

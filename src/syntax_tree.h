@@ -41,6 +41,7 @@ class SyntaxTree {
   };
 
   void insert_nodes(std::vector<std::pair<bool, Token>> nodes);
+  void find_inferior_node(/* par: id, inferior_pos */);
   void print_nodes();          // used for debugging
 
   std::vector<Node> node_dic;  // 语法树的全部节点, 下标为编号
