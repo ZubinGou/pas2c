@@ -12,9 +12,9 @@ private:
   bool result = true;
 
 public:
-  SemanticAnalyzer(SyntaxTree tree);
+  SemanticAnalyzer(const SyntaxTree& );
   void start_analyze();
-  void get_exp_type(int nodeid, std::string symbol_table_name);
+  void get_exp_type(const int& , const std::string& );
   // 下面是一堆产生式函数的声明
 };
 

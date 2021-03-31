@@ -1,14 +1,14 @@
 #include "semantic_analyzer.h"
 using namespace std;
 
-SemanticAnalyzer::SemanticAnalyzer(SyntaxTree tree){
-
+SemanticAnalyzer::SemanticAnalyzer(const SyntaxTree& tree){
+  this->syntax_tree = tree;
 }
 
 void SemanticAnalyzer::start_analyze(){
   
 }
 
-void SemanticAnalyzer::get_exp_type(int nodeid, string symbol_table_name){
+void SemanticAnalyzer::get_exp_type(const int& nodeid, const string& symbol_table_name){
 
 }
