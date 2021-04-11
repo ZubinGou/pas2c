@@ -1,4 +1,5 @@
 #include "semantic_analyzer.h"
+#include "symbol_table.h"
 using namespace std;
 
 SemanticAnalyzer::SemanticAnalyzer(const SyntaxTree& tree){
