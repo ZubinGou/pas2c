@@ -64,3 +64,7 @@ void SyntaxTree::print_nodes() {
     cout << endl;
   }
 }
+
+ Node SyntaxTree::find_inferior_node(/* par: id, inferior_pos */int id,int inferior_pos){
+    return node_dic[node_dic[id].son[inferior_pos]]    ;
+  }
