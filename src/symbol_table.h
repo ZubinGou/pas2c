@@ -62,18 +62,17 @@ struct SymbolTable{
   std::vector<Argument > arguments;  // argument list
 };
 
-class SymboltableController
+class SymbolTableController
 {
   private:
     std::map<std::string, SymbolTable> table_lists;  // using table name to find its table
     std::string current_table;  // current table name
   public:
     bool create_table(const std::string&, const bool&, const std::string&, std::vector<Argument >&);
-    bool insert_element2table(const SymbolTableElement&, std::string& );
-    struct SymbolTableElement search_table(const std::string&, const std::string& );
+    bool insert_element2table(const SymbolTableElement&, const std::string& );
+    SymbolTableElement search_table(const std::string&, const std::string& );
     void locate_table(const std::string&);
     void relocate_table();
-
 };
 
 #endif
