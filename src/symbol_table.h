@@ -31,6 +31,9 @@ struct SymbolTableElement{
                         this->declare = declare;
                         this->use = use;
                       }
+  SymbolTableElement(){
+    this->name = "";
+  }
   std::string name; // identifier name
   std::string element_type; // identifier type, e.g FUNCTION PROCEDURE
   std::string value_type; 
@@ -53,6 +56,7 @@ struct SymbolTable{
                  this->return_type = return_type;
                  this->arguments = arguments;
   }
+  SymbolTable(){}
   std::string parent; // parent symbol table name
   std::vector<SymbolTableElement > element_lists; // lists of table elements
   std::string name; // symbol table name

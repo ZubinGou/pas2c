@@ -24,8 +24,8 @@ string SemanticAnalyzer::get_exp_type(const int& nodeid, const string& symbol_ta
   else{
     return nullptr;
   }
-
 }
+
 void SemanticAnalyzer::programstruct(void){
   int cur_nodeId = this->syntax_tree.find_inferior_node(0, 0).id;
   Node cur_node = this->syntax_tree.find_inferior_node(0, 0);
@@ -38,3 +38,12 @@ void SemanticAnalyzer::programstruct(void){
     this->result = false;
   }
 }
+
+void SemanticAnalyzer::program_head(const int& node_id){
+
+}
+
+void SemanticAnalyzer::program_body(const int& node_id){
+
+}
+

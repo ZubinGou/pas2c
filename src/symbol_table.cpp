@@ -10,11 +10,12 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
   auto it = table_lists.find(subtable_name);
   if(it == table_lists.end()){
     vector<SymbolTableElement> element_lists;
-    table_lists[subtable_name] = SymbolTable(current_table, element_lists, subtable_name, 
+    SymbolTable new_table(current_table, element_lists, subtable_name, 
                                               is_func, false, return_type, arguments_lists);
-
+    //table_lists[subtable_name] = new_table;
+    table_lists.insert(make_pair(subtable_name, new_table));
     if(arguments_lists.size()){
-      for(auto argument : arguments_lists){
+      for(auto& argument : arguments_lists){
         string identifier_type;
         if(argument.pass_value == true){
           identifier_type = "addr";
@@ -24,8 +25,8 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
         }
         vector<Argument> new_arguments_lists;
         vector<int> new_use;
-        SymbolTableElement new_element = SymbolTableElement(argument.name, identifier_type, 
-                                          argument.type, NULL, NULL, new_arguments_lists, argument.row, new_use);
+        SymbolTableElement new_element(argument.name, identifier_type, 
+                                          argument.type, 0, NULL, new_arguments_lists, argument.row, new_use);
         insert_element2table(new_element, subtable_name);
       }
     }
@@ -38,13 +39,14 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
     else
       func_type = "procedure";
     vector<int> new_use;
-    SymbolTableElement new_element = SymbolTableElement(subtable_name, func_type, return_type, 
-                                          arguments_lists.size(), NULL, arguments_lists, NULL, new_use);
+    SymbolTableElement new_element(subtable_name, func_type, return_type, 
+                                          arguments_lists.size(), NULL, arguments_lists, 0, new_use);
     insert_element2table(new_element, subtable_name);
     if(subtable_name != "main"){
       insert_element2table(new_element, "main");
     }
     locate_table(subtable_name);
+    return true;
   }
   else
     return false;
@@ -54,7 +56,7 @@ bool SymbolTableController::insert_element2table(const SymbolTableElement& item,
   auto it = table_lists.find(table_name);
   if(it != table_lists.end()){  // table exists
     bool redefined = false;
-    for(auto element : table_lists[table_name].element_lists){
+    for(auto& element : table_lists[table_name].element_lists){
       if(element.name == item.name){
         redefined = true;
         break;
@@ -72,15 +74,16 @@ bool SymbolTableController::insert_element2table(const SymbolTableElement& item,
 }
 
 SymbolTableElement SymbolTableController::search_table(const std::string& id_name, const std::string& table_name){
+  SymbolTableElement empty_element;
   if(table_lists[table_name].element_lists.size()){
-    for(auto element : table_lists[table_name].element_lists){
+    for(auto& element : table_lists[table_name].element_lists){
       if(element.name == id_name){  // find element
         return element;
       }    
     }
 
     if(table_lists[table_name].parent == ""){ // no element and the table has no parent
-      return ;
+      return empty_element;
     }
     else{
       string new_table_name = table_lists[table_name].parent;
@@ -88,11 +91,11 @@ SymbolTableElement SymbolTableController::search_table(const std::string& id_nam
       if(result.name != "") // find element in previous table
         return result;
       else 
-        return ;
+        return empty_element;
     }
   }
   else{
-    return ;
+    return empty_element;
   }
 }
 
