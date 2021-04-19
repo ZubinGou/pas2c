@@ -6,7 +6,7 @@
 #include <vector>
 
 struct Argument{
-  Argument(std::string name, std::string type, bool pass_value, int row){
+  Argument(std::string name, std::string type, int row, bool pass_value = false){
     this->name = name;
     this->type = type;
     this->pass_value = pass_value;
@@ -19,9 +19,8 @@ struct Argument{
 };
 
 struct SymbolTableElement{
-  SymbolTableElement(std::string name, std::string element_type, std::string value_type, 
-                      int dimension, std::string value, std::vector<Argument > arguments_lists,
-                      int declare, std::vector<int > use){
+  SymbolTableElement(std::string name, std::string element_type, std::string value_type, std::string value, std::vector<Argument > arguments_lists,
+                      int declare, std::vector<int > use, int dimension = 0){
                         this->name = name;
                         this->element_type = element_type;
                         this->value_type = value_type;
@@ -33,6 +32,16 @@ struct SymbolTableElement{
                       }
   SymbolTableElement(){
     this->name = "";
+    this->element_type = "";
+    this->value_type = "";
+    this->value = "";
+    this->dimension = 0;
+  }
+  bool empty(){
+    if(this->name == "" && this->element_type == "" && this->value_type == "" && this->value == "" && this->dimension == 0)
+      return true;
+    else
+      return false;
   }
   std::string name; // identifier name
   std::string element_type; // identifier type, e.g FUNCTION PROCEDURE
@@ -45,9 +54,9 @@ struct SymbolTableElement{
 };
 
 struct SymbolTable{
-  SymbolTable(std::string parent, std::vector<SymbolTableElement > element_lists,
-               std::string name, bool is_func, bool enabled,  
-               std::string return_type, std::vector<Argument > arguments){
+  SymbolTable(std::string parent, std::vector<SymbolTableElement > element_lists,  
+               std::string return_type, std::vector<Argument > arguments,
+               std::string name = "", bool is_func = false, bool enabled = false){
                  this->parent = parent;
                  this->element_lists = element_lists;
                  this->name = name;

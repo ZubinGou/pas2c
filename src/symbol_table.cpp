@@ -10,8 +10,8 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
   auto it = table_lists.find(subtable_name);
   if(it == table_lists.end()){
     vector<SymbolTableElement> element_lists;
-    SymbolTable new_table(current_table, element_lists, subtable_name, 
-                                              is_func, false, return_type, arguments_lists);
+    SymbolTable new_table(current_table, element_lists, return_type, arguments_lists, subtable_name, 
+                                              is_func, false);
     //table_lists[subtable_name] = new_table;
     table_lists.insert(make_pair(subtable_name, new_table));
     if(arguments_lists.size()){
@@ -26,7 +26,7 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
         vector<Argument> new_arguments_lists;
         vector<int> new_use;
         SymbolTableElement new_element(argument.name, identifier_type, 
-                                          argument.type, 0, NULL, new_arguments_lists, argument.row, new_use);
+                                          argument.type, NULL, new_arguments_lists, argument.row, new_use);
         insert_element2table(new_element, subtable_name);
       }
     }
@@ -39,8 +39,8 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
     else
       func_type = "procedure";
     vector<int> new_use;
-    SymbolTableElement new_element(subtable_name, func_type, return_type, 
-                                          arguments_lists.size(), NULL, arguments_lists, 0, new_use);
+    SymbolTableElement new_element(subtable_name, func_type, return_type, NULL, arguments_lists, 0, new_use, 
+                                          arguments_lists.size());
     insert_element2table(new_element, subtable_name);
     if(subtable_name != "main"){
       insert_element2table(new_element, "main");
@@ -88,7 +88,7 @@ SymbolTableElement SymbolTableController::search_table(const std::string& id_nam
     else{
       string new_table_name = table_lists[table_name].parent;
       SymbolTableElement result = search_table(id_name, new_table_name);
-      if(result.name != "") // find element in previous table
+      if(result.empty() == false) // find element in previous table
         return result;
       else 
         return empty_element;
