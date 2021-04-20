@@ -75,7 +75,7 @@ vector<Argument> SemanticAnalyzer::parameter_list(const int& node_id){
         parameters.push_back(it);
       }
     }
-    vector<Argument> sub_parameters = parameter(cur_node.son[2]);
+    sub_parameters = parameter(cur_node.son[2]);
     if(!sub_parameters.empty()){
       for(auto& it : sub_parameters){
         parameters.push_back(it);
