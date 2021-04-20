@@ -12,14 +12,14 @@ struct Argument{
     this->pass_value = pass_value;
     this->row = row;
   }
-  Argument(std::vector<std::pair<int, int> > period_array){
-    this->period_array = period_array;
+  Argument(std::pair<int, int> period_element){
+    this->period_element = period_element;
   }
   std::string name; // parameter name
   std::string type; // parameter type
   bool pass_value = false; // true for transfer address, false for transfer value，default is false
   int row;  // the row number of parameters
-  std::vector<std::pair<int, int> > period_array;
+  std::pair<int, int> period_element;
 };
 
 struct SymbolTableElement{

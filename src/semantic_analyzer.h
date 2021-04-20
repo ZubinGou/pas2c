@@ -38,6 +38,7 @@ private:
 
 public:
   SemanticAnalyzer(const SyntaxTree& );
+  SemanticAnalyzer(){};
   SymbolTable symbol_table(); 
   SymbolTableController controller;
   void start_analyze();
