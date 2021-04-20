@@ -109,6 +109,26 @@ void SymbolTableController::relocate_table(){
   current_table = table_lists[current_table].parent;
 }
 
+string SymbolTableController::check_parameters(const std::string& function, const vector<string>& arg_lists){
+  int arg_total = arg_lists.size();
+  if(table_lists.find(function) != table_lists.end()){
+    int para_total = table_lists[function].arguments.size();
+    bool is_correct = true;
+    vector<string> real_para;
+    for(auto& element : table_lists[function].arguments){
+      real_para.push_back(element.type);
+    }
+    is_correct = (real_para == arg_lists);
+    if(arg_total == para_total && is_correct){
+      return table_lists[function].return_type;
+    }
+    else 
+      return "";
+  }
+  else
+    return "";
+}
+
 
 /*
   Interface for code_generator
