@@ -8,6 +8,13 @@
 #include <iostream>
 
 struct returnList{
+  returnList(std::string id_name, std::string type, std::string row, 
+  std::string column, std::string value_type):
+        id_name(id_name), 
+        type(type), 
+        row(row), 
+        column(column), 
+        value_type(value_type){};
   returnList():id_name(""), type(""), row(""), column(""), value_type(""){};
   std::string id_name;
   std::string type;
