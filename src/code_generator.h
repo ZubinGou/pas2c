@@ -49,6 +49,7 @@ class CodeGenerator {
   std::string get_token(int node_id);
   std::string get_str_value(int node_id);
   double get_num_value(int node_id);
+  NumType get_num_type(int node_id);
 
   // Semantic intrface
   bool is_addr(std::string id);
@@ -87,12 +88,12 @@ class CodeGenerator {
   void idlist(int node_id, vector<int> id_num, string id_type="", bool id_addr=false);
   void const_declarations(int node_id);
   void const_declaration(int node_id);
-  void const_value(int node_id);
+  std::vector<std::string> const_value(int node_id);
   void var_declarations(int node_id);
   void var_declaration(int node_id);
-  void type(int node_id);
+  pair<vector<string>, vector<int> > type(int node_id);
   std::string basic_type(int node_id);
-  int period(int node_id);
+  std::vector<int> period(int node_id);
   void subprogram_declarations(int node_id);
   void subprogram(int node_id);
   void subprogram_head(int node_id);

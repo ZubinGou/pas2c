@@ -37,6 +37,9 @@ double CodeGenerator::get_num_value(int node_id) {
   return tree[node_id].num_value;
 }
 
+NumType CodeGenerator::get_num_type(int node_id){
+  return tree[node_id].num_type;
+}
 
 /* 
   Semantic intrface
@@ -156,12 +159,63 @@ void CodeGenerator::const_declarations(int node_id) {
 
 // const_declaration -> const_declaration ; id = const_value | id = const_value 
 void CodeGenerator::const_declaration(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+  if (son_num == 5) {
+    const_declaration(son[0]);
+    target_append(";");
 
+    vector<string> type_value = const_value(son[4]);
+    string id_type = type_value[0];
+    string id_value = type_value[1];
+
+    target_append("const " + id_type + " "); // 输出类型，例如 const int
+    target_append(get_str_value(son[2]) + " = " + id_value);
+  }
+  else if (son_num == 3) {
+    vector<string> type_value = const_value(son[2]);
+    string id_type = type_value[0];
+    string id_value = type_value[1];
+    target_append("const " + id_type + " "); // 输出类型，例如 const int
+    target_append(get_str_value(son[0]) + " = " + id_value);
+  }
 }
 
 // const_value -> + num | - num | num | 'letter'
-void CodeGenerator::const_value(int node_id) {
+std::vector<std::string> CodeGenerator::const_value(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
 
+  string num_type_str[] = {"None", "int", "float", "bool"};
+  std::vector<std::string> type_value;
+  if (son_num == 2) {
+    string op = get_str_value(son[0]); // + or -
+    string num = to_string(get_num_value(son[1])); // 数字，包括整数和浮点数
+    NumType num_type = get_num_type(son[1]);
+    string id_type = num_type_str[num_type];
+
+    type_value.push_back(id_type);
+    type_value.push_back(op + num);
+    return type_value;
+  }
+  else if (son_num == 1) {
+    // TODO: 缺bool？
+    string num = to_string(get_num_value(son[0]));
+    NumType num_type = get_num_type(son[0]);
+    string id_type = num_type_str[num_type];
+
+    type_value.push_back(id_type);
+    type_value.push_back(num);
+    return type_value;
+  }
+  else if (son_num == 3) {
+    string id_type = "char";
+    string id_value = get_str_value(son[1]);
+
+    type_value.push_back(id_type);
+    type_value.push_back(id_value);
+    return type_value;
+  }
 }
 
 // var_declarations -> var var_declaration ; | e
@@ -176,12 +230,60 @@ void CodeGenerator::var_declarations(int node_id) {
 
 // var_declaration -> var_declaration ; idlist : type | idlist : type
 void CodeGenerator::var_declaration(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+  if (son_num == 5) {  // basic_type
+    var_declaration(son[0]);
+    target_append(";\n");
 
+    pair<vector<string>, vector<int> > type_nums = type(son[4]);
+    vector<string> id_type = type_nums.first;
+    vector<int> id_num = type_nums.second;
+    if (id_type[0] == "0"){  // 基本类型
+      target_append(id_type[1]);  // int float bool char
+      vector<int> none;
+      idlist(son[2], none);
+    }
+    else {  // 数组类型
+      target_append(id_type[1]);  // int float bool char
+      idlist(son[2], id_num);
+    }
+  }
+  else if (son_num == 3) {  // array [ period ] of basic_type
+    // idlist : type
+    pair<vector<string>, vector<int> > type_nums = type(son[2]);
+    vector<string> id_type = type_nums.first;
+    vector<int> id_num = type_nums.second;
+    if (id_type[0] == "0") {  // 基本类型
+      target_append(id_type[1]);  // int float bool char
+      vector<int> none;
+      idlist(son[0], none);
+    }
+    else {  // 数组类型
+      target_append(id_type[1]);  // int float bool char
+      idlist(son[0], id_num);  // 需要传递数组的大小
+    }
+  }
 }
 
 // type -> basic_type | array [ period ] of basic_type
-void CodeGenerator::type(int node_id) {
-
+pair<vector<string>, vector<int> > CodeGenerator::type(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+  pair<vector<string>, vector<int> > ans;
+  if (son_num == 1) {  // basic_type
+    string id_type = basic_type(son[0]);
+    ans.first.push_back("0");
+    ans.first.push_back(id_type);
+    return ans;
+  }
+  else if (son_num == 6) {  // array [ period ] of basic_type
+    string id_type = basic_type(son[5]);  // 类型 int float bool char
+    ans.first.push_back("1");
+    ans.first.push_back(id_type);
+    ans.second = period(son[2]);
+    return ans;
+  }
 }
 
 // basic_type -> integer | real | boolean | char
@@ -196,28 +298,30 @@ std::string CodeGenerator::basic_type(int node_id) {
     type_pas2c["char"] = "char";
     
     string var_type = get_str_value(son[0]);
+    string res = "";
     if (type_pas2c.find(var_type) != type_pas2c.end())
-      return type_pas2c[var_type];
-    else{
-      ;
-    }
+      res = type_pas2c[var_type];
+    return res; 
   }
 }
 
 // period -> period , digits .. digits | digits .. digits
-int CodeGenerator::period(int node_id) {
+std::vector<int> CodeGenerator::period(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (son_num == 3) {
+    std::vector<int> nums;
     int left = get_num_value(son[0]);
     int right = get_num_value(son[2]);
-    return (right-left+1);  // 1..10 代表10个元素
+    nums.push_back(right-left+1);
+    return nums;  // 1..10 代表10个元素
   }
   else if (son_num == 5) {
-    int nums = period(son[0]);
+    std::vector<int> nums = period(son[0]);
     int left = get_num_value(son[2]);
     int right = get_num_value(son[4]);
-    return (nums+right-left+1);
+    nums.push_back(right-left+1);
+    return nums;
   }
 }
 
@@ -323,9 +427,10 @@ void CodeGenerator::value_parameter(int node_id) {
 
     int parent = get_father(node_id);
     string token = get_token(parent);
+    vector<int> none;
     if (token == "var_parameter")
-        idlist(son[0], , id_type, true);  // 参数 id,id,id
+        idlist(son[0], none, id_type, true);  // 参数 id,id,id
     else
-        idlist(son[0], , id_type);
+        idlist(son[0], none, id_type);
   }
 }
