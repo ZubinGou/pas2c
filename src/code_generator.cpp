@@ -1,11 +1,11 @@
-#include "code_generator.h"
-#include <string.h>
+// #include "code_generator.h"
+// #include <string.h>
 
-using namespace std;
+// using namespace std;
 
-string CodeGenerator::run() {
-  programstruct();
-  add_indent();
-  return this->target_code;
-}
+// string CodeGenerator::run() {
+//   programstruct();
+//   add_indent();
+//   return this->target_code;
+// }
 

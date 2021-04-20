@@ -6,16 +6,20 @@
 #include <string>
 #include <vector>
 
+enum NumType {None = 0, Integer, Real, Boolean};
+
 struct Token {
  public:
   inline void renew(std::string type, int line, int col, std::string str_value,
-                    double num_value) {
+                    double num_value, NumType num_type = None) {
     this->type = type;
     this->num_value = num_value;
     this->str_value = str_value;
     this->line = line;
     this->col = col;
-  };
+    this->num_type = num_type;
+  };  
+  NumType num_type;
   std::string type;
   std::string str_value;
   double num_value;
