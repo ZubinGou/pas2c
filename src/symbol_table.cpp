@@ -110,4 +110,50 @@ void SymbolTableController::relocate_table(){
 }
 
 
+/*
+  Interface for code_generator
+*/
+bool SymbolTableController::is_addr(std::string id_name, std::string table_name) {
+  if (table_lists.find(table_name) != table_lists.end()) {
+    vector<Argument> arguments = table_lists[table_name].arguments;
+    for (auto argument : arguments) {
+      if (id_name == argument.name)
+        return argument.pass_value;
+    }
+  }
+  return false;
+  // else
+  //     "函数未声明"
+}
+
+bool SymbolTableController::is_func(std::string id_name) {
+  SymbolTableElement result_item = search_table(id_name, "main");
+  return (result_item.empty() && (result_item.element_type == "function"));
+}
+
+std::vector<Argument> SymbolTableController::get_range(std::string array_name, std::string table_name) {
+  SymbolTableElement result_item = search_table(array_name, table_name);
+  std::vector<Argument> arguments_lists;
+  if (!result_item.empty() && (result_item.element_type == "array"))
+    arguments_lists = result_item.arguments_lists;
+  return arguments_lists;
+}
+
+std::string SymbolTableController::get_type(std::string id_name, std::string table_name) {
+    SymbolTableElement result_item = search_table(id_name, table_name);
+    // if (result_item.empty())
+    //     '未定义'
+    //     return;
+    return result_item.value_type;
+}
+
+std::vector<bool> SymbolTableController::get_args(std::string table_name) {
+  std::vector<bool> args;
+  if (table_lists.find(table_name) != table_lists.end())
+    for (auto item : table_lists[table_name].arguments)
+      args.push_back(item.pass_value);
+  return args;
+}
+
+
 

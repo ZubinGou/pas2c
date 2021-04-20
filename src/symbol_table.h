@@ -87,6 +87,15 @@ class SymbolTableController
     void locate_table(const std::string&);
     void relocate_table();
     std::string current_table;  // current table name
+
+    /*
+      Interface for code_generator
+    */
+    bool is_addr(std::string id_name, std::string table_name);  // 确定某一个标识符传参方式
+    bool is_func(std::string id_name);  // 判断是函数还是过程
+    std::vector<Argument> get_range(std::string array_name, std::string table_name);  // 确定数组的上下界
+    std::string get_type(std::string id_name, std::string table_name);  // 获取值的类型
+    std::vector<bool> get_args(std::string table_name);  // 获取参数列表
 };
 
 #endif
