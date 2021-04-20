@@ -721,5 +721,3 @@ returnList SemanticAnalyzer::factor(const int& node_id){
 
   return factor;
 }
-
-
