@@ -45,6 +45,9 @@ class CodeGenerator {
   // target_code manipulate
   void target_append(std::string code);  // 部分代码到目标代码
   void add_indent();                     // 为目标代码添加缩进
+  
+  // debug
+  void print_target_code();  // 打印目标代码
 
   // Parser interface
   std::vector<int> get_son(int node_id);       // return tree[node_id].son
@@ -107,59 +110,56 @@ class CodeGenerator {
   void var_parameter(int node_id);
   void value_parameter(int node_id);
 
-  // subprogram_body -> const_declarations var_declarations compound_statement
+// subprogram_body -> const_declarations var_declarations compound_statement
   void subprogram_body(int node_id);
-  // compound_statement -> begin statement_list end
+// compound_statement -> begin statement_list end
   void compound_statement(int node_id);
-  // statement_list -> statement_list ; statement
-  //                 | statement
+// statement_list -> statement_list ; statement
+//                 | statement
   void statement_list(int node_id);
-  // statement -> variable assignop expression
-  //            | procedure_call
-  //            | compound_statement
-  //            | if expression then statement else_part
-  //            | for id assignop expression to expression do statement
-  //            | read ( variable_list )
-  //            | write ( expression_list )
-  //            | e
+// statement -> variable assignop expression
+//            | procedure_call
+//            | compound_statement
+//            | if expression then statement else_part
+//            | for id assignop expression to expression do statement
+//            | read ( variable_list )
+//            | write ( expression_list )
+//            | e 
   void statement(int node_id);
-  // variable_list -> variable_list , variable
-  //                | variable
+// variable_list -> variable_list , variable
+//                | variable
   void variable_list(int node_id,
                      std::vector<std::pair<string, string>>& vlist);
-  // variable -> id id_varpart
+// variable -> id id_varpart
   std::pair<string, string> variable(int node_id, bool is_bool = false);
-  // id_varpart -> [ expression_list ] | e
+// id_varpart -> [ expression_list ] | e
   std::string id_varpart(int node_id);
-  // procedure_call -> id | id ( expression_list )
+// procedure_call -> id | id ( expression_list )
   void procedure_call(int node_id);
-  // else_part -> else statement | e
+// else_part -> else statement | e
   void else_part(int node_id);
-  // expression_list -> expression_list , expression
-  //                  | expression
+// expression_list -> expression_list , expression
+//                  | expression
   void expression_list(
       int node_id, std::vector<std::string>& elist,
       std::vector<std::string>& tlist = std::vector<std::string>());
-  // expression -> simple_expression relop simple_expression
-  //             | simple_expression
+// expression -> simple_expression relop simple_expression
+//             | simple_expression
   std::string expression(
       int node_id, bool& is_bool = new bool(false));  // TODO pass by reference
-  // simple_expression -> simple_expression addop term
-  //                    | term
+// simple_expression -> simple_expression addop term
+//                    | term
   string simple_expression(int node_id);
-  // term -> term mulop factor
-  //       | factor
+// term -> term mulop factor
+//       | factor
   string term(int node_id);
-  // factor -> num
-  //         | variable
-  //         | id ( expression_list )
-  //         | ( expression )
-  //         | not factor
-  //         | uminus factor
+// factor -> num
+//         | variable
+//         | id ( expression_list )
+//         | ( expression )
+//         | not factor
+//         | uminus factor
   string factor(int node_id, bool& is_bool = new bool());
-
-  // debug
-  void print_target_code();  // 打印目标代码
 };
 
 #endif

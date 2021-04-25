@@ -23,6 +23,11 @@ void CodeGenerator::add_indent() {  // 为目标代码添加缩进
 }
 
 /*
+ Debug
+ */
+void CodeGenerator::print_target_code() { cout << this->target_code; }
+
+/*
   Parser interface
 */
 
@@ -238,7 +243,7 @@ void CodeGenerator::var_declaration(int node_id) {
     var_declaration(son[0]);
     target_append(";\n");
 
-    pair<vector<string>, vector<int> > type_nums = type(son[4]);
+    pair<vector<string>, vector<int>> type_nums = type(son[4]);
     vector<string> id_type = type_nums.first;
     vector<int> id_num = type_nums.second;
     if (id_type[0] == "0") {      // 基本类型
@@ -251,7 +256,7 @@ void CodeGenerator::var_declaration(int node_id) {
     }
   } else if (son_num == 3) {  // array [ period ] of basic_type
     // idlist : type
-    pair<vector<string>, vector<int> > type_nums = type(son[2]);
+    pair<vector<string>, vector<int>> type_nums = type(son[2]);
     vector<string> id_type = type_nums.first;
     vector<int> id_num = type_nums.second;
     if (id_type[0] == "0") {      // 基本类型
@@ -266,10 +271,10 @@ void CodeGenerator::var_declaration(int node_id) {
 }
 
 // type -> basic_type | array [ period ] of basic_type
-pair<vector<string>, vector<int> > CodeGenerator::type(int node_id) {
+pair<vector<string>, vector<int>> CodeGenerator::type(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
-  pair<vector<string>, vector<int> > ans;
+  pair<vector<string>, vector<int>> ans;
   if (son_num == 1) {  // basic_type
     string id_type = basic_type(son[0]);
     ans.first.push_back("0");
@@ -435,7 +440,7 @@ void CodeGenerator::value_parameter(int node_id) {
 void CodeGenerator::subprogram_body(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
-  assert (son_num == 3);
+  assert(son_num == 3);
   // parameters
   target_append("{\n");
   const_declaration(son[0]);
@@ -446,17 +451,90 @@ void CodeGenerator::subprogram_body(int node_id) {
 }
 
 // compound_statement -> begin statement_list end
-
-
-// statement_list -> statement_list ; statement | statement
-// statement -> variable assignop expression | procedure_call | compound_statement | if expression then statement else_part | for id assignop expression to expression do statement | read ( variable_list ) | write ( expression_list ) | e
-// variable_list -> variable_list , variable | variable
+void CodeGenerator::compound_statement(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
+// statement_list -> statement_list ; statement
+//                 | statement
+void CodeGenerator::statement_list(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
+// statement -> variable assignop expression
+//            | procedure_call
+//            | compound_statement
+//            | if expression then statement else_part
+//            | for id assignop expression to expression do statement
+//            | read ( variable_list )
+//            | write ( expression_list )
+//            | e
+void CodeGenerator::statement(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
+// variable_list -> variable_list , variable
+//                | variable
+void CodeGenerator::variable_list(
+    int node_id, std::vector<std::pair<string, string>>& vlist) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
 // variable -> id id_varpart
+std::pair<string, string> CodeGenerator::variable(int node_id,
+                                                  bool is_bool = false) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
 // id_varpart -> [ expression_list ] | e
+std::string CodeGenerator::id_varpart(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
 // procedure_call -> id | id ( expression_list )
+void CodeGenerator::procedure_call(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
 // else_part -> else statement | e
-// expression_list -> expression_list , expression | expression
-// expression -> simple_expression relop simple_expression | simple_expression
-// simple_expression -> simple_expression addop term | term
-// term -> term mulop factor | factor
-// factor -> num | variable | id ( expression_list ) | ( expression ) | not factor | uminus factor
+void CodeGenerator::else_part(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
+// expression_list -> expression_list , expression
+//                  | expression
+void CodeGenerator::expression_list(
+    int node_id, std::vector<std::string>& elist,
+    std::vector<std::string>& tlist = std::vector<std::string>()) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
+// expression -> simple_expression relop simple_expression
+//             | simple_expression
+std::string CodeGenerator::expression(
+    int node_id, bool& is_bool = new bool(false)) {  // TODO pass by reference
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
+// simple_expression -> simple_expression addop term
+//                    | term
+string CodeGenerator::simple_expression(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
+// term -> term mulop factor
+//       | factor
+string CodeGenerator::term(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
+// factor -> num
+//         | variable
+//         | id ( expression_list )
+//         | ( expression )
+//         | not factor
+//         | uminus factor
+string CodeGenerator::factor(int node_id, bool& is_bool = new bool()) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+}
