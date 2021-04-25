@@ -4,6 +4,13 @@
 
 using namespace std;
 
+string join_vec(vector<string> vec, string sep) {
+  string res;
+  if (vec.size() > 0) res += vec[0];
+  for (int i = 1; i < vec.size(); i++) res += sep + vec[i];
+  return res;
+}
+
 std::string CodeGenerator::run() {
   programstruct(1);
   add_indent();
@@ -13,13 +20,12 @@ std::string CodeGenerator::run() {
 /*
   target_code manipulate
 */
-
 void CodeGenerator::target_append(std::string code) {  // 部分代码到目标代码
   this->target_code += code;
 }
 
 void CodeGenerator::add_indent() {  // 为目标代码添加缩进
-  ;                                 // TODO
+  return;                           // TODO
 }
 
 /*
@@ -112,7 +118,7 @@ void CodeGenerator::program_head(int node_id) {
   int son_num = son.size();
 
   if (son_num == 5) {
-    // id_list(son[3]);    # 程序头的id_list参数在C语言中不需要
+    // id_list(son[3]);    // 程序头的id_list参数在C语言中不需要
   } else if (son_num == 2) {
   }
 }
@@ -141,7 +147,7 @@ void CodeGenerator::idlist(int node_id, vector<int> id_num, string id_type,
     idlist(son[0], id_num, id_type, id_addr);
 
     string value = get_str_value(son[2]);
-    if (id_addr) value = '*' + value;
+    if (id_addr) value = "*" + value;
     if (id_type == "")  // 声明在变量区
       target_append(", " + value);
     else  // 在参数区
@@ -150,7 +156,7 @@ void CodeGenerator::idlist(int node_id, vector<int> id_num, string id_type,
       for (auto num : id_num) target_append("[" + to_string(num) + "]");
   } else if (son_num == 1) {
     string value = get_str_value(son[0]);
-    if (id_addr) value = '*' + value;
+    if (id_addr) value = "*" + value;
     target_append(" " + value);
     if (!id_num.empty())
       for (auto num : id_num) target_append("[" + to_string(num) + "]");
@@ -190,7 +196,7 @@ void CodeGenerator::const_declaration(int node_id) {
   }
 }
 
-// const_value -> + num | - num | num | 'letter'
+// const_value -> + num | - num | num | "letter"
 std::vector<std::string> CodeGenerator::const_value(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
@@ -222,7 +228,8 @@ std::vector<std::string> CodeGenerator::const_value(int node_id) {
     type_value.push_back(id_type);
     type_value.push_back(id_value);
     return type_value;
-  }
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
 
 // var_declarations -> var var_declaration ; | e
@@ -286,7 +293,8 @@ pair<vector<string>, vector<int>> CodeGenerator::type(int node_id) {
     ans.first.push_back(id_type);
     ans.second = period(son[2]);
     return ans;
-  }
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
 
 // basic_type -> integer | real | boolean | char
@@ -305,7 +313,8 @@ std::string CodeGenerator::basic_type(int node_id) {
     if (type_pas2c.find(var_type) != type_pas2c.end())
       res = type_pas2c[var_type];
     return res;
-  }
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
 
 // period -> period , digits .. digits | digits .. digits
@@ -324,7 +333,8 @@ std::vector<int> CodeGenerator::period(int node_id) {
     int right = get_num_value(son[4]);
     nums.push_back(right - left + 1);
     return nums;
-  }
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
 
 // subprogram_declarations -> subprogram_declarations subprogram ; | e
@@ -426,8 +436,8 @@ void CodeGenerator::value_parameter(int node_id) {
     string id_type = basic_type(son[2]);  // 基本类型 如 int
     target_append(id_type);               // int
 
-    int parent = get_father(node_id);
-    string token = get_token(parent);
+    int father = get_father(node_id);
+    string token = get_token(father);
     vector<int> none;
     if (token == "var_parameter")
       idlist(son[0], none, id_type, true);  // 参数 id,id,id
@@ -440,26 +450,58 @@ void CodeGenerator::value_parameter(int node_id) {
 void CodeGenerator::subprogram_body(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
-  assert(son_num == 3);
-  // parameters
-  target_append("{\n");
-  const_declaration(son[0]);
-  var_declaration(son[1]);
-  // function
-  compound_statement(son[2]);
-  target_append("}\n");
+  if (son_num == 3) {
+    // parameters
+    target_append("{\n");
+    const_declaration(son[0]);
+    var_declaration(son[1]);
+    // function
+    compound_statement(son[2]);
+    target_append("}\n");
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
 
 // compound_statement -> begin statement_list end
 void CodeGenerator::compound_statement(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  int father = get_father(node_id);
+  if (son_num == 3) {
+    if (this->tree[father].type == "subprogram_body") {
+      match(son[0], "begin");
+      statement_list(son[1]);
+      match(son[2], "end");
+    } else if (this->tree[father].type == "program_body") {
+      target_append("int main()");
+      match(son[0], "begin");
+      target_append("{\n");
+      statement_list(son[1]);
+      match(son[2], "end");
+      target_append("\nreturn 0; \n}\n");
+    } else {  // 一般的符合语句要加大括号
+      match(son[0], "begin");
+      target_append("{\n");
+      statement_list(son[1]);
+      match(son[2], "end");
+      target_append("}\n");
+    }
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
 // statement_list -> statement_list ; statement
 //                 | statement
 void CodeGenerator::statement_list(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  if (son_num == 3) {
+    statement_list(son[0]);
+    match(son[1], ";");
+    statement(son[2]);
+  } else if (son_num == 1) {
+    statement(son[0]);
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
 // statement -> variable assignop expression
 //            | procedure_call
@@ -472,6 +514,159 @@ void CodeGenerator::statement_list(int node_id) {
 void CodeGenerator::statement(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  // pascal的赋值语句比较复杂
+  if (son_num == 3) {  // variable assignop expression
+    pair<string, string> var_pair = variable(son[0]);
+    string var_type = var_pair.first;
+    string var = var_pair.second;
+    // cout << var_type << " " << var << " " << cur_state[-1] << endl;
+
+    match(son[1], "assignop");
+    if (var == state_stack.top())  // 返回语句
+      target_append("return ");
+    else {
+      target_append(var);
+      target_append(" = ");
+    }
+
+    string exp = expression(son[2]);
+    target_append(exp);
+    target_append(";\n");
+  }
+
+  else if (son_num == 1) {
+    if (tree[son[0]].type == "procedure_call") {
+      procedure_call(son[0]);
+      target_append(";\n");
+    } else if (tree[son[0]].type == "compound_statement") {
+      compound_statement(son[0]);
+      target_append("\n");
+    } else {                   // 空
+      match(son[0], nullptr);  // TODO nullptr?
+      // target_append(";\n")
+    }
+  }
+
+  else if (son_num == 5) {  // if expression then statement else_part
+    match(son[0], "if");
+    target_append("if(");
+
+    string exp = expression(son[1]);
+    target_append(exp);
+    target_append(")");
+
+    match(son[2], "then");
+    vector<int> c = get_son(son[3]);
+    int cn = c.size();
+    if (!(cn == 1 && tree[c[0]].type == "compound_statement")) c.clear();
+    if (c.empty()) target_append("{\n");
+    statement(son[3]);
+    if (c.empty()) target_append("}\n");
+    else_part(son[4]);
+  }
+
+  else if (son_num == 8) {
+    // for id assignop expression to expression do statement
+    match(son[0], "for");
+    target_append("for(");
+    match(son[1], "id");
+
+    if (is_addr(tree[son[1]].str_value))
+      target_append("*" + tree[son[1]].str_value);
+    else
+      target_append(tree[son[1]].str_value);  // TODO num or str?
+
+    match(son[2], "assignop");
+    target_append("=");
+    target_append(expression(son[3]));
+    target_append(";");
+
+    match(son[4], "to");
+
+    target_append(tree[son[1]].str_value);
+    target_append("<=");
+    target_append(expression(son[5]));
+
+    match(son[6], "do");
+    target_append(";");
+
+    target_append(tree[son[1]].str_value);
+    target_append("++){\n");
+    statement(son[7]);
+    target_append("}\n");
+  } else if (son_num == 4) {
+    //           | while expression do statement
+    //           | read ( variable_list )
+    //           | write ( expression_list )
+    if (tree[son[0]].type == "read") {
+      match(son[0], "read");
+      target_append("scanf");
+
+      match(son[1], "(");
+      target_append("(");
+
+      vector<pair<string, string>> vlist;
+      variable_list(son[2], vlist);
+      target_append("\"");
+      for (auto p : vlist) {
+        string var_type = p.first;
+        if (var_type == "boolean") target_append("%d");
+        if (var_type == "integer") target_append("%d");
+        if (var_type == "char") target_append("%c");
+        if (var_type == "read") target_append("%f");
+      }
+      target_append("\"");
+
+      vector<string> value_list;
+      target_append(",");
+      for (auto p : vlist) value_list.push_back(p.second);
+      target_append(join_vec(value_list, ", "));
+
+      match(son[3], ")");
+      target_append(");\n");
+    }
+    if (tree[son[0]].type == "write") {
+      match(son[0], "write");
+      target_append("printf");
+      match(son[1], "(");
+
+      target_append("(");
+      target_append("\"");
+
+      // TODO 这里要加入判断表达值类型的函数
+      vector<string> elist;
+      vector<string> tlist;
+      expression_list(son[2], elist, tlist);
+
+      vector<string> trans_tlist;
+      for (auto etype : tlist) {
+        if (etype == "integer" || etype == "boolean")
+          trans_tlist.push_back("%d ");
+        if (etype == "real") trans_tlist.push_back("%f ");
+        if (etype == "char") trans_tlist.push_back("%c ");
+      }
+
+      target_append(join_vec(trans_tlist, " "));
+      target_append("\"");
+      target_append(",");
+
+      target_append(join_vec(elist, ", "));
+      match(son[3], ")");
+      target_append(");\n");
+    }
+
+    if (tree[son[0]].type == "while") {
+      // while expression do statement
+      match(son[0], "while");
+      target_append("while");
+      target_append("(");
+      target_append(expression(son[1]));
+      target_append(")");
+      match(son[2], "do");
+      statement(son[3]);
+    }
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
 // variable_list -> variable_list , variable
 //                | variable
@@ -479,55 +674,172 @@ void CodeGenerator::variable_list(
     int node_id, std::vector<std::pair<string, string>>& vlist) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  if (son_num == 3) {  // variable_list , variable
+    variable_list(son[0], vlist);
+    match(son[1], ",");
+    vlist.push_back(variable(son[2]));
+  } else if (son_num == 1)  // variable
+    vlist.push_back(variable(son[0]));
+  else
+    cerr << "Unexpected Expression" << endl;
 }
+
 // variable -> id id_varpart
 std::pair<string, string> CodeGenerator::variable(int node_id,
                                                   bool is_bool = false) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  if (son_num == 2) {  // id id_varpart
+    match(son[0], "id");
+    string var_type = get_var_type(tree[son[0]].str_value);
+    if (var_type == "boolean") is_bool = true;
+    string var_part = id_varpart(son[1]);
+    // 加入一个元组, (var的type, var) eg:(int, a[1][2])
+    string has_ptr = is_addr(tree[son[0]].str_value) ? "*" : "";
+    // is_func = "_re" if is_func(tree[son[0]].value) else ""
+    string is_func = "";
+    return {var_type, has_ptr + tree[son[0]].str_value + is_func + var_part};
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
+
 // id_varpart -> [ expression_list ] | e
 std::string CodeGenerator::id_varpart(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  if (son_num == 3) {  // [ expression_list ]
+    match(son[0], "[");
+    vector<string> elist;  // expression list
+    expression_list(son[1], elist);
+    match(son[2], "]");
+
+    int father = get_father(node_id);
+    int id = tree[father].son[0];
+    string id_value = tree[id].str_value;
+    vector<int> blist = get_bound(id_value);  // bound的list
+
+    // elist_trans = ["[{}{}]".format(exp, "-" + str(bound)) for exp, bound in
+    // zip(elist, blist) ]
+    vector<string> elist_trans;
+    for (int i = 0; i < elist.size(); i++)
+      elist_trans.push_back(elist[i] + "-" + to_string(blist[i]));
+    return join_vec(elist_trans, "");
+  } else if (son_num == 1) {  // 空
+    match(son[0], nullptr);
+    return "";
+  }
 }
+
 // procedure_call -> id | id ( expression_list )
 void CodeGenerator::procedure_call(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  if (son_num == 1) {  // id 没有参数
+    match(son[0], "id");
+    target_append(tree[son[0]].str_value);
+    target_append("()");
+  } else if (son_num == 4) {  // id ( expression_list )
+    // 有参数
+    match(son[0], "id");
+    target_append(tree[son[0]].str_value);
+
+    if (is_func(tree[son[0]].str_value)) {
+      vector<bool> args_list = get_args(tree[son[0]].str_value);
+      // cout << args_list; // TODO
+    }
+
+    match(son[1], "(");
+    target_append("(");
+
+    vector<string> elist;
+    expression_list(son[2], elist);
+    target_append(join_vec(elist, ", "));
+
+    match(son[3], ")");
+    target_append(")");
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
+
 // else_part -> else statement | e
 void CodeGenerator::else_part(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  if (son_num == 2) {  // else statement
+    match(son[0], "else");
+    target_append("else{\n");
+
+    statement(son[1]);
+    // target_append(";");
+    target_append("}\n");
+  } else if (son_num == 1)  // 空
+    match(son[0], nullptr);
+  else
+    cerr << "Unexpected Expression" << endl;
 }
-// expression_list -> expression_list , expression
-//                  | expression
-void CodeGenerator::expression_list(
-    int node_id, std::vector<std::string>& elist,
-    std::vector<std::string>& tlist = std::vector<std::string>()) {
-  vector<int> son = get_son(node_id);
-  int son_num = son.size();
-}
+
 // expression -> simple_expression relop simple_expression
 //             | simple_expression
 std::string CodeGenerator::expression(
     int node_id, bool& is_bool = new bool(false)) {  // TODO pass by reference
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+
+  if (son_num == 3) {  // simple_expression relop simple_expression
+    is_bool = true;
+    string front_exp = simple_expression(son[0]);
+    match(son[1], "relop");
+    string relop = tree[son[1]].str_value;
+    if (relop == "<>") relop = "!=";
+    if (relop == "=") relop = "==";
+    string back_exp = simple_expression(son[2]);
+    return front_exp + relop + back_exp;
+  } else if (son_num == 1)  // simple_expression
+    return simple_expression(son[0]);
+  else
+    cerr << "Unexpected Expression" << endl;
 }
+
 // simple_expression -> simple_expression addop term
 //                    | term
 string CodeGenerator::simple_expression(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  if (son_num == 3) {  // simple_expression addop term
+    string exp = simple_expression(son[0]);
+    match(son[1], "addop");
+    string addop = tree[son[1]].str_value;
+    if (addop == "or") addop = "|";
+    string _term = term(son[2]);
+    return exp + addop + _term;
+  } else if (son_num == 1)  // term
+    return term(son[0]);
+  else
+    cerr << "Unexpected Expression" << endl;
 }
+
 // term -> term mulop factor
 //       | factor
 string CodeGenerator::term(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  if (son_num == 3) {  // term mulop factor
+    string _term = term(son[0]);
+
+    match(son[1], "mulop");
+    string mulop = tree[son[1]].str_value;
+    if (mulop == "div") mulop = "/";
+    if (mulop == "mod") mulop = "%";
+    if (mulop == "and") mulop = "&&";
+    string _factor = factor(son[2]);
+    return _term + mulop + _factor;
+  } else if (son_num == 1) {  // factor
+    string _factor = factor(son[0]);
+    return _factor;
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
+
 // factor -> num
 //         | variable
 //         | id ( expression_list )
@@ -537,4 +849,56 @@ string CodeGenerator::term(int node_id) {
 string CodeGenerator::factor(int node_id, bool& is_bool = new bool()) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
+  if (son_num == 1) {  // num | variable
+    if (tree[son[0]].type == "num") return to_string(tree[son[0]].num_value);
+    if (tree[son[0]].type == "variable") {
+      pair<string, string> var_pair = variable(son[0]);
+      return var_pair.second;
+    }
+  }
+  if (son_num == 4) {  // id ( expression_list )
+    match(son[0], "id");
+    match(son[1], "(");
+
+    vector<bool> is_addr_list;
+    if (is_func(tree[son[0]].str_value))
+      is_addr_list = get_args(tree[son[0]].str_value);  // TODO
+
+    vector<string> elist;
+    expression_list(son[2], elist);
+    match(son[3], ")");
+
+    vector<string> args_list;
+    for (int i = 0; i < elist.size(); i++) {
+      string exp = elist[i];
+      bool is_addr = is_addr_list[i];
+      if (is_addr)
+        args_list.push_back("&" + exp);
+      else
+        args_list.push_back(exp);
+    }
+    return tree[son[0]].str_value + "(" + join_vec(args_list, ", ") + ")";
+  }
+  if (son_num == 3) {  // ( expression )
+    match(son[0], "(");
+    string exp = expression(son[1], is_bool);
+    match(son[2], ")");
+    return "(" + exp + ")";
+  }
+  if (son_num == 2) {  // not factor | uminus factor
+    if (tree[son[0]].type == "not") {
+      bool is_bool_var = false;
+      string _factor = factor(son[1], is_bool_var);
+      if (is_bool_var)
+        return "!" + _factor;
+      else
+        return "~" + _factor;
+    }
+    if (tree[son[0]].type == "uminus") {
+      match(son[0], "uminus");
+      string _factor = factor(son[1]);
+      return "-" + _factor;
+    }
+  } else
+    cerr << "Unexpected Expression" << endl;
 }
