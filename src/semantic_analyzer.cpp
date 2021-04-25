@@ -4,19 +4,22 @@
 #include <vector>
 using namespace std;
 
-SemanticAnalyzer::SemanticAnalyzer(const SyntaxTree& tree){
+// initialize the analyzer
+SemanticAnalyzer::SemanticAnalyzer(const SyntaxTree& tree){//checked
   this->syntax_tree = tree;   //syntax tree
   this->symbol_table_controller = SymbolTableController();  //symbol table controller
-  this->result = true;
+  this->result = true;// there's no error before the analyse
   this->start_analyze();
 }
 
-void SemanticAnalyzer::start_analyze(){
+void SemanticAnalyzer::start_analyze(){//checked
+  //the root of the syntax tree must be "programstruct"
   if(this->syntax_tree.find_inferior_node(0,0).type == "programstruct")
     programstruct();
 }
 
-string SemanticAnalyzer::get_exp_type(const int& node_id, const string& symbol_table_name){
+// return the type of an expression
+string SemanticAnalyzer::get_exp_type(const int& node_id, const string& symbol_table_name){//finished
   this->controller.current_table = symbol_table_name;
   returnList result_item = this->expression(node_id);
   this->controller.current_table = nullptr;
@@ -26,34 +29,201 @@ string SemanticAnalyzer::get_exp_type(const int& node_id, const string& symbol_t
     return nullptr;
 }
 
-void SemanticAnalyzer::programstruct(void){
-  int cur_nodeId = this->syntax_tree.find_inferior_node(0, 0).id;
-  Node cur_node = this->syntax_tree.find_inferior_node(0, 0);
-  program_head(cur_node.son[0]);
-  if(syntax_tree.node_dic[cur_node.son[1]].type != ";"){
+//programstruct -> program_head ; program_body .
+void SemanticAnalyzer::programstruct(void){//checked
+  int cur_nodeId = this->syntax_tree.find_inferior_node(0, 0).id;//the id of root node
+  Node cur_node = this->syntax_tree.find_inferior_node(0, 0);//the root node
+  program_head(cur_node.son[0]);//program head is the first son
+  if(syntax_tree.node_dic[cur_node.son[1]].type != ";"){// ; is the second son
     this->result = false;
   }
-  program_body(cur_node.son[2]);
-  if(syntax_tree.node_dic[cur_node.son[3]].type != ";"){
+  program_body(cur_node.son[2]);//program body is the third son
+  if(syntax_tree.node_dic[cur_node.son[3]].type != "."){// . is the forth son
     this->result = false;
   }
 }
-//4.24 update
-void SemanticAnalyzer::program_head(const int& node_id){
 
+
+//program_head -> program id ( idlist ) | program id
+void SemanticAnalyzer::program_head(const int& node_id){// bug alert
+  Node cur_node = this->syntax_tree.node_dic[node_id];
+  if (cur_node.son_num == 2){
+    if (this ->syntax_tree.find_inferior_node(node_id,0).type != "program" ){
+      this->result = false;
+    }
+    if (this ->syntax_tree.find_inferior_node(node_id,1).type != "id" ){
+      this->result = false;
+    }
+    else{
+      std::vector<Argument> a;
+      this->symbol_table_controller.create_table("main", false, "", a); //how to initalize?
+    }
+  }
+
+  else if ( cur_node.son_num == 5 ){
+    if (this ->syntax_tree.find_inferior_node(node_id,0).type != "program" ){
+      this->result = false;
+    }
+    if (this ->syntax_tree.find_inferior_node(node_id,1).type != "id" ){
+      this->result = false;
+    }
+    if (this ->syntax_tree.find_inferior_node(node_id,2).type != "(" ){
+      this->result = false;
+    }
+    vector<returnList> agruments = this->idlist(cur_node.son[3]);
+    vector<Argument> params;
+    for(auto& it : agruments){
+      Argument temp(it.id_name,nullptr,stoi(it.row));
+      params.push_back(temp);
+    }
+    //"if not create table" in the original code seems to be unnecessary
+    if(")" != this->syntax_tree.find_inferior_node(node_id,4).type){
+      this->result = false;
+    }
+  }
+  else{
+  /* wrong number of inferior nodes
+     There must be either 2 or 5 sons */
+    this -> result = false;
+    cout << "[semantic error] The number of the current inferior node is wrong!" << endl;
+  }
 }
 
-void SemanticAnalyzer::program_body(const int& node_id){
-
+// program_body-> const_declarations var_declarations subprogram_declarations compound_statement
+void SemanticAnalyzer::program_body(const int& node_id){//checked
+  Node cur_node = this->syntax_tree.node_dic[node_id];
+  if (this ->syntax_tree.find_inferior_node(node_id,0).type == "const_declarations" ){
+      this->const_declarations(cur_node.son[0]);
+  }
+  if (this ->syntax_tree.find_inferior_node(node_id,1).type == "var_declarations" ){
+      this->var_declarations(cur_node.son[1]);
+  }
+  if (this ->syntax_tree.find_inferior_node(node_id,2).type == "subprogram_declarations" ){
+      this->subprogram_declarations(cur_node.son[2]);
+  }
+  if (this ->syntax_tree.find_inferior_node(node_id,3).type == "compound_statement" ){
+      this->compound_statement(cur_node.son[3]);
+    }
 }
 
-vector<returnList> SemanticAnalyzer::idlist(const int& id){
+// idlist -> idlist, id | id
+vector<returnList> SemanticAnalyzer::idlist(const int& node_id){//not finished
+  vector<returnList> arguments;
+  Node cur_node = this->syntax_tree.node_dic[node_id];
+  if(cur_node.son_num == 1){
+    if(this->syntax_tree.find_inferior_node(node_id,0).type == "id"){
+      Node node_child = this->syntax_tree.find_inferior_node(node_id,0);
+      //returnList current = (node_child.str_value,node_child.type,node_child.line,node_child.col,);
+      /*
+      std::string id_name, 
+      std::string type, 
+      std::string row,
+      std::string column, 
+      std::string value_type
+      */
+      //(node_child.str_value, node_child.type,node_child.line, node_child.col,)
+    }
+  }
+  else if(cur_node.son_num == 3){
 
+  }
+  else{
+    this -> result = false;
+    cout<<"[semantic error] The number of the current inferior node is wrong!"<<endl;
+  }
+  return arguments;
 }
 
-string SemanticAnalyzer::basic_type(const int& ){
 
+
+// const_declarations -> const const_declaration ; | None
+void SemanticAnalyzer::const_declarations(const int& node_id){//finished
+  Node cur_node = this->syntax_tree.node_dic[node_id];
+  if(cur_node.son_num == 2){
+    Node node_child = this->syntax_tree.find_inferior_node(node_id,0);
+    if(node_child.type=="const"){
+      this->const_declaration(cur_node.son[1]);
+    }
+    else{
+      cout<<"[semantic error] The number of the current inferior node is wrong!"<<endl;
+    }
+  }
 }
+
+//const_declaration -> const_declaration ; id relop const_value |  id relop const_value
+void SemanticAnalyzer::const_declaration(const int& node_id){// not finished
+  Node cur_node = this->syntax_tree.node_dic[node_id];
+  if(cur_node.son_num == 3){
+
+  }
+  else if(cur_node.son_num == 5){
+
+  }
+  else{
+    cout<<"[semantic error] The number of the current inferior node is wrong!" << endl;
+  }
+}
+
+
+vector<string> SemanticAnalyzer::const_value(const int& node_id){//not finished
+  string value_const;
+  string type_const;
+
+  if(this->syntax_tree.find_inferior_node(node_id,0).type == "addop"){
+
+  }
+
+  else if(this->syntax_tree.find_inferior_node(node_id,0).type == "num"){
+
+  }
+  else if(this->syntax_tree.find_inferior_node(node_id,0).type == "\'" && this->syntax_tree.find_inferior_node(node_id,2).type == "\'"){
+    Node node_child = syntax_tree.find_inferior_node(node_id,1);
+    value_const = node_child.str_value;
+    if (1){
+      type_const = "char";
+    }
+  }
+  else{
+    this->result = false;
+    cout<<"[semantic error] The number of the current inferior node is wrong!"<<endl;
+  }
+  vector<string> tuple;
+  tuple.push_back(value_const);
+  tuple.push_back(type_const);
+  return tuple;
+}
+
+void SemanticAnalyzer::var_declarations(const int& node_id){//finished
+  Node cur_node = this->syntax_tree.node_dic[node_id];
+  if(cur_node.son_num == 3){
+    Node node_child = this->syntax_tree.find_inferior_node(node_id,0);
+    if(node_child.type == "var"){
+      this->var_declarations(cur_node.son[1]);
+    }
+    else{
+      cout<<"[semantic error] The token of current node is wrong!"<<endl;
+    }
+  }
+  else if(cur_node.son_num != 1){
+    this->result = false;
+    cout<<"[semantic error] The token of the son of the current node is wrong!"<<endl;
+  }
+}
+
+void SemanticAnalyzer::var_declaration(const int& node_id){//not finished
+  Node cur_node =this->syntax_tree.node_dic[node_id];
+  if(cur_node.son_num == 3){
+
+  }
+  else if(cur_node.son_num == 5){
+
+  }
+  else{
+    this->result = false;
+    cout<<"[semantic error] the number of the son of the current node is wrong!"<<endl;
+  }
+}
+
 
 
 
@@ -457,6 +627,7 @@ vector<returnList> SemanticAnalyzer::expression_list(const int& node_id){
   return exp_list;
 }
   // expression -> simple_expression relop simple_expression | simple_expression
+
 returnList SemanticAnalyzer::expression(const int& node_id){
   Node cur_node = this->syntax_tree.node_dic[node_id];
   returnList exp;
