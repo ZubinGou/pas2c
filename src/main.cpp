@@ -15,7 +15,7 @@ int main() {
   SemanticAnalyzer semantic_analyzer(tree);
   semantic_analyzer.start_analyze();
 
-  CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
+  // CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
 
   return 0;
 }

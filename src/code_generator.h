@@ -2,6 +2,9 @@
 #define CODE_GENERATOR_H
 
 #include <stack>
+#include <utility>
+#include <vector>
+#include <string>
 
 #include "semantic_analyzer.h"
 #include "syntax_tree.h"
@@ -85,13 +88,13 @@ class CodeGenerator {
   void programstruct(int node_id);
   void program_head(int node_id);
   void program_body(int node_id);
-  void idlist(int node_id, vector<int> id_num, string id_type="", bool id_addr=false);
+  void idlist(int node_id, std::vector<int> id_num, std::string id_type="", bool id_addr=false);
   void const_declarations(int node_id);
   void const_declaration(int node_id);
   std::vector<std::string> const_value(int node_id);
   void var_declarations(int node_id);
   void var_declaration(int node_id);
-  pair<vector<string>, vector<int> > type(int node_id);
+  std::pair<std::vector<std::string>, std::vector<int> > type(int node_id);
   std::string basic_type(int node_id);
   std::vector<int> period(int node_id);
   void subprogram_declarations(int node_id);
@@ -121,6 +124,10 @@ class CodeGenerator {
   */
   void subprogram_body(int node_id);
   void compound_statement(int node_id);
+  void statement_list(int node_id);
+  void statement(int node_id);
+  void compound_statement(int node_id);
+  
 
   // debug
   void print_target_code(); // 打印目标代码
