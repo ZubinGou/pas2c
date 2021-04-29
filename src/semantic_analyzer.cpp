@@ -135,8 +135,6 @@ vector<returnList> SemanticAnalyzer::idlist(const int& node_id){//not finished
   return arguments;
 }
 
-
-
 // const_declarations -> const const_declaration ; | None
 void SemanticAnalyzer::const_declarations(const int& node_id){//finished
   Node cur_node = this->syntax_tree.node_dic[node_id];
@@ -251,11 +249,11 @@ string SemanticAnalyzer::basic_type(const int& nodeID){//finished
 }
 
 
-vector<returnList> SemanticAnalyzer::period(const int& node_id){
+vector<returnList> SemanticAnalyzer::period(const int& node_id){//not finished
   
 }
 
-void SemanticAnalyzer::subprogram_declarations(const int& node_id){
+void SemanticAnalyzer::subprogram_declarations(const int& node_id){//checked
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if(cur_node.son_num==3){
     subprogram_declarations(cur_node.son[0]);
@@ -267,10 +265,7 @@ void SemanticAnalyzer::subprogram_declarations(const int& node_id){
   }
 }
 
-
-
-void SemanticAnalyzer::subprogram(const int& node_id){
-  //checked
+void SemanticAnalyzer::subprogram(const int& node_id){//checked
   Node cur_node = this->syntax_tree.node_dic[node_id];
   subprogram_head(cur_node.son[0]);
   subprogram_body(cur_node.son[2]);
