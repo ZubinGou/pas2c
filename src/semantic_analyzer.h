@@ -22,6 +22,8 @@ struct returnList {
   std::string row;
   std::string column;
   std::string value_type;
+
+  
   bool empty() {
     if (id_name == "" && type == "" && row == "" && column == "" &&
         value_type == "")
@@ -30,6 +32,16 @@ struct returnList {
       return false;
   }
 };
+
+typedef struct result_type{
+  std::string type;
+  int size;
+  int period;
+  int demention;
+  std::string string_type;
+}Result_type;
+
+
 
 class SemanticAnalyzer {
  private:
@@ -98,6 +110,22 @@ class SemanticAnalyzer {
   // factor -> num | variable | id ( expression_list ) | ( expression ) | not
   // factor | uminus factor
   returnList factor(const int&);
+
+  void const_declarations(const int&);
+  void const_declaration(const int&);
+  void var_declarations(const int&);
+  void subprogram_declarations(const int&);
+  void compound_statement(const int&);
+  vector<returnList> SemanticAnalyzer::idlist(const int& node_id);
+  vector<string> SemanticAnalyzer::const_value(const int& node_id);
+  void SemanticAnalyzer::var_declarations(const int& node_id);
+  void SemanticAnalyzer::var_declaration(const int& node_id);
+  returnList SemanticAnalyzer::type(const int nodeID);
+  vector<Argument> SemanticAnalyzer::formal_parameter(const int& node_id);
+  void SemanticAnalyzer::subprogram_body(const int& node_id);
+  void SemanticAnalyzer::subprogram_head(const int& node_id);
+  void SemanticAnalyzer::subprogram(const int& node_id);
+  vector<Argument> SemanticAnalyzer::period(const int& node_id);
 };
 
 #endif

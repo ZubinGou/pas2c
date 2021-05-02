@@ -262,20 +262,28 @@ void SemanticAnalyzer::var_declaration(const int& node_id){//not finished
   }
 }
 
+
+
+
+
+
 //type -> basic_type | array [ period ] of basic_type
-void SemanticAnalyzer::type(const int nodeID){//not finished
-  Result_type result_type;
+returnList SemanticAnalyzer::type(const int nodeID){//not finished
+  returnList result_type;
   Node cur_node = this->syntax_tree.node_dic[nodeID];
   if(cur_node.son_num == 1){
     result_type.type = cur_node.son[0];
   }
   else if(cur_node.son_num == 6){
-    vector<returnList> period_array = this->period(cur_node.son[2]);
+    //vector<returnList> period_array = this->period(cur_node.son[2]);
     string type_array = this->basic_type(cur_node.son[5]);
     int size_array = 0;
     
   }
+  return result_type;
 }
+
+
 
 string SemanticAnalyzer::basic_type(const int& nodeID){//finished
   Node node_child = this->syntax_tree.find_inferior_node(nodeID,0);
@@ -334,13 +342,6 @@ vector<Argument> SemanticAnalyzer::period(const int& node_id){//finished
   }
   return period_array;
 }
-
-
-
-
-
-
-
 
 void SemanticAnalyzer::subprogram_declarations(const int& node_id){//checked
   Node cur_node = this->syntax_tree.node_dic[node_id];
