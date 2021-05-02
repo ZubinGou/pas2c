@@ -4,7 +4,9 @@
 #include <vector>
 using namespace std;
 
-// initialize the analyzer
+//This file:build the symbol table base on the syntax tree
+
+// constructor function:initialize the analyzer
 SemanticAnalyzer::SemanticAnalyzer(const SyntaxTree& tree){//checked
   this->syntax_tree = tree;   //get the syntax tree
   this->symbol_table_controller = SymbolTableController();  //create the symbol table controller
@@ -23,6 +25,7 @@ string SemanticAnalyzer::get_exp_type(const int& node_id, const string& symbol_t
   this->controller.current_table = symbol_table_name;
   returnList result_item = this->expression(node_id);
   this->controller.current_table = nullptr;
+  //return a basic type or nothing
   if(result_item.empty() == false)
     return result_item.type;
   else
@@ -32,7 +35,7 @@ string SemanticAnalyzer::get_exp_type(const int& node_id, const string& symbol_t
 //programstruct -> program_head ; program_body .
 void SemanticAnalyzer::programstruct(void){//checked
   int cur_nodeId = this->syntax_tree.find_inferior_node(0, 0).id;//the id of root node
-  Node cur_node = this->syntax_tree.find_inferior_node(0, 0);//the root node
+  Node cur_node = this->syntax_tree.node_dic[cur_nodeId];//find the root node by its ID
   program_head(cur_node.son[0]);//program head is the first son
   if(syntax_tree.node_dic[cur_node.son[1]].type != ";"){// ; is the second son
     this->result = false;
