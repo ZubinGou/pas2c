@@ -1,7 +1,9 @@
 #include "semantic_analyzer.h"
 #include "symbol_table.h"
+#include <cstdio>
 #include <string>
 #include <vector>
+#include <map>
 using namespace std;
 
 //This file:build the symbol table base on the syntax tree
@@ -176,7 +178,22 @@ void SemanticAnalyzer::const_declarations(const int& node_id){//checked
 void SemanticAnalyzer::const_declaration(const int& node_id){// not finished
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if(cur_node.son_num == 3){
+    Node node_child = this->syntax_tree.find_inferior_node(node_id,0);
+    Node relop = this->syntax_tree.find_inferior_node(node_id,1);
+    if(relop.str_value != "="){
+      cout<<"[semantic error]"<<"Line:"<<node_child.line<<"    column:"<<node_child.col<<endl;
+      return ;
+    }
+    vector<string> value_const = this->const_value(cur_node.son[2]);
+    //insert an element
+    SymbolTableElement item_ST = SymbolTableElement(node_child.num_type,);
 
+
+    /*
+    construction funtion:
+    std::string name, std::string element_type, std::string value_type, std::string value, 
+    std::vector<Argument> arguments_lists,int declare, std::vector<int > use, int dimension = 0
+    */
   }
   else if(cur_node.son_num == 5){
 
@@ -185,7 +202,6 @@ void SemanticAnalyzer::const_declaration(const int& node_id){// not finished
     cout<<"[semantic error] The number of the current inferior node is wrong!" << endl;
   }
 }
-
 
 vector<string> SemanticAnalyzer::const_value(const int& node_id){//not finished
   string value_const;
@@ -271,10 +287,56 @@ string SemanticAnalyzer::basic_type(const int& nodeID){//finished
   }
 }
 
-
-vector<returnList> SemanticAnalyzer::period(const int& node_id){//not finished
-  
+vector<Argument> SemanticAnalyzer::period(const int& node_id){//finished
+  vector<Argument> period_array;
+  Node cur_node = this->syntax_tree.node_dic[node_id];
+  if(cur_node.son_num==3){
+    Node node_child1 = this->syntax_tree.find_inferior_node(node_id,0);
+    Node node_child2 = this->syntax_tree.find_inferior_node(node_id,2);
+    //数组下标不是非负整数
+    if(node_child1.num_type !=1 || node_child1.num_value<0){
+      this->result = false;
+      printf("[semantic error]ling:%d   , column:%d: error of the index of array: not a uint",node_child2.line,node_child2.col);
+      return period_array;
+    }
+    if(node_child2.num_type !=1 || node_child1.num_value<0){
+      this->result = false;
+      printf("[semantic error]ling:%d   , column:%d: error of the index of array: not a uint",node_child2.line,node_child2.col);
+      return period_array;
+    }
+    if(node_child1.num_value > node_child2.num_value){
+      this->result = false;
+      printf("[semantic error]ling:%d   , column:%d: error of the index of array",node_child2.line,node_child2.col);
+      return period_array;
+    }
+  }
+  else if(cur_node.son_num==5){
+    Node node_child1 = this->syntax_tree.find_inferior_node(node_id,2);
+    Node node_child2 = this->syntax_tree.find_inferior_node(node_id,4);
+    period_array = this->period(cur_node.son[0]);
+    if(node_child1.num_type !=1 || node_child1.num_value<0){
+      this->result = false;
+      printf("[semantic error]ling:%d   , column:%d: error of the index of array: not a uint",node_child2.line,node_child2.col);
+      return period_array;
+    }
+    if(node_child2.num_type !=1 || node_child1.num_value<0){
+      this->result = false;
+      printf("[semantic error]ling:%d   , column:%d: error of the index of array: not a uint",node_child2.line,node_child2.col);
+      return period_array;
+    }
+    if(node_child1.num_value > node_child2.num_value){
+      this->result = false;
+      printf("[semantic error]ling:%d   , column:%d: error of the index of array",node_child2.line,node_child2.col);
+      return period_array;
+    }
+    pair<int,int> a(int(node_child1.num_value),int(node_child2.num_value));
+    period_array.push_back(a);
+  }
+  return period_array;
 }
+
+
+
 
 
 
