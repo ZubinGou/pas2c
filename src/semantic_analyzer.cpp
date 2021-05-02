@@ -50,7 +50,7 @@ void SemanticAnalyzer::programstruct(void){//checked
 //program_head -> program id ( idlist ) | program id
 void SemanticAnalyzer::program_head(const int& node_id){// bug alert
   Node cur_node = this->syntax_tree.node_dic[node_id];
-  if (cur_node.son_num == 2){
+  if (cur_node.son_num == 2){//program_head -> program id
     if (this ->syntax_tree.find_inferior_node(node_id,0).type != "program" ){
       this->result = false;
     }
@@ -58,8 +58,8 @@ void SemanticAnalyzer::program_head(const int& node_id){// bug alert
       this->result = false;
     }
     else{
-      std::vector<Argument> a;
-      this->symbol_table_controller.create_table("main", false, "", a); //initalize the "main" table
+      std::vector<Argument> default_value;
+      this->symbol_table_controller.create_table("main", false, "", default_value); //initalize the "main" table
     }
   }
 
@@ -74,13 +74,30 @@ void SemanticAnalyzer::program_head(const int& node_id){// bug alert
       this->result = false;
     }
     vector<returnList> agruments = this->idlist(cur_node.son[3]);//goto funtion "idlist" and get the agruements
-  
+
+/*-----------------------bug alert here-----------------------------*/
     vector<Argument> params;
     for(auto& it : agruments){//iterate agruements
-      Argument temp(it.id_name,nullptr,stoi(it.row));
+      /*
+        type returnList to type Agrument:
+          returnList  std::string id_name;
+                      std::string type;     //符号的类型
+                      std::string row;
+                      std::string column;
+                      std::string value_type;  //值的类型
+          
+          Agruement   std::string name; // parameter name
+                      std::string type; // parameter type
+                      bool pass_value = false; // true for transfer address, false for transfer value，default is false
+                      int row;  // the row number of parameters
+                      std::pair<int, int> period_element;
+          construct funtion::(std::string name, std::string type, int row, bool pass_value = false)
+      */
+      Argument temp(it.id_name, it.value_type, stoi(it.row), false);
       params.push_back(temp);
     }
-    //"if not create table" in the original code seems to be unnecessary
+/*------------------------------------------------------------------*/
+    symbol_table_controller.create_table("main",false,nullptr,params);
     if(")" != this->syntax_tree.find_inferior_node(node_id,4).type){
       this->result = false;
     }
@@ -110,26 +127,27 @@ void SemanticAnalyzer::program_body(const int& node_id){//checked
     }
 }
 
+
 // idlist -> idlist, id | id
-vector<returnList> SemanticAnalyzer::idlist(const int& node_id){//not finished
+vector<returnList> SemanticAnalyzer::idlist(const int& node_id){//finished but there might be some bugs here
   vector<returnList> arguments;
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if(cur_node.son_num == 1){
     if(this->syntax_tree.find_inferior_node(node_id,0).type == "id"){
       Node node_child = this->syntax_tree.find_inferior_node(node_id,0);
-      //returnList current = (node_child.str_value,node_child.type,node_child.line,node_child.col,);
-      /*
-      std::string id_name, 
-      std::string type, 
-      std::string row,
-      std::string column, 
-      std::string value_type
-      */
-      //(node_child.str_value, node_child.type,node_child.line, node_child.col,)
+      returnList temp("expression",node_child.type,to_string(node_child.line),to_string(node_child.col),"");
+      arguments.push_back(temp);
     }
   }
   else if(cur_node.son_num == 3){
-
+    if(this->syntax_tree.find_inferior_node(node_id,0).type=="id"){
+      vector<returnList> tmp=this->idlist(cur_node.son[0]);
+      for(auto& it : tmp)
+        arguments.push_back(it);
+      Node node_child = this->syntax_tree.find_inferior_node(node_id,2);
+      returnList temp("expression",node_child.type,to_string(node_child.line),to_string(node_child.col),"");
+      arguments.push_back(temp);
+    }
   }
   else{
     this -> result = false;
@@ -139,7 +157,7 @@ vector<returnList> SemanticAnalyzer::idlist(const int& node_id){//not finished
 }
 
 // const_declarations -> const const_declaration ; | None
-void SemanticAnalyzer::const_declarations(const int& node_id){//finished
+void SemanticAnalyzer::const_declarations(const int& node_id){//checked
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if(cur_node.son_num == 2){
     Node node_child = this->syntax_tree.find_inferior_node(node_id,0);
@@ -147,10 +165,12 @@ void SemanticAnalyzer::const_declarations(const int& node_id){//finished
       this->const_declaration(cur_node.son[1]);
     }
     else{
-      cout<<"[semantic error] The number of the current inferior node is wrong!"<<endl;
+      cout<<"[semantic error] The token of the current inferior node is wrong!"<<endl;
     }
   }
 }
+
+
 
 //const_declaration -> const_declaration ; id relop const_value |  id relop const_value
 void SemanticAnalyzer::const_declaration(const int& node_id){// not finished
@@ -256,6 +276,10 @@ vector<returnList> SemanticAnalyzer::period(const int& node_id){//not finished
   
 }
 
+
+
+
+
 void SemanticAnalyzer::subprogram_declarations(const int& node_id){//checked
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if(cur_node.son_num==3){
@@ -317,7 +341,16 @@ vector<Argument> SemanticAnalyzer::formal_parameter(const int& node_id){// finis
   return parameters;
 }
 
-//--------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+//-----------------------the following code is wrote by ztq-----------------------------------
 vector<Argument> SemanticAnalyzer::parameter_list(const int& node_id){
   vector<Argument> parameters;
   Node cur_node = this->syntax_tree.node_dic[node_id];
