@@ -23,6 +23,7 @@ struct returnList {
   std::string column;
   std::string value_type;
 
+
   
   bool empty() {
     if (id_name == "" && type == "" && row == "" && column == "" &&
