@@ -115,15 +115,17 @@ class SemanticAnalyzer {
   void const_declarations(const int&);
   void const_declaration(const int&);
   void subprogram_declarations(const int&);
-  std::vector<std::string> const_value(const int& node_id);
-  void var_declarations(const int& node_id);
-  void var_declaration(const int& node_id);
-  returnList _type(const int& nodeID);
-  std::vector<Argument> formal_parameter(const int& node_id);
-  void subprogram_body(const int& node_id);
-  void subprogram_head(const int& node_id);
-  void subprogram(const int& node_id);
-  std::vector<Argument> period(const int& node_id);
+  std::vector<std::string> const_value(const int& );
+  void var_declarations(const int& );
+  void var_declaration(const int& );
+  returnList _type(const int& );
+  std::vector<Argument> formal_parameter(const int& );
+  void subprogram_body(const int& );
+  void subprogram_head(const int& );
+  void subprogram(const int& );
+  std::vector<Argument> period(const int& );
+
+  void print_table();
 };
 
 #endif

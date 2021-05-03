@@ -108,7 +108,7 @@ void SemanticAnalyzer::program_head(const int& node_id) {  // bug alert
       params.push_back(temp);
     }
     /*------------------------------------------------------------------*/
-    symbol_table_controller.create_table("main", false, nullptr, params);
+    symbol_table_controller.create_table("main", false, "", params);
     if (")" != this->syntax_tree.find_inferior_node(node_id, 4).type) {
       this->result = false;
     }
@@ -1247,4 +1247,8 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
   }
 
   return factor;
+}
+
+void SemanticAnalyzer::print_table(){
+
 }

@@ -26,7 +26,7 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
         vector<Argument> new_arguments_lists;
         vector<int> new_use;
         SymbolTableElement new_element(argument.name, identifier_type, 
-                                          argument.type, NULL, new_arguments_lists, argument.row, new_use);
+                                          argument.type, "", new_arguments_lists, argument.row, new_use);
         insert_element2table(new_element, subtable_name);
       }
     }
@@ -39,8 +39,8 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
     else
       func_type = "procedure";
     vector<int> new_use;
-    SymbolTableElement new_element(subtable_name, func_type, return_type, NULL, arguments_lists, 0, new_use, 
-                                          arguments_lists.size());
+    SymbolTableElement new_element(subtable_name, func_type, return_type, "", arguments_lists, 0, new_use, 
+                                          (int)arguments_lists.size());
     insert_element2table(new_element, subtable_name);
     if(subtable_name != "main"){
       insert_element2table(new_element, "main");
