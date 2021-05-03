@@ -129,9 +129,9 @@ class CodeGenerator {
 // variable_list -> variable_list , variable
 //                | variable
   void variable_list(int node_id,
-                     std::vector<std::pair<string, string>>& vlist);
+                     std::vector<std::pair<std::string, std::string>>& vlist);
 // variable -> id id_varpart
-  std::pair<string, string> variable(int node_id, bool is_bool = false);
+  std::pair<std::string, std::string> variable(int node_id, bool is_bool = false);
 // id_varpart -> [ expression_list ] | e
   std::string id_varpart(int node_id);
 // procedure_call -> id | id ( expression_list )
@@ -142,24 +142,24 @@ class CodeGenerator {
 //                  | expression
   void expression_list(
       int node_id, std::vector<std::string>& elist,
-      std::vector<std::string>& tlist = std::vector<std::string>());
+      std::vector<std::string>& tlist);
 // expression -> simple_expression relop simple_expression
 //             | simple_expression
   std::string expression(
-      int node_id, bool& is_bool = new bool(false));  // TODO pass by reference
+      int node_id, bool* is_bool = nullptr);  // TODO pass by reference
 // simple_expression -> simple_expression addop term
 //                    | term
-  string simple_expression(int node_id);
+  std::string simple_expression(int node_id);
 // term -> term mulop factor
 //       | factor
-  string term(int node_id);
+  std::string term(int node_id);
 // factor -> num
 //         | variable
 //         | id ( expression_list )
 //         | ( expression )
 //         | not factor
 //         | uminus factor
-  string factor(int node_id, bool& is_bool = new bool());
+  std::string factor(int node_id, bool* is_bool = nullptr);
 };
 
 #endif

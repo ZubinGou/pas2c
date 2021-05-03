@@ -709,8 +709,8 @@ std::string CodeGenerator::id_varpart(int node_id) {
   int son_num = son.size();
   if (son_num == 3) {  // [ expression_list ]
     match(son[0], "[");
-    vector<string> elist;  // expression list
-    expression_list(son[1], elist);
+    vector<string> elist, tlist;  // expression list
+    expression_list(son[1], elist, tlist);
     match(son[2], "]");
 
     int father = get_father(node_id);
@@ -751,8 +751,8 @@ void CodeGenerator::procedure_call(int node_id) {
     match(son[1], "(");
     target_append("(");
 
-    vector<string> elist;
-    expression_list(son[2], elist);
+    vector<string> elist, tlist;
+    expression_list(son[2], elist, tlist);
     target_append(join_vec(elist, ", "));
 
     match(son[3], ")");
@@ -778,13 +778,32 @@ void CodeGenerator::else_part(int node_id) {
     cerr << "Unexpected Expression" << endl;
 }
 
+// expression_list -> expression_list , expression
+//                  | expression
+void CodeGenerator::expression_list(
+    int node_id, std::vector<std::string>& elist,
+    std::vector<std::string>& tlist) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+  if (son_num == 3) {  // expression_list , expression
+    expression_list(son[0], elist, tlist);
+    match(son[1], ",");
+    elist.push_back(expression(son[2]));
+    tlist.push_back(get_exp_type(son[2]));
+  } else if (son_num == 1) {  // expression
+    elist.push_back(expression(son[0]));
+    tlist.push_back(get_exp_type(son[0]));
+  } else
+    cerr << "Unexpected Expression" << endl;
+}
+
 // expression -> simple_expression relop simple_expression
 //             | simple_expression
 std::string CodeGenerator::expression(
-    int node_id, bool& is_bool = new bool(false)) {  // TODO pass by reference
+    int node_id, bool* is_bool) {  // TODO pass by reference
   vector<int> son = get_son(node_id);
   int son_num = son.size();
-
+  is_bool = false;
   if (son_num == 3) {  // simple_expression relop simple_expression
     is_bool = true;
     string front_exp = simple_expression(son[0]);
@@ -846,7 +865,7 @@ string CodeGenerator::term(int node_id) {
 //         | ( expression )
 //         | not factor
 //         | uminus factor
-string CodeGenerator::factor(int node_id, bool& is_bool = new bool()) {
+string CodeGenerator::factor(int node_id, bool* is_bool) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (son_num == 1) {  // num | variable
@@ -864,8 +883,8 @@ string CodeGenerator::factor(int node_id, bool& is_bool = new bool()) {
     if (is_func(tree[son[0]].str_value))
       is_addr_list = get_args(tree[son[0]].str_value);  // TODO
 
-    vector<string> elist;
-    expression_list(son[2], elist);
+    vector<string> elist, tlist;
+    expression_list(son[2], elist, tlist);
     match(son[3], ")");
 
     vector<string> args_list;
