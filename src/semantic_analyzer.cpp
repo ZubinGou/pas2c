@@ -415,7 +415,12 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
 
 // type -> basic_type | array [ period ] of basic_type
 returnList SemanticAnalyzer::_type(const int& nodeID) {  // need to discuss
+/***********************************************************************************
+  How to return the information of an array? There's no such attribute in returnList
+************************************************************************************/
+
 /*
+        elif 6 == cur_node.inferior_num:
             period_array = self.period(cur_node.inferior[2])
             type_array = self.basic_type(cur_node.inferior[5])
             size_array = 0
@@ -425,22 +430,32 @@ returnList SemanticAnalyzer::_type(const int& nodeID) {  // need to discuss
                 result_type = ['array', (size_array, period_array), len(period_array), type_array]
 */
 
+
   returnList result_type;
   Node cur_node = this->syntax_tree.node_dic[nodeID];
   if (cur_node.son_num == 1) {
     result_type.type = this->basic_type(cur_node.son[0]);
   } 
+
+//*********************************************************************************
   else if (cur_node.son_num == 6) {
     vector<Argument> period_array = this->period(cur_node.son[2]);
     string type_array = this->basic_type(cur_node.son[5]);
     int size_array = 0;
     for (auto& it : period_array) {
-      size_array += (it.pass_value);
+      size_array += (it.period_element.second-it.period_element.first);
     }
     if (period_array.size() > 0) {
       result_type.type = "array";
+
+      //how to fill?
+      //result_type = ['array', (size_array, period_array), len(period_array), type_array]
     }
   }
+//*********************************************************************************
+
+
+
   else {
     this->result = false;
     cout << "[semantic error] The number of the current node's son is wrong!"
