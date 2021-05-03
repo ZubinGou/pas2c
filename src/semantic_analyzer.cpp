@@ -329,8 +329,6 @@ void SemanticAnalyzer::var_declarations(const int& node_id) {  // finished
 //var_declaration -> var_declaration ; idlist : type | idlist : type
 void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
   Node cur_node = this->syntax_tree.node_dic[node_id];
-
-
   //var_declaration -> idlist : type
   if (cur_node.son_num == 3) {
     vector<returnList> var = this->idlist(cur_node.son[0]);
@@ -338,23 +336,29 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
     string tmp[2];
     if (!type_var.empty() && var.size() > 0) {
       /*---bug alert----*/
-      if (type_var.type == "array") {
+      if (type_var.info.type == "array") {
         tmp[0] = "array";
-        tmp[1] = type_var.type;
+        tmp[1] = type_var.info.type_array;
       } else {
         tmp[0] = "var";
         tmp[1] = type_var.value_type;
       }
 
       for (auto& it : var) {
-        /*need to discuss here*/
-        SymbolTableElement item = SymbolTableElement();
+        vector<Argument> argument_list;
+        vector<int> new_use;
+        SymbolTableElement item;
+        
+        item.element_type = tmp[0];
+        item.value_type = tmp[1];
+        item.value = it.info.size;
+        item.arguments_lists = argument_list;
+        item.use = new_use;
 
-        // std::string name, std::string element_type, std::string value_type,
-        // std::string value, std::vector<Argument > arguments_lists,int
-        // declare, std::vector<int > use, int dimension = 0)
-        if (!this->symbol_table_controller.insert_element2table(
-                item, this->symbol_table_controller.current_table)) {
+        
+    
+
+        if (!this->symbol_table_controller.insert_element2table(item, this->symbol_table_controller.current_table)) {
           this->result = false;
           cout << "[semantic error 13] wrong about the symbol table:item reclaim "
                   "or doesn't exist"
@@ -370,35 +374,32 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
     string tmp[2];
     if (!type_var.empty() && var.size() > 0) {
       /*---bug alert----*/
-      if (type_var.type == "array") {
+      if (type_var.info.type == "array") {
         tmp[0] = "array";
-        tmp[1] = type_var.type;
+        tmp[1] = type_var.info.type_array;
       } else {
         tmp[0] = "var";
         tmp[1] = type_var.value_type;
       }
 
       for (auto& it : var) {
-        /*need to discuss here*/
+        vector<Argument> argument_list;
+        vector<int> new_use;
         SymbolTableElement item;
+        
+        item.element_type = tmp[0];
+        item.value_type = tmp[1];
+        item.value = it.info.size;
+        item.arguments_lists = argument_list;
+        item.use = new_use;
 
-        // std::string name, std::string element_type, std::string value_type,
-        // std::string value, std::vector<Argument > arguments_lists,int
-        // declare, std::vector<int > use, int dimension = 0)
-        if (!this->symbol_table_controller.insert_element2table(
-                item, this->symbol_table_controller.current_table)) {
+        if (!this->symbol_table_controller.insert_element2table(item, this->symbol_table_controller.current_table)) {
           this->result = false;
-          cout << "[semantic error 14] wrong about the symbol table:item reclaim "
+          cout << "[semantic error 13] wrong about the symbol table:item reclaim "
                   "or doesn't exist"
                << endl;
         }
       }
-    } 
-    else {
-      this->result = false;
-      cout << "[semantic error 15] the number of the son of the current node is "
-              "wrong!"
-           << endl;
     }
   }
 }
@@ -409,30 +410,14 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
 
 
 // type -> basic_type | array [ period ] of basic_type
-returnList SemanticAnalyzer::_type(const int& nodeID) {  // need to discuss
-/***********************************************************************************
-  How to return the information of an array? There's no such attribute in returnList
-************************************************************************************/
-
-/*
-        elif 6 == cur_node.inferior_num:
-            period_array = self.period(cur_node.inferior[2])
-            type_array = self.basic_type(cur_node.inferior[5])
-            size_array = 0
-            for item_period in period_array:
-                size_array += (item_period[1] - item_period[0])
-            if len(period_array) > 0:
-                result_type = ['array', (size_array, period_array), len(period_array), type_array]
-*/
-
+returnList SemanticAnalyzer::_type(const int& nodeID) {  // finished
 
   returnList result_type;
   Node cur_node = this->syntax_tree.node_dic[nodeID];
   if (cur_node.son_num == 1) {
-    result_type.type = this->basic_type(cur_node.son[0]);
+    result_type.value_type = this->basic_type(cur_node.son[0]);
   } 
 
-//*********************************************************************************
   else if (cur_node.son_num == 6) {
     vector<Argument> period_array = this->period(cur_node.son[2]);
     string type_array = this->basic_type(cur_node.son[5]);
@@ -441,15 +426,14 @@ returnList SemanticAnalyzer::_type(const int& nodeID) {  // need to discuss
       size_array += (it.period_element.second-it.period_element.first);
     }
     if (period_array.size() > 0) {
-      result_type.type = "array";
-
-      //how to fill?
+      result_type.info.type = "array";
+      result_type.info.size = size_array;
+      result_type.info.period = period_array;
+      result_type.info.len_period = period_array.size();
+      result_type.info.type_array = type_array;
       //result_type = ['array', (size_array, period_array), len(period_array), type_array]
     }
   }
-//*********************************************************************************
-
-
 
   else {
     this->result = false;

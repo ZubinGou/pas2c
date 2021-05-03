@@ -8,7 +8,21 @@
 #include "symbol_table.h"
 #include "syntax_tree.h"
 
+struct Return_array_info{
+  //(size_array, period_array), len(period_array), type_array
+  std::string type;
+  int size;
+  vector<Argument> period;
+  int len_period;
+  std::string type_array;
+};
+
+
 struct returnList {
+
+  returnList(Return_array_info info)
+      : info(info){};
+  
   returnList(std::string id_name, std::string type, std::string row,
              std::string column, std::string value_type)
       : id_name(id_name),
@@ -23,6 +37,7 @@ struct returnList {
   std::string column;
   std::string value_type;
 
+  Return_array_info info;
 
   
   bool empty() {
