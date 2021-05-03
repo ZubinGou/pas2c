@@ -11,9 +11,9 @@
 struct Return_array_info{
   //(size_array, period_array), len(period_array), type_array
   std::string type;
-  int size;
-  vector<Argument> period;
-  int len_period;
+  int size = 0;
+  std::vector<Argument> period;
+  int len_period = 0;
   std::string type_array;
 };
 

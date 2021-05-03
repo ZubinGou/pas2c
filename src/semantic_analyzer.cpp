@@ -278,12 +278,17 @@ vector<string> SemanticAnalyzer::const_value(const int& node_id) {  // finished
 //const_value -> addop num | num | ' letter '
   else if (this->syntax_tree.find_inferior_node(node_id, 0).type == "num") {
     Node num_child_node = this->syntax_tree.find_inferior_node(node_id, 0);
-    value_const = to_string(num_child_node.num_value);
     if (num_child_node.num_type == 1) {
       type_const = "integer";
+      value_const = to_string(num_child_node.num_value);
     }
     else if (num_child_node.num_type == 2){
       type_const = "real";
+      value_const = to_string(num_child_node.num_value);
+    }
+    else if (num_child_node.num_type == 3){
+      type_const = "boolean";
+      value_const = num_child_node.str_value;
     }
   } 
   
@@ -348,10 +353,12 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
         vector<Argument> argument_list;
         vector<int> new_use;
         SymbolTableElement item;
-        
+
+        item.name = it.id_name;
         item.element_type = tmp[0];
         item.value_type = tmp[1];
         item.value = it.info.size;
+        item.declare = stoi(it.row);
         item.arguments_lists = argument_list;
         item.use = new_use;
 
@@ -387,8 +394,10 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
         vector<int> new_use;
         SymbolTableElement item;
         
+        item.name = it.id_name;
         item.element_type = tmp[0];
         item.value_type = tmp[1];
+        item.declare = stoi(it.row);
         item.value = it.info.size;
         item.arguments_lists = argument_list;
         item.use = new_use;
@@ -748,7 +757,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
         }
       }
     } else if (son_node.type == "read") {
-      vector<returnList> var_list = this->variable_list(cur_node.son[3]);
+      vector<returnList> var_list = this->variable_list(cur_node.son[2]);
       SymbolTableElement result_item;
       for (auto& var : var_list) {
         result_item = this->symbol_table_controller.search_table(
@@ -760,7 +769,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
         }
       }
     } else if (son_node.type == "write") {  // todo: complete this action
-      vector<returnList> exp_list = this->expression_list(cur_node.son[3]);
+      vector<returnList> exp_list = this->expression_list(cur_node.son[2]);
     } else {
       cout << "[semantic error37] error on current node token." << endl;
     }
@@ -831,8 +840,7 @@ vector<returnList> SemanticAnalyzer::variable_list(const int& node_id) {
   if (cur_node.son_num == 1) {
     var_list.push_back(this->variable(cur_node.son[0]));
   } else if (cur_node.son_num == 3) {
-    if (var_list.empty() ==
-        false) {  // maybe wrong here, I feel strange but not sure
+    if (var_list.empty() == true) {  // maybe wrong here, I feel strange but not sure
       for (auto& var : this->variable_list(cur_node.son[0])) {
         var_list.push_back(var);
       }
@@ -1313,5 +1321,7 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
 }
 
 void SemanticAnalyzer::print_table(){
-
+  cout << endl;
+  cout << "Symbol Table: " << endl;
+  symbol_table_controller.print_table();
 }

@@ -13,7 +13,8 @@ int main() {
   SyntaxTree tree = parser.generate_tree();
 
   SemanticAnalyzer semantic_analyzer(tree);
-  semantic_analyzer.start_analyze();
+  // semantic_analyzer.start_analyze();
+  semantic_analyzer.print_table();
 
   // CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
 

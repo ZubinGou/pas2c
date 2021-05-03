@@ -1,4 +1,6 @@
 #include "symbol_table.h"
+#include <iostream>
+#include <iomanip>
 using namespace std;
 
 bool SymbolTableController::create_table(const string& subtable_name, const bool& is_func,
@@ -129,6 +131,58 @@ string SymbolTableController::check_parameters(const std::string& function, cons
     return "";
 }
 
+
+void SymbolTableController::print_table(){
+  for(auto& table : table_lists){
+    cout << "---------------------------------table << " << table.second.name << " >>-------------------------------------------------" << endl;
+    cout << setw(5) <<"parent: "<< setw(10) << table.second.parent << endl;
+    cout << setw(5) <<"return type: " << setw(10) << table.second.return_type << endl;
+    if(table.second.is_func)
+      cout << setw(5) <<"type of table: " << setw(10) << "function" << endl;  
+    else
+      cout << setw(5) <<"type of table: " << setw(10) << "procedure" << endl; 
+    cout << "elements in table: " << endl; 
+    for(auto& ele : table.second.element_lists){
+      cout << setw(10) << "name: " << ele.name;
+      cout << setw(20) <<"element type: " << ele.element_type;
+      cout << setw(20) <<"value type: " << ele.value_type;
+      cout << setw(20) <<"value: " << ele.value;
+      cout << setw(20) <<"dimension " << ele.dimension;
+      cout << setw(20) <<"declare: " << ele.declare << endl;
+      if(ele.arguments_lists.empty() == false){
+        cout << setw(15) <<"arguments in element: " << endl;
+        for(auto& arg : ele.arguments_lists){
+          cout << setw(15) <<"name: " << arg.name;
+          cout << setw(20) << "type: " << arg.type;
+          cout << setw(20) <<"row: " << arg.row;
+          if(arg.pass_value)
+            cout << setw(20) <<"transfer type: address" << endl; 
+          else 
+            cout << setw(20) <<"transfer type: value" << endl; 
+        }
+      }
+      if(ele.use.empty() == false){
+        cout << "use of element: " << endl;
+        for(auto& u : ele.use){
+          cout << setw(20) << u;
+        }
+        cout << endl;
+      }
+    }
+    if(table.second.arguments.empty() == false){
+      cout << "arguments in table: " << endl;
+      for(auto& arg : table.second.arguments){
+        cout << setw(10) << "name: " <<arg.name;
+        cout << setw(20) << "type: " << arg.type;
+        cout << setw(20) << "row: " << arg.row;
+        if(arg.pass_value)
+          cout << setw(20) << "transfer type: address" << endl; 
+        else 
+          cout << setw(20) << "transfer type: address" << endl; 
+      }
+    }
+  }
+}
 
 /*
   Interface for code_generator
