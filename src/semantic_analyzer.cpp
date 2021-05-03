@@ -1,5 +1,4 @@
 #include "semantic_analyzer.h"
-
 #include <cstdio>
 #include <map>
 #include <string>
@@ -26,8 +25,7 @@ void SemanticAnalyzer::start_analyze() {  // checked
 }
 
 // return the type of an expression
-string SemanticAnalyzer::get_exp_type(
-    const int& node_id, const string& symbol_table_name) {  // finished
+string SemanticAnalyzer::get_exp_type(const int& node_id, const string& symbol_table_name) {  // finished
   this->controller.current_table = symbol_table_name;
   returnList result_item = this->expression(node_id);
   this->controller.current_table = nullptr;
@@ -144,8 +142,7 @@ void SemanticAnalyzer::program_body(const int& node_id) {  // checked
 }
 
 // idlist -> idlist, id | id
-vector<returnList> SemanticAnalyzer::idlist(
-    const int& node_id) {  // finished but there might be some bugs here
+vector<returnList> SemanticAnalyzer::idlist(const int& node_id) {  // finished but there might be some bugs here
   vector<returnList> arguments;
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if (cur_node.son_num == 1) {
@@ -190,8 +187,9 @@ void SemanticAnalyzer::const_declarations(const int& node_id) {  // checked
 
 // const_declaration -> const_declaration ; id relop const_value |  id relop
 // const_value
-void SemanticAnalyzer::const_declaration(
-    const int& node_id) {  // need to discusss
+
+
+void SemanticAnalyzer::const_declaration(const int& node_id) {  // already discussed but still bug alert
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if (cur_node.son_num == 3) {
     Node node_child = this->syntax_tree.find_inferior_node(node_id, 0);
@@ -255,15 +253,16 @@ void SemanticAnalyzer::const_declaration(
   }
 }
 
-vector<string> SemanticAnalyzer::const_value(const int& node_id) {  // bug alert
-  string value_const;
-  string type_const;
+//const_value -> addop num | num | ' letter '
+vector<string> SemanticAnalyzer::const_value(const int& node_id) {  // finished
+  string value_const;//数值
+  string type_const;//数的类型
 
   if (this->syntax_tree.find_inferior_node(node_id, 0).type == "addop") {
     Node addop_child_node = this->syntax_tree.find_inferior_node(node_id, 0);
     Node num_child_node = this->syntax_tree.find_inferior_node(node_id, 1);
     if (addop_child_node.str_value == "+") {
-      value_const = num_child_node.str_value;
+      value_const = to_string(num_child_node.num_value);
     } else if (addop_child_node.str_value == "-") {
       value_const = to_string((num_child_node.num_value) * (-1));
     } else if (addop_child_node.str_value == "or" &&
@@ -271,21 +270,35 @@ vector<string> SemanticAnalyzer::const_value(const int& node_id) {  // bug alert
       cout << "[semantic error] You can't use logical operation on real number"
            << endl;
     }
-  }
-
-  else if (this->syntax_tree.find_inferior_node(node_id, 0).type == "num") {
-    Node addop_child_node = this->syntax_tree.find_inferior_node(node_id, 0);
-    Node num_child_node = this->syntax_tree.find_inferior_node(node_id, 1);
-    if (num_child_node.num_type == 1) {
+    if(num_child_node.num_type == 1){
+      type_const = "Integer";
     }
-  } else if (this->syntax_tree.find_inferior_node(node_id, 0).type == "\'" &&
+    else if(num_child_node.num_type == 2){
+      type_const = "Real";
+    }
+   
+  }
+//const_value -> addop num | num | ' letter '
+  else if (this->syntax_tree.find_inferior_node(node_id, 0).type == "num") {
+    Node node_child = this->syntax_tree.find_inferior_node(node_id, 0);
+    value_const = to_string(node_child.num_value);
+    if(node_child.num_type == 1){
+      type_const = "Integer";
+    }
+    else if(node_child.num_type == 2){
+      type_const = "Real";
+    }
+  } 
+  
+  
+  else if (this->syntax_tree.find_inferior_node(node_id, 0).type == "\'" &&
              this->syntax_tree.find_inferior_node(node_id, 2).type == "\'") {
     Node node_child = syntax_tree.find_inferior_node(node_id, 1);
     value_const = node_child.str_value;
-    if (1) {
-      type_const = "char";
-    }
-  } else {
+    type_const = "char";
+    
+  }
+ else {
     this->result = false;
     cout << "[semantic error] The number of the current inferior node is wrong!"
          << endl;
@@ -296,16 +309,18 @@ vector<string> SemanticAnalyzer::const_value(const int& node_id) {  // bug alert
   return tuple;
 }
 
-void SemanticAnalyzer::var_declarations(const int& node_id) {  // alert
+void SemanticAnalyzer::var_declarations(const int& node_id) {  // finished
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if (cur_node.son_num == 3) {
     Node node_child = this->syntax_tree.find_inferior_node(node_id, 0);
     if (node_child.type == "var") {
       this->var_declarations(cur_node.son[1]);
-    } else {
+    } 
+    else {
       cout << "[semantic error] The token of current node is wrong!" << endl;
     }
-  } else if (cur_node.son_num != 1) {
+  } 
+  else if (cur_node.son_num != 1) {
     this->result = false;
     cout
         << "[semantic error] The token of the son of the current node is wrong!"
@@ -313,8 +328,15 @@ void SemanticAnalyzer::var_declarations(const int& node_id) {  // alert
   }
 }
 
+
+
+
+//var_declaration -> var_declaration ; idlist : type | idlist : type
 void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
   Node cur_node = this->syntax_tree.node_dic[node_id];
+
+
+  //var_declaration -> idlist : type
   if (cur_node.son_num == 3) {
     vector<returnList> var = this->idlist(cur_node.son[0]);
     returnList type_var = _type(cur_node.son[2]);
@@ -345,7 +367,8 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
         }
       }
     }
-  } else if (cur_node.son_num == 5) {
+  } 
+  else if (cur_node.son_num == 5) {
     this->var_declaration(cur_node.son[0]);
     vector<returnList> var = this->idlist(cur_node.son[2]);
     returnList type_var = _type(cur_node.son[4]);
@@ -375,7 +398,8 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
                << endl;
         }
       }
-    } else {
+    } 
+    else {
       this->result = false;
       cout << "[semantic error] the number of the son of the current node is "
               "wrong!"
@@ -384,13 +408,29 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
   }
 }
 
+
+
+
+
+
 // type -> basic_type | array [ period ] of basic_type
-returnList SemanticAnalyzer::_type(const int& nodeID) {  // alert
+returnList SemanticAnalyzer::_type(const int& nodeID) {  // need to discuss
+/*
+            period_array = self.period(cur_node.inferior[2])
+            type_array = self.basic_type(cur_node.inferior[5])
+            size_array = 0
+            for item_period in period_array:
+                size_array += (item_period[1] - item_period[0])
+            if len(period_array) > 0:
+                result_type = ['array', (size_array, period_array), len(period_array), type_array]
+*/
+
   returnList result_type;
   Node cur_node = this->syntax_tree.node_dic[nodeID];
   if (cur_node.son_num == 1) {
     result_type.type = this->basic_type(cur_node.son[0]);
-  } else if (cur_node.son_num == 6) {
+  } 
+  else if (cur_node.son_num == 6) {
     vector<Argument> period_array = this->period(cur_node.son[2]);
     string type_array = this->basic_type(cur_node.son[5]);
     int size_array = 0;
@@ -400,13 +440,22 @@ returnList SemanticAnalyzer::_type(const int& nodeID) {  // alert
     if (period_array.size() > 0) {
       result_type.type = "array";
     }
-  } else {
+  }
+  else {
     this->result = false;
     cout << "[semantic error] The number of the current node's son is wrong!"
          << endl;
   }
   return result_type;
 }
+
+
+
+
+
+
+
+
 
 string SemanticAnalyzer::basic_type(const int& nodeID) {  // finished
   Node node_child = this->syntax_tree.find_inferior_node(nodeID, 0);
@@ -529,8 +578,7 @@ void SemanticAnalyzer::subprogram_body(const int& node_id) {  // checked
   compound_statement(cur_node.son[2]);
 }
 
-vector<Argument> SemanticAnalyzer::formal_parameter(
-    const int& node_id) {  // finished
+vector<Argument> SemanticAnalyzer::formal_parameter(const int& node_id) {  // finished
   vector<Argument> parameters;
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if (cur_node.son_num == 1) {
