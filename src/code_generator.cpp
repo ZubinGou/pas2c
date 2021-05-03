@@ -686,13 +686,13 @@ void CodeGenerator::variable_list(
 
 // variable -> id id_varpart
 std::pair<string, string> CodeGenerator::variable(int node_id,
-                                                  bool is_bool = false) {
+                                                  bool* is_bool) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (son_num == 2) {  // id id_varpart
     match(son[0], "id");
     string var_type = get_var_type(tree[son[0]].str_value);
-    if (var_type == "boolean") is_bool = true;
+    if (var_type == "boolean") *is_bool = true;
     string var_part = id_varpart(son[1]);
     // 加入一个元组, (var的type, var) eg:(int, a[1][2])
     string has_ptr = is_addr(tree[son[0]].str_value) ? "*" : "";
@@ -803,9 +803,9 @@ std::string CodeGenerator::expression(
     int node_id, bool* is_bool) {  // TODO pass by reference
   vector<int> son = get_son(node_id);
   int son_num = son.size();
-  is_bool = false;
+  *is_bool = false;
   if (son_num == 3) {  // simple_expression relop simple_expression
-    is_bool = true;
+    *is_bool = true;
     string front_exp = simple_expression(son[0]);
     match(son[1], "relop");
     string relop = tree[son[1]].str_value;
@@ -907,7 +907,7 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
   if (son_num == 2) {  // not factor | uminus factor
     if (tree[son[0]].type == "not") {
       bool is_bool_var = false;
-      string _factor = factor(son[1], is_bool_var);
+      string _factor = factor(son[1], &is_bool_var);
       if (is_bool_var)
         return "!" + _factor;
       else

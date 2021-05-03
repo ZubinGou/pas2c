@@ -117,16 +117,16 @@ class SemanticAnalyzer {
   void var_declarations(const int&);
   void subprogram_declarations(const int&);
   void compound_statement(const int&);
-  vector<returnList> SemanticAnalyzer::idlist(const int& node_id);
-  vector<string> SemanticAnalyzer::const_value(const int& node_id);
+  std::vector<returnList> SemanticAnalyzer::idlist(const int& node_id);
+  std::vector<std::string> SemanticAnalyzer::const_value(const int& node_id);
   void SemanticAnalyzer::var_declarations(const int& node_id);
   void SemanticAnalyzer::var_declaration(const int& node_id);
   returnList SemanticAnalyzer::type(const int nodeID);
-  vector<Argument> SemanticAnalyzer::formal_parameter(const int& node_id);
+  std::vector<Argument> SemanticAnalyzer::formal_parameter(const int& node_id);
   void SemanticAnalyzer::subprogram_body(const int& node_id);
   void SemanticAnalyzer::subprogram_head(const int& node_id);
   void SemanticAnalyzer::subprogram(const int& node_id);
-  vector<Argument> SemanticAnalyzer::period(const int& node_id);
+  std::vector<Argument> SemanticAnalyzer::period(const int& node_id);
 };
 
 #endif

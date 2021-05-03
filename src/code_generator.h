@@ -131,7 +131,7 @@ class CodeGenerator {
   void variable_list(int node_id,
                      std::vector<std::pair<std::string, std::string>>& vlist);
 // variable -> id id_varpart
-  std::pair<std::string, std::string> variable(int node_id, bool is_bool = false);
+  std::pair<std::string, std::string> variable(int node_id, bool* is_bool=nullptr);
 // id_varpart -> [ expression_list ] | e
   std::string id_varpart(int node_id);
 // procedure_call -> id | id ( expression_list )
