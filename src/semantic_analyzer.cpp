@@ -207,17 +207,27 @@ void SemanticAnalyzer::const_declaration(
     // insert an element
 
     /*没有足够参数 */
+    vector<Argument> argument_list;
+    vector<int> new_use;
+    SymbolTableElement item_ST = SymbolTableElement(node_child.str_value, "const", value_const[1], value_const[0], 
+                                                    argument_list, node_child.line, new_use);
 
-    // SymbolTableElement item_ST = SymbolTableElement(node_child.num_type,);
-
+    if(this->symbol_table_controller.insert_element2table(item_ST, this->symbol_table_controller.current_table) == false){
+      this->result = false;
+      cout << "[semantic error]"
+           << "Line:" << node_child.line << "    column:" << node_child.col
+           << node_child.str_value << "doesn't exist or is redefined."
+           << endl;
+    }
     /*
     construction funtion:
     std::string name, std::string element_type, std::string value_type,
     std::string value, std::vector<Argument> arguments_lists,int declare,
     std::vector<int > use, int dimension = 0
     */
-  } else if (cur_node.son_num == 5) {
-    Node node_child = this->syntax_tree.find_inferior_node(node_id, 1);
+  } else if (cur_node.son_num == 5) { // alert!!!!!!!!
+    this->const_declaration(cur_node.son[0]);
+    Node node_child = this->syntax_tree.find_inferior_node(node_id, 3);
     Node relop = this->syntax_tree.find_inferior_node(node_id, 2);
     vector<string> value_const = this->const_value(cur_node.son[4]);
     if (relop.str_value != "=") {
@@ -226,6 +236,17 @@ void SemanticAnalyzer::const_declaration(
            << "Line:" << node_child.line << "    column:" << node_child.col
            << endl;
       return;
+    }
+    vector<Argument> argument_list;
+    vector<int> new_use;
+    SymbolTableElement item_ST = SymbolTableElement(node_child.str_value, "const", value_const[1], value_const[0], 
+                                                    argument_list, node_child.line, new_use);
+    if(this->symbol_table_controller.insert_element2table(item_ST, this->symbol_table_controller.current_table) == false){
+      this->result = false;
+      cout << "[semantic error]"
+           << "Line:" << node_child.line << "    column:" << node_child.col
+           << node_child.str_value << "is redefined or this symbol table doesn't exist."
+           << endl;
     }
 
   } else {
@@ -310,7 +331,7 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
 
       for (auto& it : var) {
         /*need to discuss here*/
-        SymbolTableElement item;
+        SymbolTableElement item = SymbolTableElement();
 
         // std::string name, std::string element_type, std::string value_type,
         // std::string value, std::vector<Argument > arguments_lists,int
