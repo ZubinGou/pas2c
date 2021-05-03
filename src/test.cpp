@@ -1,11 +1,11 @@
-#include "code_generator.h"
-#include "parser.h"
-#include "semantic_analyzer.h"
+// #include "code_generator.h"
+// #include "parser.h"
+// #include "semantic_analyzer.h"
 
-using namespace std;  // recommend only use it in .cpp
+// using namespace std;  // recommend only use it in .cpp
 
-const string GRAMMAR_FILE = "../include/grammar.json";
-const string INPUT_FILE = "../example/parser_test.pas";
+// const string GRAMMAR_FILE = "../include/grammar.json";
+// const string INPUT_FILE = "../example/parser_test.pas";
 
 // int main() {
 //   Parser parser(GRAMMAR_FILE, INPUT_FILE);
