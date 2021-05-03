@@ -1,6 +1,6 @@
 #include "parser.h"
-#include "code_generator.h"
-#include "semantic_analyzer.h"
+// #include "code_generator.h"
+// #include "semantic_analyzer.h"
 
 
 using namespace std;  // recommend only use it in .cpp

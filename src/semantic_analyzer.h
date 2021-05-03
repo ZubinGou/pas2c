@@ -118,7 +118,7 @@ class SemanticAnalyzer {
   std::vector<std::string> const_value(const int& node_id);
   void var_declarations(const int& node_id);
   void var_declaration(const int& node_id);
-  returnList type(const int nodeID);
+  returnList _type(const int& nodeID);
   std::vector<Argument> formal_parameter(const int& node_id);
   void subprogram_body(const int& node_id);
   void subprogram_head(const int& node_id);

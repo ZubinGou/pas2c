@@ -250,7 +250,7 @@ void CodeGenerator::var_declaration(int node_id) {
     var_declaration(son[0]);
     target_append(";\n");
 
-    pair<vector<string>, vector<int>> type_nums = type(son[4]);
+    pair<vector<string>, vector<int>> type_nums = _type(son[4]);
     vector<string> id_type = type_nums.first;
     vector<int> id_num = type_nums.second;
     if (id_type[0] == "0") {      // 基本类型
@@ -263,7 +263,7 @@ void CodeGenerator::var_declaration(int node_id) {
     }
   } else if (son_num == 3) {  // array [ period ] of basic_type
     // idlist : type
-    pair<vector<string>, vector<int>> type_nums = type(son[2]);
+    pair<vector<string>, vector<int>> type_nums = _type(son[2]);
     vector<string> id_type = type_nums.first;
     vector<int> id_num = type_nums.second;
     if (id_type[0] == "0") {      // 基本类型
@@ -278,7 +278,7 @@ void CodeGenerator::var_declaration(int node_id) {
 }
 
 // type -> basic_type | array [ period ] of basic_type
-pair<vector<string>, vector<int>> CodeGenerator::type(int node_id) {
+pair<vector<string>, vector<int>> CodeGenerator::_type(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   pair<vector<string>, vector<int>> ans;

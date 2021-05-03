@@ -98,7 +98,7 @@ class CodeGenerator {
   std::vector<std::string> const_value(int node_id);
   void var_declarations(int node_id);
   void var_declaration(int node_id);
-  std::pair<std::vector<std::string>, std::vector<int>> type(int node_id);
+  std::pair<std::vector<std::string>, std::vector<int>> _type(int node_id);
   std::string basic_type(int node_id);
   std::vector<int> period(int node_id);
   void subprogram_declarations(int node_id);
