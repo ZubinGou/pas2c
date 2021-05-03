@@ -1,5 +1,5 @@
 #include "parser.h"
-// #include "code_generator.h"
+#include "code_generator.h"
 #include "semantic_analyzer.h"
 
 
