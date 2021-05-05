@@ -25,7 +25,7 @@ void CodeGenerator::target_append(std::string code) {  // 部分代码到目标�
 }
 
 void CodeGenerator::add_indent() {  // 为目标代码添加缩进
-  stringstream sstream(target_code); 
+  stringstream sstream(target_code);
   target_code = "";
   int space_len = 0;
   string line;
@@ -34,17 +34,15 @@ void CodeGenerator::add_indent() {  // 为目标代码添加缩进
     getline(sstream, line);
     if (line == "") continue;
     content = "";
-    for (int i=0; i<space_len; i++)
-      content += "\t";
+    for (int i = 0; i < space_len; i++) content += "    ";
     content += line;
 
-    if (line[0]== '{' || line[line.size() - 1]=='{')
+    if (line[0] == '{' || line[line.size() - 1] == '{')
       space_len += 1;
-    else if (line[0] == '}' || line[line.size() - 1]=='}') {
+    else if (line[0] == '}' || line[line.size() - 1] == '}') {
       space_len -= 1;
       content = "";
-      for (int i=0; i<space_len; i++)
-        content += "\t";
+      for (int i = 0; i < space_len; i++) content += "    ";
       content += line;
     }
     target_code += content + "\n";
@@ -241,11 +239,11 @@ std::vector<std::string> CodeGenerator::const_value(int node_id) {
     NumType num_type = get_num_type(son[0]);
     string id_type = num_type_str[num_type];
     string num;
-    if(id_type == "int")
+    if (id_type == "int")
       num = to_string(int(val));
-    else if(id_type == "float")
+    else if (id_type == "float")
       num = to_string(val);
-    else if(id_type == "bool")
+    else if (id_type == "bool")
       num = val ? "true" : "false";
 
     type_value.push_back(id_type);
@@ -482,7 +480,7 @@ void CodeGenerator::subprogram_body(int node_id) {
   int son_num = son.size();
   if (son_num == 3) {
     // parameters
-    target_append("{\n");
+    target_append(" {\n");
     const_declaration(son[0]);
     var_declaration(son[1]);
     // function
@@ -505,13 +503,13 @@ void CodeGenerator::compound_statement(int node_id) {
     } else if (this->tree[father].type == "program_body") {
       target_append("int main()");
       match(son[0], "begin");
-      target_append("{\n");
+      target_append(" {\n");
       statement_list(son[1]);
       match(son[2], "end");
       target_append("\nreturn 0; \n}\n");
     } else {  // 一般的符合语句要加大括号
       match(son[0], "begin");
-      target_append("{\n");
+      target_append(" {\n");
       statement_list(son[1]);
       match(son[2], "end");
       target_append("}\n");
@@ -579,7 +577,7 @@ void CodeGenerator::statement(int node_id) {
 
   else if (son_num == 5) {  // if expression then statement else_part
     match(son[0], "if");
-    target_append("if(");
+    target_append("if (");
 
     string exp = expression(son[1]);
     target_append(exp);
@@ -589,7 +587,7 @@ void CodeGenerator::statement(int node_id) {
     vector<int> c = get_son(son[3]);
     int cn = c.size();
     if (!(cn == 1 && tree[c[0]].type == "compound_statement")) c.clear();
-    if (c.empty()) target_append("{\n");
+    if (c.empty()) target_append(" {\n");
     statement(son[3]);
     if (c.empty()) target_append("}\n");
     else_part(son[4]);
@@ -598,7 +596,7 @@ void CodeGenerator::statement(int node_id) {
   else if (son_num == 8) {
     // for id assignop expression to expression do statement
     match(son[0], "for");
-    target_append("for(");
+    target_append("for (");
     match(son[1], "id");
 
     if (is_addr(tree[son[1]].str_value))
@@ -621,7 +619,7 @@ void CodeGenerator::statement(int node_id) {
     target_append(";");
 
     target_append(tree[son[1]].str_value);
-    target_append("++){\n");
+    target_append("++) {\n");
     statement(son[7]);
     target_append("}\n");
   } else if (son_num == 4) {
@@ -648,7 +646,7 @@ void CodeGenerator::statement(int node_id) {
       target_append("\"");
 
       vector<string> value_list;
-      target_append(",");
+      target_append(", ");
       for (auto p : vlist) value_list.push_back(p.second);
       target_append(join_vec(value_list, ", "));
 
@@ -678,7 +676,7 @@ void CodeGenerator::statement(int node_id) {
 
       target_append(join_vec(trans_tlist, " "));
       target_append("\"");
-      target_append(",");
+      target_append(", ");
 
       target_append(join_vec(elist, ", "));
       match(son[3], ")");
@@ -688,8 +686,7 @@ void CodeGenerator::statement(int node_id) {
     if (tree[son[0]].type == "while") {
       // while expression do statement
       match(son[0], "while");
-      target_append("while");
-      target_append("(");
+      target_append("while (");
       target_append(expression(son[1]));
       target_append(")");
       match(son[2], "do");
@@ -715,8 +712,7 @@ void CodeGenerator::variable_list(
 }
 
 // variable -> id id_varpart
-std::pair<string, string> CodeGenerator::variable(int node_id,
-                                                  bool* is_bool) {
+std::pair<string, string> CodeGenerator::variable(int node_id, bool* is_bool) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (son_num == 2) {  // id id_varpart
@@ -798,7 +794,7 @@ void CodeGenerator::else_part(int node_id) {
   int son_num = son.size();
   if (son_num == 2) {  // else statement
     match(son[0], "else");
-    target_append("else{\n");
+    target_append("else {\n");
 
     statement(son[1]);
     // target_append(";");
@@ -811,9 +807,9 @@ void CodeGenerator::else_part(int node_id) {
 
 // expression_list -> expression_list , expression
 //                  | expression
-void CodeGenerator::expression_list(
-    int node_id, std::vector<std::string>& elist,
-    std::vector<std::string>& tlist) {
+void CodeGenerator::expression_list(int node_id,
+                                    std::vector<std::string>& elist,
+                                    std::vector<std::string>& tlist) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (son_num == 3) {  // expression_list , expression
@@ -834,9 +830,9 @@ std::string CodeGenerator::expression(
     int node_id, bool* is_bool) {  // TODO pass by reference
   vector<int> son = get_son(node_id);
   int son_num = son.size();
-  if(is_bool) *is_bool = false;
+  if (is_bool) *is_bool = false;
   if (son_num == 3) {  // simple_expression relop simple_expression
-    if(is_bool) *is_bool = true;
+    if (is_bool) *is_bool = true;
     string front_exp = simple_expression(son[0]);
     match(son[1], "relop");
     string relop = tree[son[1]].str_value;
@@ -900,12 +896,12 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (son_num == 1) {  // num | variable
-    if (tree[son[0]].type == "num"){
+    if (tree[son[0]].type == "num") {
       double val = tree[son[0]].num_value;
-      //TODO: add bool
-      if(tree[son[0]].num_type == NumType::Integer)
+      // TODO: add bool
+      if (tree[son[0]].num_type == NumType::Integer)
         return to_string(int(val));
-      else if(tree[son[0]].num_type == NumType::Real)
+      else if (tree[son[0]].num_type == NumType::Real)
         return to_string(val);
     }
     if (tree[son[0]].type == "variable") {

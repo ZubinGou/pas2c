@@ -9,15 +9,15 @@ const string GRAMMAR_FILE = "../include/grammar.json";
 const string INPUT_FILE = "../example/gcd.pas";
 
 int main() {
-  cout << "*** Section 0 ***\n";
+  cout << "\n*** Section 0 ***\n";
   Parser parser(GRAMMAR_FILE, INPUT_FILE);
   SyntaxTree tree = parser.generate_tree();
 
-  cout << "*** Section 1 ***\n";
+  cout << "\n*** Section 1 ***\n";
   SemanticAnalyzer semantic_analyzer(tree);
   semantic_analyzer.print_table();
 
-  cout << "*** Section 2 ***\n";
+  cout << "\n*** Section 2 ***\n";
   CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
   cout << code_generator.run() << endl;
 
