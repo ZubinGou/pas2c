@@ -143,22 +143,22 @@ void SymbolTableController::print_table(){
       cout << setw(5) <<"type of table: " << setw(10) << "procedure" << endl; 
     cout << "elements in table: " << endl; 
     for(auto& ele : table.second.element_lists){
-      cout << setw(10) << "name: " << ele.name;
-      cout << setw(20) <<"element type: " << ele.element_type;
-      cout << setw(20) <<"value type: " << ele.value_type;
-      cout << setw(20) <<"value: " << ele.value;
-      cout << setw(20) <<"dimension " << ele.dimension;
-      cout << setw(20) <<"declare: " << ele.declare << endl;
+      cout << setw(10) << "name: " << setw(10) << ele.name;
+      cout << setw(20) <<"element type: " << setw(10) << ele.element_type;
+      cout << setw(20) <<"value type: " << setw(10) << ele.value_type;
+      cout << setw(20) <<"value: " << setw(10) << ele.value;
+      cout << setw(20) <<"dimension: " << setw(10) << ele.dimension;
+      cout << setw(20) <<"declare: " << setw(10) << ele.declare << endl;
       if(ele.arguments_lists.empty() == false){
-        cout << setw(15) <<"arguments in element: " << endl;
+        cout << setw(26) <<"arguments in element: " << endl;
         for(auto& arg : ele.arguments_lists){
-          cout << setw(15) <<"name: " << arg.name;
-          cout << setw(20) << "type: " << arg.type;
-          cout << setw(20) <<"row: " << arg.row;
+          cout << setw(15) <<"name: " << setw(10) << arg.name;
+          cout << setw(20) << "type: " << setw(10) << arg.type;
+          cout << setw(20) <<"row: " << setw(10) << arg.row;
           if(arg.pass_value)
-            cout << setw(20) <<"transfer type: address" << endl; 
+            cout << setw(30) <<"transfer type: address" << endl; 
           else 
-            cout << setw(20) <<"transfer type: value" << endl; 
+            cout << setw(30) <<"transfer type: value" << endl; 
         }
       }
       if(ele.use.empty() == false){
@@ -172,13 +172,13 @@ void SymbolTableController::print_table(){
     if(table.second.arguments.empty() == false){
       cout << "arguments in table: " << endl;
       for(auto& arg : table.second.arguments){
-        cout << setw(10) << "name: " <<arg.name;
-        cout << setw(20) << "type: " << arg.type;
-        cout << setw(20) << "row: " << arg.row;
+        cout << setw(10) << "name: "<< setw(10) <<arg.name;
+        cout << setw(20) << "type: "<< setw(10) << arg.type;
+        cout << setw(20) << "row: "<< setw(10) << arg.row;
         if(arg.pass_value)
-          cout << setw(20) << "transfer type: address" << endl; 
+          cout << setw(30) << "transfer type: address" << endl; 
         else 
-          cout << setw(20) << "transfer type: address" << endl; 
+          cout << setw(30) << "transfer type: address" << endl; 
       }
     }
   }

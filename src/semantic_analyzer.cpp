@@ -566,7 +566,7 @@ void SemanticAnalyzer::subprogram_head(const int& node_id) {  // checked
     string subprogram_name = node_child.str_value;
     string return_type = basic_type(cur_node.son[4]);
     vector<Argument> parameters = formal_parameter(cur_node.son[2]);
-    this->symbol_table_controller.create_table(subprogram_name, false,
+    this->symbol_table_controller.create_table(subprogram_name, true,
                                                return_type, parameters);
   } else {
     this->result = false;
@@ -629,11 +629,11 @@ vector<Argument> SemanticAnalyzer::parameter(const int& node_id) {
   vector<Argument> parameter_result;
   Node son_node = this->syntax_tree.find_inferior_node(node_id, 0);
   if (son_node.type == "var_parameter") {
-    for (auto& it : this->var_parameter(node_id)) {
+    for (auto& it : this->var_parameter(son_node.id)) {
       parameter_result.push_back(it);
     }
   } else if (son_node.type == "value_parameter") {
-    for (auto& it : this->value_parameter(node_id)) {
+    for (auto& it : this->value_parameter(son_node.id)) {
       parameter_result.push_back(it);
     }
   }
@@ -778,7 +778,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
   // statement -> if expression then statement else_part
   else if (cur_node.son_num == 5) {
     returnList return_type = this->expression(cur_node.son[1]);
-    if (return_type.empty() == false) {
+    if (return_type.empty() == true) {
       result = false;
       cout << "[semantic error38] row:" << cur_node.line
            << ", expression cannot be empty." << endl;
@@ -1290,7 +1290,7 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
             args.push_back(exp.type);
           }
           string return_type = this->symbol_table_controller.check_parameters(
-              son_node.type, args);
+              son_node.str_value, args);
           if (return_type == "") {
             this->result = false;
             cout << "[semantic error74] row:" << son_node.line
