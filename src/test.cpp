@@ -1,20 +1,25 @@
-// #include "code_generator.h"
-// #include "parser.h"
-// #include "semantic_analyzer.h"
+#include "parser.h"
+#include "code_generator.h"
+#include "semantic_analyzer.h"
 
-// using namespace std;  // recommend only use it in .cpp
 
-// const string GRAMMAR_FILE = "../include/grammar.json";
-// const string INPUT_FILE = "../example/parser_test.pas";
+using namespace std;  // recommend only use it in .cpp
 
-// int main() {
-//   Parser parser(GRAMMAR_FILE, INPUT_FILE);
-//   SyntaxTree tree = parser.generate_tree();
+const string GRAMMAR_FILE = "../include/grammar.json";
+const string INPUT_FILE = "../example/gcd.pas";
 
-//   SemanticAnalyzer semantic_analyzer(tree);
-//   semantic_analyzer.start_analyze();
+int main() {
+  cout << "\n*** Section 0 ***\n";
+  Parser parser(GRAMMAR_FILE, INPUT_FILE);
+  SyntaxTree tree = parser.generate_tree();
 
-//   CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
+  cout << "\n*** Section 1 ***\n";
+  SemanticAnalyzer semantic_analyzer(tree);
+  semantic_analyzer.print_table();
 
-//   return 0;
-// }
+  cout << "\n*** Section 2 ***\n";
+  CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
+  cout << code_generator.run() << endl;
+
+  return 0;
+}
