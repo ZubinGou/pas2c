@@ -8,7 +8,21 @@
 #include "symbol_table.h"
 #include "syntax_tree.h"
 
+struct Return_array_info{
+  //(size_array, period_array), len(period_array), type_array
+  std::string type;
+  int size = 0;
+  std::vector<Argument> period;
+  int len_period = 0;
+  std::string type_array;
+};
+
+
 struct returnList {
+
+  returnList(Return_array_info info)
+      : info(info){};
+  
   returnList(std::string id_name, std::string type, std::string row,
              std::string column, std::string value_type)
       : id_name(id_name),
@@ -23,6 +37,7 @@ struct returnList {
   std::string column;
   std::string value_type;
 
+  Return_array_info info;
 
   
   bool empty() {
@@ -47,13 +62,15 @@ typedef struct result_type{
 class SemanticAnalyzer {
  private:
   SyntaxTree syntax_tree;
-  SymbolTableController symbol_table_controller;
   bool result = true;
 
  public:
   SemanticAnalyzer(const SyntaxTree&);
   SemanticAnalyzer(){};
   SymbolTable symbol_table();
+  // TODO: why define two SymbolTableController ???
+  // move symbol_table_controller to public temporarily
+  SymbolTableController symbol_table_controller;
   SymbolTableController controller;
   void start_analyze();
   std::string get_exp_type(const int&, const std::string&);
@@ -115,15 +132,17 @@ class SemanticAnalyzer {
   void const_declarations(const int&);
   void const_declaration(const int&);
   void subprogram_declarations(const int&);
-  std::vector<std::string> const_value(const int& node_id);
-  void var_declarations(const int& node_id);
-  void var_declaration(const int& node_id);
-  returnList _type(const int& nodeID);
-  std::vector<Argument> formal_parameter(const int& node_id);
-  void subprogram_body(const int& node_id);
-  void subprogram_head(const int& node_id);
-  void subprogram(const int& node_id);
-  std::vector<Argument> period(const int& node_id);
+  std::vector<std::string> const_value(const int& );
+  void var_declarations(const int& );
+  void var_declaration(const int& );
+  returnList _type(const int& );
+  std::vector<Argument> formal_parameter(const int& );
+  void subprogram_body(const int& );
+  void subprogram_head(const int& );
+  void subprogram(const int& );
+  std::vector<Argument> period(const int& );
+
+  void print_table();
 };
 
 #endif

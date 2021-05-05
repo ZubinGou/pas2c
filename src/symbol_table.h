@@ -93,6 +93,8 @@ class SymbolTableController
     std::string check_parameters(const std::string&, const std::vector<std::string>& );
     std::string current_table;  // current table name
 
+    void print_table();
+
     /*
       Interface for code_generator
     */

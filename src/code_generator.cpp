@@ -25,7 +25,30 @@ void CodeGenerator::target_append(std::string code) {  // 部分代码到目标�
 }
 
 void CodeGenerator::add_indent() {  // 为目标代码添加缩进
-  return;                           // TODO
+  stringstream sstream(target_code); 
+  target_code = "";
+  int space_len = 0;
+  string line;
+  string content;
+  while (sstream) {
+    getline(sstream, line);
+    if (line == "") continue;
+    content = "";
+    for (int i=0; i<space_len; i++)
+      content += "\t";
+    content += line;
+
+    if (line[0]== '{' || line[line.size() - 1]=='{')
+      space_len += 1;
+    else if (line[0] == '}' || line[line.size() - 1]=='}') {
+      space_len -= 1;
+      content = "";
+      for (int i=0; i<space_len; i++)
+        content += "\t";
+      content += line;
+    }
+    target_code += content + "\n";
+  }
 }
 
 /*
@@ -130,6 +153,7 @@ void CodeGenerator::program_body(int node_id) {
   int son_num = son.size();
 
   if (son_num == 4) {
+    state_stack.push("main");
     const_declarations(son[0]);
     var_declarations(son[1]);
     subprogram_declarations(son[2]);
@@ -213,10 +237,16 @@ std::vector<std::string> CodeGenerator::const_value(int node_id) {
     type_value.push_back(op + num);
     return type_value;
   } else if (son_num == 1) {
-    // TODO: 缺bool？
-    string num = to_string(get_num_value(son[0]));
+    double val = get_num_value(son[0]);
     NumType num_type = get_num_type(son[0]);
     string id_type = num_type_str[num_type];
+    string num;
+    if(id_type == "int")
+      num = to_string(int(val));
+    else if(id_type == "float")
+      num = to_string(val);
+    else if(id_type == "bool")
+      num = val ? "true" : "false";
 
     type_value.push_back(id_type);
     type_value.push_back(num);
@@ -226,7 +256,7 @@ std::vector<std::string> CodeGenerator::const_value(int node_id) {
     string id_value = get_str_value(son[1]);
 
     type_value.push_back(id_type);
-    type_value.push_back(id_value);
+    type_value.push_back("'" + id_value + "'");
     return type_value;
   } else
     cerr << "Unexpected Expression" << endl;
@@ -641,9 +671,9 @@ void CodeGenerator::statement(int node_id) {
       vector<string> trans_tlist;
       for (auto etype : tlist) {
         if (etype == "integer" || etype == "boolean")
-          trans_tlist.push_back("%d ");
-        if (etype == "real") trans_tlist.push_back("%f ");
-        if (etype == "char") trans_tlist.push_back("%c ");
+          trans_tlist.push_back("%d");
+        if (etype == "real") trans_tlist.push_back("%f");
+        if (etype == "char") trans_tlist.push_back("%c");
       }
 
       target_append(join_vec(trans_tlist, " "));
@@ -725,7 +755,8 @@ std::string CodeGenerator::id_varpart(int node_id) {
       elist_trans.push_back(elist[i] + "-" + to_string(blist[i]));
     return join_vec(elist_trans, "");
   } else if (son_num == 1) {  // 空
-    match(son[0], nullptr);
+    // TODO:更改match类型
+    // match(son[0], nullptr);
     return "";
   }
 }
@@ -803,9 +834,9 @@ std::string CodeGenerator::expression(
     int node_id, bool* is_bool) {  // TODO pass by reference
   vector<int> son = get_son(node_id);
   int son_num = son.size();
-  *is_bool = false;
+  if(is_bool) *is_bool = false;
   if (son_num == 3) {  // simple_expression relop simple_expression
-    *is_bool = true;
+    if(is_bool) *is_bool = true;
     string front_exp = simple_expression(son[0]);
     match(son[1], "relop");
     string relop = tree[son[1]].str_value;
@@ -869,7 +900,14 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (son_num == 1) {  // num | variable
-    if (tree[son[0]].type == "num") return to_string(tree[son[0]].num_value);
+    if (tree[son[0]].type == "num"){
+      double val = tree[son[0]].num_value;
+      //TODO: add bool
+      if(tree[son[0]].num_type == NumType::Integer)
+        return to_string(int(val));
+      else if(tree[son[0]].num_type == NumType::Real)
+        return to_string(val);
+    }
     if (tree[son[0]].type == "variable") {
       pair<string, string> var_pair = variable(son[0]);
       return var_pair.second;
@@ -890,7 +928,8 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
     vector<string> args_list;
     for (int i = 0; i < elist.size(); i++) {
       string exp = elist[i];
-      bool is_addr = is_addr_list[i];
+      bool is_addr = false;
+      if (is_addr_list.size()) is_addr_list[i];
       if (is_addr)
         args_list.push_back("&" + exp);
       else

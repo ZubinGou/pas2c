@@ -1,4 +1,6 @@
 #include "symbol_table.h"
+#include <iostream>
+#include <iomanip>
 using namespace std;
 
 bool SymbolTableController::create_table(const string& subtable_name, const bool& is_func,
@@ -26,7 +28,7 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
         vector<Argument> new_arguments_lists;
         vector<int> new_use;
         SymbolTableElement new_element(argument.name, identifier_type, 
-                                          argument.type, NULL, new_arguments_lists, argument.row, new_use);
+                                          argument.type, "", new_arguments_lists, argument.row, new_use);
         insert_element2table(new_element, subtable_name);
       }
     }
@@ -39,8 +41,8 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
     else
       func_type = "procedure";
     vector<int> new_use;
-    SymbolTableElement new_element(subtable_name, func_type, return_type, NULL, arguments_lists, 0, new_use, 
-                                          arguments_lists.size());
+    SymbolTableElement new_element(subtable_name, func_type, return_type, "", arguments_lists, 0, new_use, 
+                                          (int)arguments_lists.size());
     insert_element2table(new_element, subtable_name);
     if(subtable_name != "main"){
       insert_element2table(new_element, "main");
@@ -129,6 +131,58 @@ string SymbolTableController::check_parameters(const std::string& function, cons
     return "";
 }
 
+
+void SymbolTableController::print_table(){
+  for(auto& table : table_lists){
+    cout << "---------------------------------table << " << table.second.name << " >>-------------------------------------------------" << endl;
+    cout << setw(5) <<"parent: "<< setw(10) << table.second.parent << endl;
+    cout << setw(5) <<"return type: " << setw(10) << table.second.return_type << endl;
+    if(table.second.is_func)
+      cout << setw(5) <<"type of table: " << setw(10) << "function" << endl;  
+    else
+      cout << setw(5) <<"type of table: " << setw(10) << "procedure" << endl; 
+    cout << "elements in table: " << endl; 
+    for(auto& ele : table.second.element_lists){
+      cout << setw(10) << "name: " << setw(10) << ele.name;
+      cout << setw(20) <<"element type: " << setw(10) << ele.element_type;
+      cout << setw(20) <<"value type: " << setw(10) << ele.value_type;
+      cout << setw(20) <<"value: " << setw(10) << ele.value;
+      cout << setw(20) <<"dimension: " << setw(10) << ele.dimension;
+      cout << setw(20) <<"declare: " << setw(10) << ele.declare << endl;
+      if(ele.arguments_lists.empty() == false){
+        cout << setw(26) <<"arguments in element: " << endl;
+        for(auto& arg : ele.arguments_lists){
+          cout << setw(15) <<"name: " << setw(10) << arg.name;
+          cout << setw(20) << "type: " << setw(10) << arg.type;
+          cout << setw(20) <<"row: " << setw(10) << arg.row;
+          if(arg.pass_value)
+            cout << setw(30) <<"transfer type: address" << endl; 
+          else 
+            cout << setw(30) <<"transfer type: value" << endl; 
+        }
+      }
+      if(ele.use.empty() == false){
+        cout << "use of element: " << endl;
+        for(auto& u : ele.use){
+          cout << setw(20) << u;
+        }
+        cout << endl;
+      }
+    }
+    if(table.second.arguments.empty() == false){
+      cout << "arguments in table: " << endl;
+      for(auto& arg : table.second.arguments){
+        cout << setw(10) << "name: "<< setw(10) <<arg.name;
+        cout << setw(20) << "type: "<< setw(10) << arg.type;
+        cout << setw(20) << "row: "<< setw(10) << arg.row;
+        if(arg.pass_value)
+          cout << setw(30) << "transfer type: address" << endl; 
+        else 
+          cout << setw(30) << "transfer type: address" << endl; 
+      }
+    }
+  }
+}
 
 /*
   Interface for code_generator

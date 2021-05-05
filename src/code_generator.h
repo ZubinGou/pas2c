@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <sstream>
 
 #include "semantic_analyzer.h"
 #include "syntax_tree.h"
@@ -30,7 +31,7 @@ class CodeGenerator {
                 const SemanticAnalyzer& semantic_analyzer) {
     this->tree = syntax_tree;
     this->table_anal = semantic_analyzer;
-    this->table_ctrl = semantic_analyzer.controller;
+    this->table_ctrl = semantic_analyzer.symbol_table_controller;
   }
 
   std::string run();  // 返回 target_code

@@ -6,16 +6,20 @@
 using namespace std;  // recommend only use it in .cpp
 
 const string GRAMMAR_FILE = "../include/grammar.json";
-const string INPUT_FILE = "../example/parser_test.pas";
+const string INPUT_FILE = "../example/gcd.pas";
 
 int main() {
+  cout << "*** Section 0 ***\n";
   Parser parser(GRAMMAR_FILE, INPUT_FILE);
   SyntaxTree tree = parser.generate_tree();
 
+  cout << "*** Section 1 ***\n";
   SemanticAnalyzer semantic_analyzer(tree);
-  semantic_analyzer.start_analyze();
+  semantic_analyzer.print_table();
 
-  // CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
+  cout << "*** Section 2 ***\n";
+  CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
+  cout << code_generator.run() << endl;
 
   return 0;
 }
