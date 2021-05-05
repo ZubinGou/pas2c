@@ -671,9 +671,9 @@ void CodeGenerator::statement(int node_id) {
       vector<string> trans_tlist;
       for (auto etype : tlist) {
         if (etype == "integer" || etype == "boolean")
-          trans_tlist.push_back("%d ");
-        if (etype == "real") trans_tlist.push_back("%f ");
-        if (etype == "char") trans_tlist.push_back("%c ");
+          trans_tlist.push_back("%d");
+        if (etype == "real") trans_tlist.push_back("%f");
+        if (etype == "char") trans_tlist.push_back("%c");
       }
 
       target_append(join_vec(trans_tlist, " "));
@@ -834,9 +834,9 @@ std::string CodeGenerator::expression(
     int node_id, bool* is_bool) {  // TODO pass by reference
   vector<int> son = get_son(node_id);
   int son_num = son.size();
-  *is_bool = false;
+  if(is_bool) *is_bool = false;
   if (son_num == 3) {  // simple_expression relop simple_expression
-    *is_bool = true;
+    if(is_bool) *is_bool = true;
     string front_exp = simple_expression(son[0]);
     match(son[1], "relop");
     string relop = tree[son[1]].str_value;
@@ -900,7 +900,14 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (son_num == 1) {  // num | variable
-    if (tree[son[0]].type == "num") return to_string(tree[son[0]].num_value);
+    if (tree[son[0]].type == "num"){
+      double val = tree[son[0]].num_value;
+      //TODO: add bool
+      if(tree[son[0]].num_type == NumType::Integer)
+        return to_string(int(val));
+      else if(tree[son[0]].num_type == NumType::Real)
+        return to_string(val);
+    }
     if (tree[son[0]].type == "variable") {
       pair<string, string> var_pair = variable(son[0]);
       return var_pair.second;
@@ -921,7 +928,8 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
     vector<string> args_list;
     for (int i = 0; i < elist.size(); i++) {
       string exp = elist[i];
-      bool is_addr = is_addr_list[i];
+      bool is_addr = false;
+      if (is_addr_list.size()) is_addr_list[i];
       if (is_addr)
         args_list.push_back("&" + exp);
       else

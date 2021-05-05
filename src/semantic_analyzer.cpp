@@ -26,14 +26,14 @@ void SemanticAnalyzer::start_analyze() {  // checked
 
 // return the type of an expression
 string SemanticAnalyzer::get_exp_type(const int& node_id, const string& symbol_table_name) {  // finished
-  this->controller.current_table = symbol_table_name;
+  this->symbol_table_controller.current_table = symbol_table_name;
   returnList result_item = this->expression(node_id);
-  this->controller.current_table = nullptr;
+  this->symbol_table_controller.current_table = "";
   // return a basic type or nothing
   if (result_item.empty() == false)
     return result_item.type;
   else
-    return nullptr;
+    return "";
 }
 
 // programstruct -> program_head ; program_body .
