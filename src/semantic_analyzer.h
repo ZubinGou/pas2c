@@ -62,13 +62,15 @@ typedef struct result_type{
 class SemanticAnalyzer {
  private:
   SyntaxTree syntax_tree;
-  SymbolTableController symbol_table_controller;
   bool result = true;
 
  public:
   SemanticAnalyzer(const SyntaxTree&);
   SemanticAnalyzer(){};
   SymbolTable symbol_table();
+  // TODO: why define two SymbolTableController ???
+  // move symbol_table_controller to public temporarily
+  SymbolTableController symbol_table_controller;
   SymbolTableController controller;
   void start_analyze();
   std::string get_exp_type(const int&, const std::string&);
