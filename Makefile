@@ -6,7 +6,11 @@ full: src/main.cpp src/parser.h src/parser.cpp src/lexer.h src/lexer.cpp src/syn
 			src/lexer.cpp \
 			src/main.cpp \
 			src/syntax_tree.cpp \
-			-o bin/pas2c -Wall -std=c++17 && cd bin && ./pas2c
+			src/semantic_analyzer.cpp \
+			src/symbol_table.cpp \
+			src/code_generator.cpp \
+			-o bin/pas2c -Wall -std=c++17 \
+			&& cd bin && ./pas2c
 
 clean:
 	$(RM) bin/pas2c
