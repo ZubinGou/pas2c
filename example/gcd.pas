@@ -1,5 +1,6 @@
 
 Program example(input, output);
+{下面如果是空行会有bug}
 
 Var x, y : integer;
 Function gcd( a, b : integer) : integer;
