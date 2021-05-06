@@ -142,7 +142,11 @@ bool Lexer::get_token(Token& token) {
         col_pos++;
         if (col_pos == int(cur_line.length())) {
           if (!get_new_line()) return false;
-          temp_char = get_char();
+          temp_char = get_char();  // get a new char
+          while (temp_char == 0) {
+            if (!get_new_line()) return false;
+            temp_char = get_char();
+          }
           cur_word = "";
           last_col_pos = -1;
         }
@@ -306,17 +310,29 @@ bool Lexer::get_token(Token& token) {
             return false;
           }
           temp_char = get_char();  // get a new char
+          while (temp_char == 0) {
+            if (!get_new_line()) return false;
+            temp_char = get_char();
+          }
         }
       } else {
         state = 0;
         col_pos++;
         if (col_pos == int(cur_line.length())) {
           if (!get_new_line()) return false;
-          temp_char = get_char();
+          temp_char = get_char();  // get a new char
+          while (temp_char == 0) {
+            if (!get_new_line()) return false;
+            temp_char = get_char();
+          }
           cur_word = "";
           last_col_pos = -1;
         } else
-          temp_char = get_char();
+          temp_char = get_char();  // get a new char
+          while (temp_char == 0) {
+            if (!get_new_line()) return false;
+            temp_char = get_char();
+          }
       }
     }
   }
