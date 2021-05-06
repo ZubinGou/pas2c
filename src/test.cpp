@@ -1,12 +1,19 @@
+//============================================================================
+// @Name : test.cpp
+// @Author : Zubin Gou
+// @Version : 1.0
+// @Copyright : 2021, BUPT
+// @Description : test all Pascal-S files
+//============================================================================
 #include "parser.h"
-#include "code_generator.h"
 #include "semantic_analyzer.h"
+#include "code_generator.h"
 
 
 using namespace std;  // recommend only use it in .cpp
 
 const string GRAMMAR_FILE = "../include/grammar.json";
-const string INPUT_FILE = "../example/gcd.pas";
+const string INPUT_FILE = "../example/quicksort.pas";
 
 int main() {
   cout << "\n*** Section 0 ***\n";
