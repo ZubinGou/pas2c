@@ -647,7 +647,7 @@ void CodeGenerator::statement(int node_id) {
 
       vector<string> value_list;
       target_append(", ");
-      for (auto p : vlist) value_list.push_back(p.second);
+      for (auto p : vlist) value_list.push_back("&" + p.second);
       target_append(join_vec(value_list, ", "));
 
       match(son[3], ")");

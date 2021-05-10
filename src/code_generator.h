@@ -29,6 +29,8 @@ class CodeGenerator {
  public:
   CodeGenerator(const std::vector<Node>& syntax_tree,
                 const SemanticAnalyzer& semantic_analyzer) {
+
+                  
     this->tree = syntax_tree;
     this->table_anal = semantic_analyzer;
     this->table_ctrl = semantic_analyzer.symbol_table_controller;
