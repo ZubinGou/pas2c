@@ -467,6 +467,7 @@ string SemanticAnalyzer::basic_type(const int& nodeID) {  // finished
     return node_child.type;
   } else {
     cout << "[semantic error 17] The token of the current node is wrong!" << endl;
+    return "";
   }
 }
 
