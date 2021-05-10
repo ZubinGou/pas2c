@@ -9,6 +9,10 @@
 #include "lexer.h"
 #include "syntax_tree.h"
 
+enum StrategyType {
+  DROP, INSERT, REPLACE
+};
+
 struct Grammar {
   std::string start;
   std::set<std::string> non_terminals;

@@ -9,7 +9,7 @@
 using namespace std;
 using json = nlohmann::json;
 
-Parser::Parser(const std::string& filename, const std::string& inputfile) {
+Parser::Parser(const string& filename, const string& inputfile) {
   load_grammar(filename);
   // print_grammar();
 
@@ -41,8 +41,8 @@ SyntaxTree Parser::generate_tree() {
   return tree;
 }
 
-void Parser::load_grammar(const std::string& filename) {
-  std::ifstream grammar_config(filename);
+void Parser::load_grammar(const string& filename) {
+  ifstream grammar_config(filename);
   json grammar_json;
   grammar_config >> grammar_json;
   grammar.start = grammar_json["S"].get<string>();
@@ -207,7 +207,7 @@ set<ItemElement> Parser::get_next_item(const set<ItemElement>& item,
   return next_item;
 }
 
-int Parser::is_new_item(const std::set<ItemElement>& new_item) {
+int Parser::is_new_item(const set<ItemElement>& new_item) {
   int cnt = 0;
   for (auto& item : item_family) {
     if (item == new_item) {
@@ -369,7 +369,20 @@ bool Parser::is_non_terminal(const string& symbol) {
 }
 
 void Parser::analyze() {
-  std::vector<std::pair<int, Token>> analysis_stack;
+  bool pass_analyze = true;
+  // for recover error
+  StrategyType strategy = DROP;
+  size_t drop_cnt = 0, lookahead_len = 0, lookahead_idx = 0;
+  vector<pair<int, Token>> temp_stack;
+  int temp_ip = 0;
+  Token temp_token;
+  // for record error
+  int error_len = -1;
+  pair<string, string> error_msg;
+  pair<int, int> error_pos = make_pair(-1, -1);
+  // for analysis
+  vector<pair<int, Token>> analysis_stack;
+  vector<string> lookahead_tokens;
   int ip = 0;
   Token tmp;
   tmp.renew("", 0, 0, "", 0);
@@ -380,51 +393,175 @@ void Parser::analyze() {
   while (true) {
     pair<int, Token> stack_top = analysis_stack.back();
     Token cur_token = token_list[ip];
-    int action = action_table[make_pair(stack_top.first, cur_token.type)].first;
-    int num = action_table[make_pair(stack_top.first, cur_token.type)].second;
-    // cout << "stack:" << endl;
-    // for (auto stk : analysis_stack)
-    //   cout << "  " << stk.first << " " << stk.second.type << endl;
-    // cout << "token: " << cur_token.type << endl;
-    // cout << "action:" << action;
-    // if (S == action) {
-    //   cout << " S" << num << endl;
-    // } else if (R == action) {
-    //   cout << " R" << num << endl;
-    // }
-    // cout << endl;
-    analysis_log.push_back(AnalysisState(
-        analysis_stack, ip,
-        action_table[make_pair(stack_top.first, cur_token.type)]));
-    if (S == action) {  // Shift
-      analysis_stack.push_back(make_pair(num, cur_token));
-      ip++;
-    } else if (R == action) {  // Reduce
-      vector<pair<bool, Token>> nodes;
-      if (grammar.productions[num].second[0] != EPSILON) {
-        for (auto it : grammar.productions[num].second) {
-          nodes.insert(nodes.begin(),
-                       make_pair(is_terminal(analysis_stack.back().second.type),
-                                 analysis_stack.back().second));
-          analysis_stack.pop_back();
+    auto action_pair =
+        action_table.find(make_pair(stack_top.first, cur_token.type));
+    if (action_pair != action_table.end()) {
+      // Got in table
+      // cout << "stack:" << endl;
+      // for (auto stk : analysis_stack)
+      //   cout << "  " << stk.first << " " << stk.second.type << endl;
+      // cout << "token: " << cur_token.type << endl;
+      // cout << "action:" << action;
+      // if (S == action) {
+      //   cout << " S" << num << endl;
+      // } else if (R == action) {
+      //   cout << " R" << num << endl;
+      // }
+      // cout << endl;
+      int action = action_pair->second.first;
+      int num = action_pair->second.second;
+      analysis_log.push_back(AnalysisState(
+          analysis_stack, ip,
+          action_table[make_pair(stack_top.first, cur_token.type)]));
+      if (S == action) {  // Shift
+        analysis_stack.push_back(make_pair(num, cur_token));
+        ip++;
+      } else if (R == action) {  // Reduce
+        vector<pair<bool, Token>> nodes;
+        if (grammar.productions[num].second[0] != EPSILON) {
+          for (auto it : grammar.productions[num].second) {
+            nodes.insert(
+                nodes.begin(),
+                make_pair(is_terminal(analysis_stack.back().second.type),
+                          analysis_stack.back().second));
+            analysis_stack.pop_back();
+          }
+        } else {
+          Token eps;
+          eps.renew("e", 0, 0, "", 0);
+          nodes.insert(nodes.begin(), make_pair(true, eps));
         }
+        nodes_list.insert(nodes_list.begin(), nodes);
+        string tmp = grammar.productions[num].first;
+        Token tmp_token;
+        tmp_token.renew(tmp, 0, 0, "", 0);
+        analysis_stack.push_back(
+            make_pair(goto_table[make_pair(analysis_stack.back().first, tmp)],
+                      tmp_token));
+      } else if (ACC == action) {  // Accept
+        cout << "[Syntax] Accept." << endl << endl;
+        break;
       } else {
-        Token eps;
-        eps.renew("e", 0, 0, "", 0);
-        nodes.insert(nodes.begin(), make_pair(true, eps));
+        // TODO: table is broken
+        pass_analyze = false;
+        cout << "[Syntax] Meet errors." << endl << endl;
+        break;
       }
-      nodes_list.insert(nodes_list.begin(), nodes);
-      string tmp = grammar.productions[num].first;
-      Token tmp_token;
-      tmp_token.renew(tmp, 0, 0, "", 0);
-      analysis_stack.push_back(make_pair(
-          goto_table[make_pair(analysis_stack.back().first, tmp)], tmp_token));
-    } else if (ACC == action) {  // Accept
-      cout << "[Syntax] Accept." << endl << endl;
-      break;
+      if (error_len >= 0) {
+        error_len++;
+      }
+      if (error_len >= 10 || ip == token_list.size() - 1) {
+        drop_cnt = 0;
+        lookahead_idx = 0;
+        lookahead_len = 0;
+        if (error_pos.first != -1) {
+          cout << "[Syntax] Error in [" << error_pos.first << ", "
+               << error_pos.second << "]: ";
+          if (strategy == DROP) {
+            cout << "Extra token " << error_msg.first << endl;
+          } else if (strategy == INSERT) {
+            cout << "Lack of " << error_msg.second << " before "
+                 << error_msg.first << endl;
+          } else {
+            cout << "Suppose to be " << error_msg.second << " but "
+                 << error_msg.first << endl;
+          }
+        }
+      }
     } else {
-      cout << "[Syntax] Meet errors." << endl << endl;
-      break;
+      // cout << cur_token << endl;
+      // Failed to get in action table
+      error_len = 0;
+      if (strategy == DROP) {
+        if (ip < token_list.size() &&
+            drop_cnt < 1) {  // not ent and did not drop
+          if (error_pos.first == -1) {
+            error_pos = make_pair(cur_token.line, cur_token.col);
+            error_msg.first = cur_token.type;
+          }
+          drop_cnt++;
+          ip++;
+        } else {
+          // change drop to insert
+          strategy = INSERT;
+          ip -= drop_cnt;
+          drop_cnt = 0;
+          error_pos = make_pair(-1, -1);
+        }
+      }
+      if (strategy == INSERT) {
+        if (error_pos.first == -1) {
+          error_pos = make_pair(cur_token.line, cur_token.col);
+          error_msg.first = cur_token.type;
+        }
+        // find possible tokens to insert
+        if (lookahead_len == 0) {
+          for (const auto& p : action_table) {
+            if (p.first.first == stack_top.first &&
+                is_terminal(p.first.second)) {
+              lookahead_tokens.push_back(p.first.second);
+            }
+          }
+          lookahead_len = lookahead_tokens.size();
+          ip--;
+          temp_token = token_list[ip];
+          temp_ip = ip;
+          temp_stack = analysis_stack;
+        }
+        // enumerate possible tokens to insert
+        if (lookahead_idx < lookahead_len) {
+          analysis_stack = temp_stack;
+          ip = temp_ip;
+          Token t;
+          error_msg.second = t.type = lookahead_tokens[lookahead_idx];
+          token_list[ip] = t;
+          lookahead_idx++;
+        } else {
+          // change insert to replace
+          strategy = REPLACE;
+          analysis_stack = temp_stack;
+          token_list[temp_ip] = temp_token;
+          ip = temp_ip + 1;
+          lookahead_idx = 0;
+          lookahead_len = 0;
+          error_msg = make_pair(-1, -1);
+          stack_top = analysis_stack.back();
+        }
+      }
+      if (strategy == REPLACE) {
+        if (error_pos.first == -1) {
+          error_pos = make_pair(cur_token.line, cur_token.col);
+          error_msg.first = cur_token.type;
+        }
+        if (lookahead_len == 0) {
+          for (const auto& p : action_table) {
+            if (p.first.first == stack_top.first &&
+                is_terminal(p.first.second)) {
+              lookahead_tokens.push_back(p.first.second);
+            }
+          }
+          lookahead_len = lookahead_tokens.size();
+          temp_token = token_list[ip];
+          temp_ip = ip;
+          temp_stack = analysis_stack;
+        }
+        if (lookahead_idx < lookahead_len) {
+          analysis_stack = temp_stack;
+          ip = temp_ip;
+          Token t;
+          error_msg.second = t.type = lookahead_tokens[lookahead_idx];
+          token_list[ip] = t;
+          lookahead_idx++;
+        } else {
+          strategy = DROP;
+          token_list[ip] = temp_token;
+          ip++;
+          lookahead_idx = 0;
+          lookahead_len = 0;
+          error_msg = make_pair(-1, -1);
+          stack_top = analysis_stack.back();
+        }
+      }
     }
   }
 }
