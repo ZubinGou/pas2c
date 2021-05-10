@@ -22,7 +22,7 @@
         "integer", "real", "boolean", "char",
         "if", "then", "else", "for", "to", "do",
         ",", ";", "=", "+", "-", "'", "..", ":", "[", "]", "(", ")", ".",
-        "e"
+        "e", "of", "while"
     ],
     "P": {
         "programstruct": [["program_head", ";", "program_body", "."]], 
