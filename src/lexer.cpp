@@ -55,7 +55,7 @@ bool Lexer::get_token(Token& token) {
         col_pos++;
         if (col_pos == int(cur_line.length())) {
           token.renew("num", line_pos, last_col_pos, "",
-                      stoi(cur_word.c_str()));
+                      stoi(cur_word.c_str()), Integer);
           state = 0;
           return true;
         }
@@ -142,7 +142,11 @@ bool Lexer::get_token(Token& token) {
         col_pos++;
         if (col_pos == int(cur_line.length())) {
           if (!get_new_line()) return false;
-          temp_char = get_char();
+          temp_char = get_char();  // get a new char
+          while (temp_char == 0) {
+            if (!get_new_line()) return false;
+            temp_char = get_char();
+          }
           cur_word = "";
           last_col_pos = -1;
         }
@@ -157,6 +161,10 @@ bool Lexer::get_token(Token& token) {
         if (col_pos == int(cur_line.length())) {
           if (RESERVED_WORDS.count(cur_word) != 0)
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
+          else if (cur_word == "true") 
+            token.renew("num", line_pos, last_col_pos, cur_word, 1, Boolean);
+          else if (cur_word == "false") 
+            token.renew("num", line_pos, last_col_pos, cur_word, 0, Boolean);
           else
             token.renew("id", line_pos, last_col_pos, cur_word, 0);
           state = 0;
@@ -215,11 +223,14 @@ bool Lexer::get_token(Token& token) {
             return true;
           }
         } else {  // cur_word is normal word
-          if (IDENTIFIER.count(cur_word) != 0) {
+          if (IDENTIFIER.count(cur_word) != 0)
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
-          } else {
+          else if (cur_word == "true") 
+            token.renew("num", line_pos, last_col_pos, cur_word, 1, Boolean);
+          else if (cur_word == "false") 
+            token.renew("num", line_pos, last_col_pos, cur_word, 0, Boolean);
+          else
             token.renew("id", line_pos, last_col_pos, cur_word, 0);
-          }
           state = 0;
           return true;
         }
@@ -232,7 +243,7 @@ bool Lexer::get_token(Token& token) {
         col_pos++;
         if (col_pos == int(cur_line.length())) {
           token.renew("num", line_pos, last_col_pos, "",
-                      stoi(cur_word.c_str()));
+                      stoi(cur_word.c_str()), Integer);
           state = 0;
           return true;
         }
@@ -244,7 +255,7 @@ bool Lexer::get_token(Token& token) {
         col_pos++;
       } else {
         state = 0;
-        token.renew("num", line_pos, last_col_pos, "", stoi(cur_word.c_str()));
+        token.renew("num", line_pos, last_col_pos, "", stoi(cur_word.c_str()), Integer);
         return true;
       }
     }
@@ -255,13 +266,13 @@ bool Lexer::get_token(Token& token) {
         col_pos++;
         if (col_pos == int(cur_line.length())) {
           token.renew("num", line_pos, last_col_pos, "",
-                      atof(cur_word.c_str()));
+                      atof(cur_word.c_str()), Real);
           state = 0;
           return true;
         }
       } else {
         state = 0;
-        token.renew("num", line_pos, last_col_pos, "", atof(cur_word.c_str()));
+        token.renew("num", line_pos, last_col_pos, "", atof(cur_word.c_str()), Real);
         return true;
       }
     }
@@ -299,17 +310,29 @@ bool Lexer::get_token(Token& token) {
             return false;
           }
           temp_char = get_char();  // get a new char
+          while (temp_char == 0) {
+            if (!get_new_line()) return false;
+            temp_char = get_char();
+          }
         }
       } else {
         state = 0;
         col_pos++;
         if (col_pos == int(cur_line.length())) {
           if (!get_new_line()) return false;
-          temp_char = get_char();
+          temp_char = get_char();  // get a new char
+          while (temp_char == 0) {
+            if (!get_new_line()) return false;
+            temp_char = get_char();
+          }
           cur_word = "";
           last_col_pos = -1;
         } else
-          temp_char = get_char();
+          temp_char = get_char();  // get a new char
+          while (temp_char == 0) {
+            if (!get_new_line()) return false;
+            temp_char = get_char();
+          }
       }
     }
   }

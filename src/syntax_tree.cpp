@@ -10,7 +10,7 @@ void SyntaxTree::insert_nodes(std::vector<std::pair<bool, Token>> nodes) {
   for (auto it : nodes) {
     node_dic.push_back(Node(cur_node, node_num, it.first, it.second.type,
                             it.second.num_value, it.second.str_value,
-                            it.second.line, it.second.col));
+                            it.second.line, it.second.col, it.second.num_type));
     node_dic[cur_node].son.push_back(node_num);
     node_dic[cur_node].son_num++;
     node_num++;
@@ -59,8 +59,18 @@ void SyntaxTree::print_nodes() {
       cout << setw(20) << "terminal";
     else
       cout << setw(20) << "non-terminal";
+    if (node.num_type == Boolean)
+      cout << setw(10) << "boolean";
+    else if (node.num_type == Integer)
+      cout << setw(10) << "integer";
+    else if (node.num_type == Real)
+      cout << setw(10) << "real";
     cout << setw(15) << "father: " << setw(3) << node.father << "   son: ";
     for (auto it : node.son) cout << it << " ";
     cout << endl;
   }
 }
+
+ Node SyntaxTree::find_inferior_node(const int& id, const int& inferior_pos){
+    return node_dic[node_dic[id].son[inferior_pos]];
+  }
