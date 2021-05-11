@@ -133,6 +133,9 @@ string SymbolTableController::check_parameters(const std::string& function, cons
     return "ERROR";
 }
 
+// vector<int> SymbolTableController::check_bound(const string& id_name, const string& table_name){
+
+// }
 
 void SymbolTableController::print_table(){
   for(auto& table : table_lists){

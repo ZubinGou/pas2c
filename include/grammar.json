@@ -55,7 +55,7 @@
         "statement_list": [["statement_list", ";", "statement"], ["statement"]], 
         "statement": [["variable", "assignop", "expression"], ["procedure_call"], ["compound_statement"], ["if", "expression", "then", "statement", "else_part"], ["while", "expression", "do", "statement"], ["for", "id", "assignop", "expression", "to", "expression", "do", "statement"], ["read", "(", "variable_list", ")"], ["write", "(", "expression_list", ")"], ["e"]], 
         "variable_list": [["variable_list", ",", "variable"], ["variable"]], 
-        "variable": [["id", "id_varpart"]], 
+        "variable": [["id", "id_varpart"], ["id", ".", "variable"]], 
         "id_varpart": [["[", "expression_list", "]"], ["e"]], 
         "procedure_call": [["id"], ["id", "(", "expression_list", ")"]], 
         "else_part": [["else", "statement"], ["e"]], 

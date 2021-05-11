@@ -93,6 +93,7 @@ class SymbolTableController
     void locate_table(const std::string&);
     void relocate_table();
     std::string check_parameters(const std::string&, const std::vector<std::string>& );
+    std::vector<int> check_bound(const std::string& , const std::string& );
     std::string current_table;  // current table name
 
     void print_table();

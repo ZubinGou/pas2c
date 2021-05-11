@@ -6,7 +6,7 @@
 using namespace std;  // recommend only use it in .cpp
 
 const string GRAMMAR_FILE = "../include/grammar.json";
-const string INPUT_FILE = "../example/module_test/const_array_addr.pas";
+const string INPUT_FILE = "../example/record.pas";
 
 int main() {
   cout << "\n*** Section 0 ***\n";
