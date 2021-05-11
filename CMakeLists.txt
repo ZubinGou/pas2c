@@ -45,6 +45,16 @@ install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h"
 include(CTest)
 enable_testing()
 
+add_test(NAME Usage COMMAND p2c)
+add_test(NAME Version COMMAND p2c -v)
+add_test(NAME Debug COMMAND p2c ../example/gcd.pas -d)
+add_test(NAME Output COMMAND p2c ../example/gcd.pas -o test_out.c)
+add_test(NAME Log COMMAND p2c ../example/gcd.pas -l test_log.txt)
+
+add_test(NAME test1 COMMAND p2c ../example/quicksort.pas)
+add_test(NAME test2 COMMAND p2c ../example/record.pas)
+
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)  

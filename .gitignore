@@ -1,4 +1,10 @@
 /output
+/bin
+/build
+
+# VSCode
+# /.vscode
+
 
 # Prerequisites
 *.d
@@ -33,7 +39,3 @@
 *.out
 *.app
 
-/build/*
-
-# VSCode
-# /.vscode

@@ -40,7 +40,7 @@ Yet Another Pascal to C Compiler.
 3. Code Generate
     - systax_tree symbol_table -> target_code
 
-## CLI `p2c` Usage
+## `p2c` CLI Usage
 - build:
 ```
 mkdir build && cd build
@@ -65,6 +65,5 @@ cpack
 ## TODO
 - 语法树可视化：寻找合适树可视化工具、框架、轮子
 - GUI
-- logger
 - CLI
-    - bugs: parsing parms
+- Code gen: bugs

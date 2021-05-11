@@ -47,7 +47,7 @@ void parsing_parameters(int argc, char *argv[]) {
   // We expect 2 arguments: the program name, the source path
   if (argc < 2 || !has_suffix(string(argv[1]), ".pas")) {
     show_usage(argv);
-    exit(-1);
+    exit(0);
   }
 
   INPUT_FILE = string(argv[1]);
@@ -82,11 +82,11 @@ void parsing_parameters(int argc, char *argv[]) {
         break;
       case 'v':
         cout << PROJECT_NAME << " version: " << PROJECT_VERSION << endl;
-        exit(-1);
+        exit(0);
       case 'h':
       default:
         show_usage(argv);
-        exit(-1);
+        exit(0);
     }
   }
 }
