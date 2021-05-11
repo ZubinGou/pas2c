@@ -916,18 +916,19 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
     match(son[1], "(");
 
     vector<bool> is_addr_list;
-    if (is_func(tree[son[0]].str_value))
-      is_addr_list = get_args(tree[son[0]].str_value);  // TODO
+    // if (is_func(tree[son[0]].str_value))
+    is_addr_list = get_args(tree[son[0]].str_value);  // TODO
 
     vector<string> elist, tlist;
     expression_list(son[2], elist, tlist);
     match(son[3], ")");
 
+    assert(is_addr_list.size() == elist.size());
+
     vector<string> args_list;
     for (int i = 0; i < (int)elist.size(); i++) {
       string exp = elist[i];
-      bool is_addr = false;
-      if (is_addr_list.size()) is_addr_list[i];
+      bool is_addr = is_addr_list[i];
       if (is_addr)
         args_list.push_back("&" + exp);
       else

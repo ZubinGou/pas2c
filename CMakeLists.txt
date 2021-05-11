@@ -52,7 +52,8 @@ add_test(NAME Output COMMAND p2c ../example/gcd.pas -o test_out.c)
 add_test(NAME Log COMMAND p2c ../example/gcd.pas -l test_log.txt)
 
 add_test(NAME test1 COMMAND p2c ../example/quicksort.pas)
-add_test(NAME test2 COMMAND p2c ../example/record.pas)
+add_test(NAME test2 COMMAND p2c ../example/module_test/const_array_addr.pas)
+add_test(NAME test3 COMMAND p2c ../example/record.pas)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
