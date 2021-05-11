@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-enum NumType {None = 0, Integer, Real, Boolean};
+enum NumType { None = 0, Integer, Real, Boolean };
 
 struct Token {
  public:
@@ -18,7 +18,7 @@ struct Token {
     this->line = line;
     this->col = col;
     this->num_type = num_type;
-  };  
+  };
   NumType num_type;
   std::string type;
   std::string str_value;
@@ -61,61 +61,11 @@ class Lexer {
 
   inline static const std::set<char> SEPARATION_CHAR = {'(', ')', '[', ']',
                                                         ',', ';', ':'};
-  inline static const std::set<std::string> RESERVED_WORDS = {"and",
-                                                              "array",
-                                                              "begin",
-                                                              "case",
-                                                              "const",
-                                                              "div",
-                                                              "do",
-                                                              "downto",
-                                                              "else",
-                                                              "end",
-                                                              "file",
-                                                              "for",
-                                                              "function",
-                                                              "goto",
-                                                              "if",
-                                                              "in",
-                                                              "label",
-                                                              "mod",
-                                                              "nil",
-                                                              "not",
-                                                              "of",
-                                                              "or",
-                                                              "packed",
-                                                              "procedure",
-                                                              "program",
-                                                              "record",
-                                                              "repeat",
-                                                              "set",
-                                                              "then",
-                                                              "to",
-                                                              "type",
-                                                              "until",
-                                                              "var",
-                                                              "while",
-                                                              "with",
-                                                              "wxports",
-                                                              "shr",
-                                                              "string",
-                                                              "asm",
-                                                              "object",
-                                                              "unit",
-                                                              "constructor",
-                                                              "implementation",
-                                                              "destructor",
-                                                              "uses",
-                                                              "inherited",
-                                                              "inline",
-                                                              "interface",
-                                                              "library",
-                                                              "xor",
-                                                              "shl",
-                                                              "operator",
-                                                              "read",
-                                                              "write",
-                                                              "uminus"};
+  inline static const std::set<std::string> RESERVED_WORDS = {
+      "array",    "begin", "const", "else", "do",        "end",     "for",
+      "function", "if",    "not",   "of",   "procedure", "program", "record",
+      "then",     "to",    "type",  "var",  "while",     "read",    "write",
+      "uminus",   "and",   "div",   "mod",  "or"};
   inline static const std::set<std::string> IDENTIFIER = {
       "integer", "real", "char", "boolean", "text"};
 };

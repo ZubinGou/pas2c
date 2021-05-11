@@ -6,7 +6,7 @@
 using namespace std;  // recommend only use it in .cpp
 
 const string GRAMMAR_FILE = "../include/grammar.json";
-const string INPUT_FILE = "../example/pascal-s-test/test5.pas";
+const string INPUT_FILE = "../example/module_test/const_array_addr.pas";
 
 int main() {
   cout << "\n*** Section 0 ***\n";
@@ -17,9 +17,9 @@ int main() {
   SemanticAnalyzer semantic_analyzer(tree);
   semantic_analyzer.print_table();
 
-  // cout << "\n*** Section 2 ***\n";
-  // CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
-  // cout << code_generator.run() << endl;
+  cout << "\n*** Section 2 ***\n";
+  CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
+  cout << code_generator.run() << endl;
 
   return 0;
 }

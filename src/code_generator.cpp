@@ -7,7 +7,7 @@ using namespace std;
 string join_vec(vector<string> vec, string sep) {
   string res;
   if (vec.size() > 0) res += vec[0];
-  for (int i = 1; i < vec.size(); i++) res += sep + vec[i];
+  for (int i = 1; i < (int)vec.size(); i++) res += sep + vec[i];
   return res;
 }
 
@@ -481,8 +481,8 @@ void CodeGenerator::subprogram_body(int node_id) {
   if (son_num == 3) {
     // parameters
     target_append(" {\n");
-    const_declaration(son[0]);
-    var_declaration(son[1]);
+    const_declarations(son[0]);
+    var_declarations(son[1]);
     // function
     compound_statement(son[2]);
     target_append("}\n");
@@ -570,7 +570,7 @@ void CodeGenerator::statement(int node_id) {
       compound_statement(son[0]);
       target_append("\n");
     } else {                   // 空
-      match(son[0], nullptr);  // TODO nullptr?
+      // match(son[0], nullptr);  // TODO nullptr?
       // target_append(";\n")
     }
   }
@@ -747,8 +747,10 @@ std::string CodeGenerator::id_varpart(int node_id) {
     // elist_trans = ["[{}{}]".format(exp, "-" + str(bound)) for exp, bound in
     // zip(elist, blist) ]
     vector<string> elist_trans;
-    for (int i = 0; i < elist.size(); i++)
-      elist_trans.push_back(elist[i] + "-" + to_string(blist[i]));
+    for (int i = 0; i < (int)elist.size(); i++){
+      elist_trans.push_back("[" + elist[i] + "]");
+      // elist_trans.push_back(elist[i] + "-" + to_string(blist[i]));
+    }
     return join_vec(elist_trans, "");
   } else if (son_num == 1) {  // 空
     // TODO:更改match类型
@@ -922,7 +924,7 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
     match(son[3], ")");
 
     vector<string> args_list;
-    for (int i = 0; i < elist.size(); i++) {
+    for (int i = 0; i < (int)elist.size(); i++) {
       string exp = elist[i];
       bool is_addr = false;
       if (is_addr_list.size()) is_addr_list[i];

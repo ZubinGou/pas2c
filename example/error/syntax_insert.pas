@@ -1,7 +1,7 @@
 
 Program sort (input,output);
 
-Var a : array[0..4] Of integer;
+Var a : array[0..4] Of 3 integer;
   x,y: integer;
 Procedure readarray;
 
