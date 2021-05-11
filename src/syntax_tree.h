@@ -23,16 +23,16 @@ struct Node {
         num_type(num_type){};
 
   int father;             // 父节点的编号
-  std::vector<int> son;   // 子节点的编号集
   int son_num;            // 子结点的个数
   int id;                 // 节点编号
   std::string type;       // 节点代表的符号类型
-  std::string str_value;  // 节点携带的字符串值
   double num_value;       // 节点携带的数值
-  NumType num_type;       // 若子节点为数字，它对应的类型
+  std::string str_value;  // 节点携带的字符串值
   bool is_terminal;       // 当前节点是否为终结符
   int line;               // 如果是终结符，终结符的行号
   int col;                // 如果是终结符，终结符的列号
+  NumType num_type;       // 若子节点为数字，它对应的类型
+  std::vector<int> son;   // 子节点的编号集
 };
 
 class SyntaxTree {
