@@ -1,6 +1,7 @@
 /output
 /bin
 /build
+/gui/__pycache__
 
 # VSCode
 # /.vscode
