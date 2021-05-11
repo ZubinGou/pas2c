@@ -139,10 +139,6 @@ string SymbolTableController::check_parameters(
     return "ERROR";
 }
 
-// vector<int> SymbolTableController::check_bound(const string& id_name, const
-// string& table_name){
-
-// }
 
 void SymbolTableController::print_table() {
   spdlog::debug("Symbol Table");
