@@ -64,9 +64,10 @@ void SemanticAnalyzer::program_head(const int& node_id) {  // bug alert
     if (this->syntax_tree.find_inferior_node(node_id, 1).type != "id") {
       this->result = false;
     } else {
+      int declaration = this->syntax_tree.find_inferior_node(node_id, 1).line;
       std::vector<Argument> default_value;
       this->symbol_table_controller.create_table(
-          "main", false, "", default_value);  // initalize the "main" table
+          "main", false, "", default_value, declaration);  // initalize the "main" table
     }
   }
 
@@ -106,7 +107,8 @@ void SemanticAnalyzer::program_head(const int& node_id) {  // bug alert
       params.push_back(temp);
     }
     /*------------------------------------------------------------------*/
-    symbol_table_controller.create_table("main", false, "", params);
+    int declaration = this->syntax_tree.find_inferior_node(node_id, 1).line;
+    symbol_table_controller.create_table("main", false, "", params, declaration);
     if (")" != this->syntax_tree.find_inferior_node(node_id, 4).type) {
       this->result = false;
     }
@@ -339,7 +341,7 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
     vector<returnList> var = this->idlist(cur_node.son[0]);
     returnList type_var = _type(cur_node.son[2]);
     string tmp[2];
-    if (!type_var.empty() && var.size() > 0) {
+    if ((!type_var.empty() || !type_var.info.empty()) && var.size() > 0) {
       /*---bug alert----*/
       if (type_var.info.type == "array") {
         tmp[0] = "array";
@@ -350,7 +352,7 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
       }
 
       for (auto& it : var) {
-        vector<Argument> argument_list;
+        // vector<Argument> argument_list;
         vector<int> new_use;
         SymbolTableElement item;
 
@@ -359,7 +361,8 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
         item.value_type = tmp[1];
         item.value = it.info.size;
         item.declare = stoi(it.row);
-        item.arguments_lists = argument_list;
+        item.dimension = type_var.info.len_period;
+        item.arguments_lists = type_var.info.period;
         item.use = new_use;
 
         
@@ -502,6 +505,8 @@ vector<Argument> SemanticAnalyzer::period(const int& node_id) {  // finished
           node_child2.line, node_child2.col);
       return period_array;
     }
+    pair<int, int> a(int(node_child1.num_value), int(node_child2.num_value));
+    period_array.push_back(a);
   } else if (cur_node.son_num == 5) {
     Node node_child1 = this->syntax_tree.find_inferior_node(node_id, 2);
     Node node_child2 = this->syntax_tree.find_inferior_node(node_id, 4);
@@ -561,14 +566,14 @@ void SemanticAnalyzer::subprogram_head(const int& node_id) {  // checked
     string subprogram_name = node_child.str_value;
     vector<Argument> parameters = formal_parameter(cur_node.son[2]);
     this->symbol_table_controller.create_table(subprogram_name, false, "",
-                                               parameters);
+                                               parameters, node_child.line);
   } else if (cur_node.son_num == 5) {
     Node node_child = this->syntax_tree.find_inferior_node(node_id, 1);
     string subprogram_name = node_child.str_value;
     string return_type = basic_type(cur_node.son[4]);
     vector<Argument> parameters = formal_parameter(cur_node.son[2]);
     this->symbol_table_controller.create_table(subprogram_name, true,
-                                               return_type, parameters);
+                                               return_type, parameters, node_child.line);
   } else {
     this->result = false;
     cout << "[semantic error25] error on son number of current node" << endl;
@@ -915,7 +920,7 @@ void SemanticAnalyzer::procedure_call(const int& node_id) {
     Node son_node = this->syntax_tree.find_inferior_node(node_id, 0);
     SymbolTableElement item = this->symbol_table_controller.search_table(
         son_node.str_value, this->symbol_table_controller.current_table);
-    if (item.empty()) {
+    if (!item.empty()) {
       item.use.push_back(son_node.line);
       if (item.element_type == "procedure" || item.element_type == "function") {
         if (item.arguments_lists.size() != 0) {
@@ -953,7 +958,7 @@ void SemanticAnalyzer::procedure_call(const int& node_id) {
             }
             string return_type = this->symbol_table_controller.check_parameters(
                 son_node.str_value, args);
-            if (return_type == "") {
+            if (return_type == "ERROR") {
               this->result = false;
               cout << "[semantic error51] row:" << son_node.line
                    << " col:" << son_node.col
