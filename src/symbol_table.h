@@ -85,7 +85,7 @@ class SymbolTableController
     std::map<std::string, SymbolTable> table_lists;  // using table name to find its table
     
   public:
-    bool create_table(const std::string&, const bool&, const std::string&, std::vector<Argument >&);
+    bool create_table(const std::string&, const bool&, const std::string&, std::vector<Argument >&, int& );
     bool insert_element2table(const SymbolTableElement&, const std::string& );
     SymbolTableElement search_table(const std::string&, const std::string& );
     void locate_table(const std::string&);

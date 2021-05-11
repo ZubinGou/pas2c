@@ -15,6 +15,13 @@ struct Return_array_info{
   std::vector<Argument> period;
   int len_period = 0;
   std::string type_array;
+
+  bool empty() {
+    if(type == "" && size == 0 && period.empty() && len_period == 0 && type_array == "")
+      return true;
+    else
+      return false;
+  }
 };
 
 

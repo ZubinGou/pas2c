@@ -4,7 +4,7 @@
 using namespace std;
 
 bool SymbolTableController::create_table(const string& subtable_name, const bool& is_func,
-                                         const string& return_type, vector<Argument >& arguments_lists){
+                                         const string& return_type, vector<Argument >& arguments_lists, int& declaration){
   if(current_table != "" && current_table != "main"){
     return false;
   }
@@ -41,7 +41,7 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
     else
       func_type = "procedure";
     vector<int> new_use;
-    SymbolTableElement new_element(subtable_name, func_type, return_type, "", arguments_lists, 0, new_use, 
+    SymbolTableElement new_element(subtable_name, func_type, return_type, "", arguments_lists, declaration, new_use, 
                                           (int)arguments_lists.size());
     insert_element2table(new_element, subtable_name);
     if(subtable_name != "main"){
@@ -125,10 +125,10 @@ string SymbolTableController::check_parameters(const std::string& function, cons
       return table_lists[function].return_type;
     }
     else 
-      return "";
+      return "ERROR";
   }
   else
-    return "";
+    return "ERROR";
 }
 
 
@@ -152,6 +152,11 @@ void SymbolTableController::print_table(){
       if(ele.arguments_lists.empty() == false){
         cout << setw(26) <<"arguments in element: " << endl;
         for(auto& arg : ele.arguments_lists){
+          if(arg.name == ""){
+            cout << setw(15) << "start: " << setw(10) << arg.period_element.first;
+            cout << setw(15) << "end: " << setw(10) << arg.period_element.second << endl;
+            continue;
+          }
           cout << setw(15) <<"name: " << setw(10) << arg.name;
           cout << setw(20) << "type: " << setw(10) << arg.type;
           cout << setw(20) <<"row: " << setw(10) << arg.row;
@@ -178,7 +183,7 @@ void SymbolTableController::print_table(){
         if(arg.pass_value)
           cout << setw(30) << "transfer type: address" << endl; 
         else 
-          cout << setw(30) << "transfer type: address" << endl; 
+          cout << setw(30) << "transfer type: value" << endl; 
       }
     }
   }
