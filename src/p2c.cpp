@@ -6,10 +6,10 @@
 #include "code_generator.h"
 #include "parser.h"
 #include "semantic_analyzer.h"
+#include "config.h"
 
 using namespace std;  // recommend only use it in .cpp
 
-string VERSION_INFO = "Pas2c version 2.1.0";
 string GRAMMAR_FILE = "../include/grammar.json";
 string INPUT_FILE = "../example/quicksort.pas";
 string OUTPUT_FILE = "./out.c";
@@ -60,7 +60,7 @@ void parsing_parameters(int argc, char *argv[]) {
         cout << "Place the output to " << OUTPUT_FILE << endl;
         break;
       case 'v':
-        cout << VERSION_INFO << endl;
+        cout << PROJECT_NAME << " version: " << PROJECT_VERSION << endl;
         exit(-1);
       case 'h':
       default:
@@ -72,6 +72,12 @@ void parsing_parameters(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
   parsing_parameters(argc, argv);
+  if (IS_LOG) 
+    freopen(LOG_FILE.c_str(), "w", stdout);
+
+  if (IS_DEBUG)
+    spdlog::set_level(spdlog::level::debug);  // Set global log level to debug
+
   spdlog::info("Welcome to spdlog!");
   spdlog::error("Some error message with arg: {}", 1);
 
@@ -82,26 +88,22 @@ int main(int argc, char *argv[]) {
   spdlog::info("Positional args are {1} {0}..", "too", "supported");
   spdlog::info("{:<30}", "left aligned");
 
-  spdlog::set_level(spdlog::level::debug);  // Set global log level to debug
   spdlog::debug("This message should be displayed..");
 
   // change log pattern
   spdlog::set_pattern("[%H:%M:%S %z] [%n] [%^---%L---%$] [thread %t] %v");
 
-  // Compile time log levels
-  // define SPDLOG_ACTIVE_LEVEL to desired level
-  SPDLOG_TRACE("Some trace message with param {}", 42);
-  SPDLOG_DEBUG("Some debug message");
 
-  cout << "\n*** Section 0 ***\n";
+
+  spdlog::info("\n*** Section 0 ***\n");
   Parser parser(GRAMMAR_FILE, INPUT_FILE);
   SyntaxTree tree = parser.generate_tree();
 
-  cout << "\n*** Section 1 ***\n";
+  spdlog::info("\n*** Section 1 ***\n");
   SemanticAnalyzer semantic_analyzer(tree);
   semantic_analyzer.print_table();
 
-  cout << "\n*** Section 2 ***\n";
+  spdlog::info("\n*** Section 2 ***\n");
   CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
   cout << code_generator.run() << endl;
 
