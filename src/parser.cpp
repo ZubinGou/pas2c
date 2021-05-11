@@ -476,7 +476,7 @@ void Parser::analyze() {
       error_occur = true;
       pass_analyze = false;
       if (strategy == DROP) {
-        if (ip < token_list.size() &&
+        if (ip < (int)token_list.size() &&
             drop_cnt < 1) {  // not ent and did not drop
           if (error_pos.first == -1) {
             error_pos = make_pair(cur_token.line, cur_token.col);

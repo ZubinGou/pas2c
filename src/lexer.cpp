@@ -327,12 +327,13 @@ bool Lexer::get_token(Token& token) {
           }
           cur_word = "";
           last_col_pos = -1;
-        } else
+        } else {
           temp_char = get_char();  // get a new char
           while (temp_char == 0) {
             if (!get_new_line()) return false;
             temp_char = get_char();
           }
+        }
       }
     }
   }

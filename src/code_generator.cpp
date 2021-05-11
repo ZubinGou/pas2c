@@ -7,7 +7,7 @@ using namespace std;
 string join_vec(vector<string> vec, string sep) {
   string res;
   if (vec.size() > 0) res += vec[0];
-  for (int i = 1; i < vec.size(); i++) res += sep + vec[i];
+  for (int i = 1; i < (int)vec.size(); i++) res += sep + vec[i];
   return res;
 }
 
@@ -747,7 +747,7 @@ std::string CodeGenerator::id_varpart(int node_id) {
     // elist_trans = ["[{}{}]".format(exp, "-" + str(bound)) for exp, bound in
     // zip(elist, blist) ]
     vector<string> elist_trans;
-    for (int i = 0; i < elist.size(); i++)
+    for (int i = 0; i < (int)elist.size(); i++)
       elist_trans.push_back(elist[i] + "-" + to_string(blist[i]));
     return join_vec(elist_trans, "");
   } else if (son_num == 1) {  // 空
@@ -922,7 +922,7 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
     match(son[3], ")");
 
     vector<string> args_list;
-    for (int i = 0; i < elist.size(); i++) {
+    for (int i = 0; i < (int)elist.size(); i++) {
       string exp = elist[i];
       bool is_addr = false;
       if (is_addr_list.size()) is_addr_list[i];
