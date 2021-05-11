@@ -14,7 +14,13 @@
 - 读入pas，输出.c
 - log模块
 
-## 命令行工具 `p2c`
+## CLI `p2c` Usage
+```
+mkdir build && cd build
+cmake .. && cmake --build .
+./p2c ../example/gcd.pas
+```
+
 - 将 `.pas` 代码转换为 `.c` 代码
 - cmake：`cmake ../src`
 - `cmake --build .`

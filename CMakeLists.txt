@@ -5,7 +5,6 @@ project(p2c VERSION 2.0)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-# set(spdlog_DIR "include/spdlog/build")
 add_subdirectory(include/spdlog)
 
 # set(JSON_BuildTests OFF CACHE INTERNAL "")
