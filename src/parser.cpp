@@ -377,7 +377,7 @@ void Parser::analyze() {
   int temp_ip = 0;
   Token temp_token;
   // for record error
-  int error_len = -1;
+  bool error_occur = false;
   pair<string, string> error_msg;
   pair<int, int> error_pos = make_pair(-1, -1);
   // for analysis
@@ -439,7 +439,10 @@ void Parser::analyze() {
             make_pair(goto_table[make_pair(analysis_stack.back().first, tmp)],
                       tmp_token));
       } else if (ACC == action) {  // Accept
-        cout << "[Syntax] Accept." << endl << endl;
+        if (pass_analyze)
+          cout << "[Syntax] Accept." << endl << endl;
+        else
+          cout << "[Syntax] Meet errors but recover." << endl << endl;
         break;
       } else {
         // TODO: table is broken
@@ -447,10 +450,7 @@ void Parser::analyze() {
         cout << "[Syntax] Meet errors." << endl << endl;
         break;
       }
-      if (error_len >= 0) {
-        error_len++;
-      }
-      if (error_len >= 10 || ip == token_list.size() - 1) {
+      if (error_occur) {
         drop_cnt = 0;
         lookahead_idx = 0;
         lookahead_len = 0;
@@ -467,11 +467,14 @@ void Parser::analyze() {
                  << error_msg.first << endl;
           }
         }
+        error_occur = false;
+        strategy = DROP;
       }
     } else {
       // cout << cur_token << endl;
       // Failed to get in action table
-      error_len = 0;
+      error_occur = true;
+      pass_analyze = false;
       if (strategy == DROP) {
         if (ip < token_list.size() &&
             drop_cnt < 1) {  // not ent and did not drop
@@ -483,16 +486,50 @@ void Parser::analyze() {
           ip++;
         } else {
           // change drop to insert
-          strategy = INSERT;
+          strategy = REPLACE;
           ip -= drop_cnt;
           drop_cnt = 0;
           error_pos = make_pair(-1, -1);
         }
       }
+      if (strategy == REPLACE) {
+        if (error_pos.first == -1) {
+          error_pos = make_pair(token_list[ip].line, token_list[ip].col);
+          error_msg.first = token_list[ip].type;
+        }
+        if (lookahead_len == 0) {
+          for (const auto& p : action_table) {
+            if (p.first.first == stack_top.first &&
+                is_terminal(p.first.second)) {
+              lookahead_tokens.push_back(p.first.second);
+            }
+          }
+          lookahead_len = lookahead_tokens.size();
+          temp_token = token_list[ip];
+          temp_ip = ip;
+          temp_stack = analysis_stack;
+        }
+        if (lookahead_idx < lookahead_len) {
+          analysis_stack = temp_stack;
+          ip = temp_ip;
+          Token t;
+          error_msg.second = t.type = lookahead_tokens[lookahead_idx];
+          token_list[ip] = t;
+          lookahead_idx++;
+        } else {
+          strategy = INSERT;
+          token_list[ip] = temp_token;
+          ip++;
+          lookahead_idx = 0;
+          lookahead_len = 0;
+          error_msg = make_pair(-1, -1);
+          stack_top = analysis_stack.back();
+        }
+      }
       if (strategy == INSERT) {
         if (error_pos.first == -1) {
-          error_pos = make_pair(cur_token.line, cur_token.col);
-          error_msg.first = cur_token.type;
+          error_pos = make_pair(token_list[ip].line, token_list[ip].col);
+          error_msg.first = token_list[ip].type;
         }
         // find possible tokens to insert
         if (lookahead_len == 0) {
@@ -518,44 +555,10 @@ void Parser::analyze() {
           lookahead_idx++;
         } else {
           // change insert to replace
-          strategy = REPLACE;
+          strategy = DROP;
           analysis_stack = temp_stack;
           token_list[temp_ip] = temp_token;
           ip = temp_ip + 1;
-          lookahead_idx = 0;
-          lookahead_len = 0;
-          error_msg = make_pair(-1, -1);
-          stack_top = analysis_stack.back();
-        }
-      }
-      if (strategy == REPLACE) {
-        if (error_pos.first == -1) {
-          error_pos = make_pair(cur_token.line, cur_token.col);
-          error_msg.first = cur_token.type;
-        }
-        if (lookahead_len == 0) {
-          for (const auto& p : action_table) {
-            if (p.first.first == stack_top.first &&
-                is_terminal(p.first.second)) {
-              lookahead_tokens.push_back(p.first.second);
-            }
-          }
-          lookahead_len = lookahead_tokens.size();
-          temp_token = token_list[ip];
-          temp_ip = ip;
-          temp_stack = analysis_stack;
-        }
-        if (lookahead_idx < lookahead_len) {
-          analysis_stack = temp_stack;
-          ip = temp_ip;
-          Token t;
-          error_msg.second = t.type = lookahead_tokens[lookahead_idx];
-          token_list[ip] = t;
-          lookahead_idx++;
-        } else {
-          strategy = DROP;
-          token_list[ip] = temp_token;
-          ip++;
           lookahead_idx = 0;
           lookahead_len = 0;
           error_msg = make_pair(-1, -1);
