@@ -1,5 +1,6 @@
 #include "lexer.h"
 
+#include <spdlog/spdlog.h>
 #include <algorithm>
 #include <cstdlib>
 #include <fstream>
@@ -11,8 +12,8 @@ Lexer::Lexer(const std::string& inputfile) {
   input = ifstream(inputfile, ios::in);
   string tmp;
   if (!getline(input, tmp)) {
-    cout << "the input file is empty";
-    exit(0);
+    spdlog::critical("the input file is empty!");
+    exit(1);
   }
   cout << "Input File:" << endl;
   cur_line = "";

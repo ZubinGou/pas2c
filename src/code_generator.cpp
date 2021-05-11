@@ -1,5 +1,5 @@
+#include <spdlog/spdlog.h>
 #include "code_generator.h"
-
 #include "assert.h"
 
 using namespace std;
