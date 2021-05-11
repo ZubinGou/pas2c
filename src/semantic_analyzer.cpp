@@ -1072,7 +1072,9 @@ void SemanticAnalyzer::id_varpart(const int& node_id) {
   if (cur_node.son_num == 3) {
     vector<returnList> exp_list = this->expression_list(cur_node.son[1]);
     if (exp_list.empty() == false) {
+      int cnt = 0;  // use for matching
       for (auto& exp : exp_list) {
+        cnt++;
         if (exp.type != "integer") {
           this->result = false;
           cout << "[semantic error46] row: "
@@ -1083,8 +1085,10 @@ void SemanticAnalyzer::id_varpart(const int& node_id) {
           Node father = this->syntax_tree.node_dic[cur_node.father];
           Node id_node = this->syntax_tree.find_inferior_node(father.id, 0);
           SymbolTableElement element = this->symbol_table_controller.search_table(id_node.str_value, this->symbol_table_controller.current_table);
+          int dimension = 0;
           for(auto& bound : element.arguments_lists){
-            if(exp.info.size < bound.period_element.first || exp.info.size > bound.period_element.second){
+            dimension++;
+            if((cnt == dimension) && (exp.info.size < bound.period_element.first || exp.info.size > bound.period_element.second)){
               this->result = false;
               cout << "[semantic error46] row: "
                   << this->syntax_tree.find_inferior_node(node_id, 0).line
@@ -1400,11 +1404,9 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
       switch (son_node.num_type) {
         case 1:
           son_type = "integer";
-          factor.info.size = son_node.num_value;
           break;
         case 2:
           son_type = "real";
-          factor.info.size = son_node.num_value;
           break;
         case 3:
           son_type = "boolean";
@@ -1418,6 +1420,7 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
       }
       factor = returnList("expression", son_type, to_string(son_node.line),
                           to_string(son_node.col), "");
+      factor.info.size = son_node.num_value;
     } else if (son_node.type == "variable") {
       returnList var = this->variable(son_node.id);
       if (var.empty() == false) {
