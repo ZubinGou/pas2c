@@ -8,7 +8,6 @@ default:
 BUILD_DIR := ./build
 MAIN_SRC = $(filter-out src/p2c.cpp, $(wildcard src/*.cpp))
 P2C_SRC = $(filter-out src/main.cpp, $(wildcard src/*.cpp))
-INCLUDE = -I/include/json.hpp
 
 full: $(MAIN_SRC)
 	$(CC) $(MAIN_SRC) -o $(BUILD_DIR)/pas2c \
