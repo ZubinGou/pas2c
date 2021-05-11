@@ -570,7 +570,7 @@ void CodeGenerator::statement(int node_id) {
       compound_statement(son[0]);
       target_append("\n");
     } else {                   // 空
-      match(son[0], nullptr);  // TODO nullptr?
+      // match(son[0], nullptr);  // TODO nullptr?
       // target_append(";\n")
     }
   }

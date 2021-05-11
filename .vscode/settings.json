@@ -73,7 +73,17 @@
     "string_view": "cpp",
     "sstream": "cpp",
     "compare": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "csignal": "cpp",
+    "chrono": "cpp",
+    "condition_variable": "cpp",
+    "unordered_set": "cpp",
+    "random": "cpp",
+    "ratio": "cpp",
+    "mutex": "cpp",
+    "thread": "cpp",
+    "cinttypes": "cpp",
+    "variant": "cpp"
   },
   "C_Cpp.clang_format_fallbackStyle": "Google",
   "C_Cpp.default.cppStandard": "c++17",

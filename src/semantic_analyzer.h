@@ -142,12 +142,22 @@ class SemanticAnalyzer {
   std::vector<std::string> const_value(const int& );
   void var_declarations(const int& );
   void var_declaration(const int& );
+  //types -> basic_type | array [ period ] of basic_type | record_type | array [ period ] of record_type
   returnList _type(const int& );
+  // record_type -> record field_list end
+  std::string record_type(const int& );
+  // field_list -> fixed_fields ; 
+  void field_list(const int& );
+  // fixed_fields -> idlist : types | fixed_fields ; idlist : types
+  void fixed_fields(const int& );
+  
   std::vector<Argument> formal_parameter(const int& );
   void subprogram_body(const int& );
   void subprogram_head(const int& );
   void subprogram(const int& );
   std::vector<Argument> period(const int& );
+
+
 
   void print_table();
 };
