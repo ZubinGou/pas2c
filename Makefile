@@ -1,6 +1,8 @@
 CC=g++
 # CFLAGS = -c -Wall -Iinclude/ -std=c++17
 CFLAGS = -c -Iinclude/ -std=c++17
+LDFLAGS = -L./include/spdlog/build/ -lspdloc -static
+LIBS = -lspdloc
 
 default:
 	$(MAKE) full
