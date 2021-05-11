@@ -1088,7 +1088,7 @@ void SemanticAnalyzer::id_varpart(const int& node_id) {
           int dimension = 0;
           for(auto& bound : element.arguments_lists){
             dimension++;
-            if((cnt == dimension) && (exp.info.size < bound.period_element.first || exp.info.size > bound.period_element.second)){
+            if((cnt == dimension) && (exp.info.len_period) && (exp.info.size < bound.period_element.first || exp.info.size > bound.period_element.second)){
               this->result = false;
               cout << "[semantic error46] row: "
                   << this->syntax_tree.find_inferior_node(node_id, 0).line
@@ -1421,6 +1421,7 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
       factor = returnList("expression", son_type, to_string(son_node.line),
                           to_string(son_node.col), "");
       factor.info.size = son_node.num_value;
+      factor.info.len_period = 1;
     } else if (son_node.type == "variable") {
       returnList var = this->variable(son_node.id);
       if (var.empty() == false) {
