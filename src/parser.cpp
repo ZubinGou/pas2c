@@ -442,7 +442,7 @@ void Parser::analyze() {
                       tmp_token));
       } else if (ACC == action) {  // Accept
         if (pass_analyze)
-          spdlog::info("[Syntax] Accept.");
+          spdlog::debug("[Syntax] Accept.");
         else
           spdlog::error("[Syntax] Meet errors but recover.");
         break;
