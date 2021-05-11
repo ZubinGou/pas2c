@@ -152,7 +152,7 @@ void SymbolTableController::print_table(){
       if(ele.arguments_lists.empty() == false){
         cout << setw(26) <<"arguments in element: " << endl;
         for(auto& arg : ele.arguments_lists){
-          if(arg.name == ""){
+          if(arg.period_element.second){
             cout << setw(15) << "start: " << setw(10) << arg.period_element.first;
             cout << setw(15) << "end: " << setw(10) << arg.period_element.second << endl;
             continue;
