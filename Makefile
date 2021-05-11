@@ -1,5 +1,6 @@
 CC=g++
-CFLAGS = -c -Wall -Iinclude/ -std=c++17
+# CFLAGS = -c -Wall -Iinclude/ -std=c++17
+CFLAGS = -c -Iinclude/ -std=c++17
 
 default:
 	$(MAKE) full
@@ -14,7 +15,7 @@ full: $(MAIN_SRC)
 	&& cd build && ./pas2c
 
 p2c: $(P2C_SRC)
-	$(CC) $(P2C_SRC) -o $(BUILD_DIR)/pas2c
+	$(CC) $(P2C_SRC) -o $(BUILD_DIR)/p2c
 
 clean:
 	$(RM) build/pas2c

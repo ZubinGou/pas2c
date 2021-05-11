@@ -76,5 +76,5 @@ int main(int argc, char *argv[]) {
   // CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
   // cout << code_generator.run() << endl;
 
-  // return 0;
+  return 0;
 }

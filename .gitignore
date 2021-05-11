@@ -31,7 +31,7 @@
 *.out
 *.app
 
-/bin/*
+/build/*
 
 # VSCode
 # /.vscode
