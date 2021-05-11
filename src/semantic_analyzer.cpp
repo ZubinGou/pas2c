@@ -1518,7 +1518,5 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
 }
 
 void SemanticAnalyzer::print_table(){
-  cout << endl;
-  cout << "Symbol Table: " << endl;
   symbol_table_controller.print_table();
 }

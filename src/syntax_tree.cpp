@@ -1,5 +1,7 @@
 #include "syntax_tree.h"
 
+#include <spdlog/spdlog.h>
+
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -47,30 +49,31 @@ void SyntaxTree::insert_nodes(std::vector<std::pair<bool, Token>> nodes) {
 }
 
 void SyntaxTree::print_nodes() {
-  cout << "Syntax Tree:" << endl;
-  for (auto node : this->node_dic) {
-    cout << "node " << setw(3) << node.id << ": ";
-    string sign = "[" + node.type + "," + to_string(node.num_value) + "," +
-                  node.str_value + "," + to_string(node.line) + "," +
-                  to_string(node.col) + "]";
-    cout << setw(40) << sign;
+  spdlog::debug("Syntax Tree:");
+  if (spdlog::get_level() == spdlog::level::debug)
+    for (auto node : this->node_dic) {
+      cout << "node " << setw(3) << node.id << ": ";
+      string sign = "[" + node.type + "," + to_string(node.num_value) + "," +
+                    node.str_value + "," + to_string(node.line) + "," +
+                    to_string(node.col) + "]";
+      cout << setw(40) << sign;
 
-    if (node.is_terminal)
-      cout << setw(20) << "terminal";
-    else
-      cout << setw(20) << "non-terminal";
-    if (node.num_type == Boolean)
-      cout << setw(10) << "boolean";
-    else if (node.num_type == Integer)
-      cout << setw(10) << "integer";
-    else if (node.num_type == Real)
-      cout << setw(10) << "real";
-    cout << setw(15) << "father: " << setw(3) << node.father << "   son: ";
-    for (auto it : node.son) cout << it << " ";
-    cout << endl;
-  }
+      if (node.is_terminal)
+        cout << setw(20) << "terminal";
+      else
+        cout << setw(20) << "non-terminal";
+      if (node.num_type == Boolean)
+        cout << setw(10) << "boolean";
+      else if (node.num_type == Integer)
+        cout << setw(10) << "integer";
+      else if (node.num_type == Real)
+        cout << setw(10) << "real";
+      cout << setw(15) << "father: " << setw(3) << node.father << "   son: ";
+      for (auto it : node.son) cout << it << " ";
+      cout << endl;
+    }
 }
 
- Node SyntaxTree::find_inferior_node(const int& id, const int& inferior_pos){
-    return node_dic[node_dic[id].son[inferior_pos]];
-  }
+Node SyntaxTree::find_inferior_node(const int& id, const int& inferior_pos) {
+  return node_dic[node_dic[id].son[inferior_pos]];
+}

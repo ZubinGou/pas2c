@@ -1,11 +1,12 @@
-#include "parser.h"
+#include <spdlog/spdlog.h>
 
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <regex>
 
 // #include "../include/json.hpp"
-#include <nlohmann/json.hpp>
+#include "parser.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -441,14 +442,14 @@ void Parser::analyze() {
                       tmp_token));
       } else if (ACC == action) {  // Accept
         if (pass_analyze)
-          cout << "[Syntax] Accept." << endl << endl;
+          spdlog::info("[Syntax] Accept.");
         else
-          cout << "[Syntax] Meet errors but recover." << endl << endl;
+          spdlog::error("[Syntax] Meet errors but recover.");
         break;
       } else {
         // TODO: table is broken
         pass_analyze = false;
-        cout << "[Syntax] Meet errors." << endl << endl;
+        spdlog::error("[Syntax] Meet errors.");
         break;
       }
       if (error_occur) {
@@ -456,15 +457,14 @@ void Parser::analyze() {
         lookahead_idx = 0;
         lookahead_len = 0;
         if (error_pos.first != -1) {
-          cout << "[Syntax] Error in [" << error_pos.first << ", "
-               << error_pos.second << "]: ";
+          spdlog::error("[Syntax] Error in [{}, {}]: ", error_pos.first, error_pos.second);
           if (strategy == DROP) {
-            cout << "Extra token " << error_msg.first << endl;
+            cout << "\t\tExtra token " << error_msg.first << endl;
           } else if (strategy == INSERT) {
-            cout << "Lack of " << error_msg.second << " before "
+            cout << "\t\tLack of " << error_msg.second << " before "
                  << error_msg.first << endl;
           } else {
-            cout << "Suppose to be " << error_msg.second << " but "
+            cout << "\t\tSuppose to be " << error_msg.second << " but "
                  << error_msg.first << endl;
           }
         }
