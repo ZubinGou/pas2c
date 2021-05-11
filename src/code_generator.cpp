@@ -481,8 +481,8 @@ void CodeGenerator::subprogram_body(int node_id) {
   if (son_num == 3) {
     // parameters
     target_append(" {\n");
-    const_declaration(son[0]);
-    var_declaration(son[1]);
+    const_declarations(son[0]);
+    var_declarations(son[1]);
     // function
     compound_statement(son[2]);
     target_append("}\n");
@@ -747,8 +747,10 @@ std::string CodeGenerator::id_varpart(int node_id) {
     // elist_trans = ["[{}{}]".format(exp, "-" + str(bound)) for exp, bound in
     // zip(elist, blist) ]
     vector<string> elist_trans;
-    for (int i = 0; i < (int)elist.size(); i++)
-      elist_trans.push_back(elist[i] + "-" + to_string(blist[i]));
+    for (int i = 0; i < (int)elist.size(); i++){
+      elist_trans.push_back("[" + elist[i] + "]");
+      // elist_trans.push_back(elist[i] + "-" + to_string(blist[i]));
+    }
     return join_vec(elist_trans, "");
   } else if (son_num == 1) {  // 空
     // TODO:更改match类型

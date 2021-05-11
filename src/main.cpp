@@ -17,9 +17,9 @@ int main() {
   SemanticAnalyzer semantic_analyzer(tree);
   semantic_analyzer.print_table();
 
-  // cout << "\n*** Section 2 ***\n";
-  // CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
-  // cout << code_generator.run() << endl;
+  cout << "\n*** Section 2 ***\n";
+  CodeGenerator code_generator(tree.node_dic, semantic_analyzer);
+  cout << code_generator.run() << endl;
 
   return 0;
 }
