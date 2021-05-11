@@ -15,19 +15,26 @@
 - log模块
 
 ## CLI `p2c` Usage
+- build:
 ```
 mkdir build && cd build
 cmake .. && cmake --build .
+```
+- run:
+```
 ./p2c ../example/gcd.pas
 ```
 
-- 将 `.pas` 代码转换为 `.c` 代码
-- cmake：`cmake ../src`
-- `cmake --build .`
-- 选项 `[-d] [-h] [-l] [-o <file>] [-v]`
-- 测试：`ctest`, `ctest -VV`
-- 发布：`cpack`
-- 安装：
+- test:
+```
+ctest
+> for more info: ctset -VV
+```
+
+- release:
+```
+cpack
+```
 
 ## TODO
 - 语法树可视化：寻找合适树可视化工具、框架、轮子

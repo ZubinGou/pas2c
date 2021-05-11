@@ -89,13 +89,13 @@
   "C_Cpp.default.cppStandard": "c++17",
   "C_Cpp.errorSquiggles": "Enabled",
   "editor.tabSize": 2,
-  "terminal.integrated.shell.windows": "C:\\Program Files\\Cygwin\\bin\\bash.exe",
+  // "terminal.integrated.shell.windows": "C:\\Program Files\\Cygwin\\bin\\bash.exe",
   // Use this to keep bash from doing a 'cd ${HOME}'
   "terminal.integrated.env.windows": {
     "CHERE_INVOKING": "1"
   },
   // Make it a login shell
-  "terminal.integrated.shellArgs.windows": [
-    "-l"
-  ],
+  // "terminal.integrated.shellArgs.windows": [
+  //   "-l"
+  // ],
 }

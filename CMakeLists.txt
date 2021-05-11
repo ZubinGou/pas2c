@@ -5,9 +5,10 @@ project(p2c VERSION 2.0)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-add_subdirectory(include/spdlog)
+set(JSON_BuildTests OFF CACHE INTERNAL "")
 
-# set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(include/nlohmann_json)
+add_subdirectory(include/spdlog)
 
 # configure_file(TutorialConfig.h.in TutorialConfig.h)
 
@@ -29,7 +30,20 @@ add_executable(p2c ${p2c_srcs})
 
 # target_link_libraries(main PRIVATE spdlog::spdlog)
 target_link_libraries(p2c PRIVATE spdlog::spdlog)
+target_link_libraries(p2c PRIVATE nlohmann_json::nlohmann_json)
 
 target_include_directories(p2c PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            )
+
+install(TARGETS p2c DESTINATION bin)
+install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h"
+  DESTINATION include 
+  )
+
+include(CTest)
+enable_testing()
+
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+include(CPack)  
