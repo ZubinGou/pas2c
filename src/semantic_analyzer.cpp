@@ -800,7 +800,7 @@ vector<Argument> SemanticAnalyzer::var_parameter(const int& node_id) {
   parameters = this->value_parameter(
       this->syntax_tree.find_inferior_node(node_id, 1).id);
   for (auto& it : parameters) {
-    it.pass_value = false;
+    it.pass_value = true;
   }
   return parameters;
 }
