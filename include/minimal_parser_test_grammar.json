@@ -1,9 +1,0 @@
-{
-    "S": "expression",
-    "N": ["expression", "variable"],
-    "T": ["addop"],
-    "P": {
-        "expression": [["variable", "addop"]],
-        "variable": [["e"]]
-    }
-}

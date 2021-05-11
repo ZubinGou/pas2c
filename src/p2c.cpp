@@ -34,7 +34,7 @@ static void show_usage(char *argv[]) {
   cerr << "Usage: " << argv[0]
        << " src.pas [-d] [-g] [-h] [-l] [-o <file>] [-v]" << endl;
   cerr << "Where:  -d                     Display debug information." << endl;
-  cerr << "        -g                     Set Pascal-S grammar file." << endl;
+  cerr << "        -g <file>              Set Pascal-S grammar file." << endl;
   cerr << "        -h                     Display help information." << endl;
   cerr << "        -l                     Output to log file." << endl;
   cerr << "        -o <file>              Place the output into <file>."
@@ -61,7 +61,7 @@ void parsing_parameters(int argc, char *argv[]) {
 
   int opt;
   // 选项后有冒号，表示必须后面有参数
-  const char *optstring = "dghlo:v";
+  const char *optstring = "dg:hlo:v";
   while ((opt = getopt(argc, argv, optstring)) != -1) {
     switch (opt) {
       case 'd':
@@ -69,6 +69,8 @@ void parsing_parameters(int argc, char *argv[]) {
         spdlog::info("DEBUG is on.");
         break;
       case 'g':
+        printf("parameter 'b' specified with the value %s\n", optarg);
+        cout << "get optarg: " << optarg << endl;
         GRAMMAR_FILE = string(optarg);
         spdlog::info("Set Pascal-S grammar to {}", GRAMMAR_FILE);
         break;

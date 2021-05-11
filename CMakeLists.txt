@@ -38,9 +38,9 @@ target_include_directories(p2c PUBLIC
                            )
 
 install(TARGETS p2c DESTINATION bin)
-install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h"
-  DESTINATION include 
-  )
+# install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h"
+#   DESTINATION include 
+#   )
 
 include(CTest)
 enable_testing()
