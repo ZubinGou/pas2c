@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 # set the project name and version
-project(p2c VERSION 2.0)
+project(Pas2c VERSION 2.0)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -10,7 +10,8 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(include/nlohmann_json)
 add_subdirectory(include/spdlog)
 
-# configure_file(TutorialConfig.h.in TutorialConfig.h)
+configure_file(src/config.h.in config.h)
+
 
 # ---------------------------------------------------------------------------------------
 # Example of using pre-compiled library
