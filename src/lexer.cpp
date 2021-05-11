@@ -396,7 +396,7 @@ void Lexer::print_token_list() {
 
 void Lexer::print_error_list() {
   if (error_list.size() == 0)
-    spdlog::info("[Lexer] No Errors.");
+    spdlog::debug("[Lexer] No Errors.");
   else {
     spdlog::error("[Lexer] Have Errors:");
     for (auto it : error_list) {
