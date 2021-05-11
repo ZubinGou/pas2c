@@ -3,7 +3,7 @@
 #include <iomanip>
 using namespace std;
 
-bool SymbolTableController::create_table(const string& subtable_name, const bool& is_func,
+bool SymbolTableController::create_table(const string& subtable_name, const bool& is_func, const bool& is_record,
                                          const string& return_type, vector<Argument >& arguments_lists, int& declaration){
   if(current_table != "" && current_table != "main"){
     return false;
@@ -13,7 +13,7 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
   if(it == table_lists.end()){
     vector<SymbolTableElement> element_lists;
     SymbolTable new_table(current_table, element_lists, return_type, arguments_lists, subtable_name, 
-                                              is_func, false);
+                                              is_func, false, is_record);
     //table_lists[subtable_name] = new_table;
     table_lists.insert(make_pair(subtable_name, new_table));
     if(arguments_lists.size()){
@@ -40,10 +40,12 @@ bool SymbolTableController::create_table(const string& subtable_name, const bool
       func_type = "function";
     else
       func_type = "procedure";
+    if(is_record == true)
+      func_type = "record";
     vector<int> new_use;
     SymbolTableElement new_element(subtable_name, func_type, return_type, "", arguments_lists, declaration, new_use, 
                                           (int)arguments_lists.size());
-    insert_element2table(new_element, subtable_name);
+    // insert_element2table(new_element, subtable_name);
     if(subtable_name != "main"){
       insert_element2table(new_element, "main");
     }
@@ -137,33 +139,35 @@ void SymbolTableController::print_table(){
     cout << "---------------------------------table << " << table.second.name << " >>-------------------------------------------------" << endl;
     cout << setw(5) <<"parent: "<< setw(10) << table.second.parent << endl;
     cout << setw(5) <<"return type: " << setw(10) << table.second.return_type << endl;
-    if(table.second.is_func)
+    if(table.second.is_record)
+      cout << setw(5) <<"type of table: " << setw(10) << "record" << endl; 
+    else if(table.second.is_func)
       cout << setw(5) <<"type of table: " << setw(10) << "function" << endl;  
     else
       cout << setw(5) <<"type of table: " << setw(10) << "procedure" << endl; 
     cout << "elements in table: " << endl; 
     for(auto& ele : table.second.element_lists){
-      cout << setw(10) << "name: " << setw(10) << ele.name;
+      cout << setw(10) << "name: " << setw(8) << ele.name;
       cout << setw(20) <<"element type: " << setw(10) << ele.element_type;
-      cout << setw(20) <<"value type: " << setw(10) << ele.value_type;
-      cout << setw(20) <<"value: " << setw(10) << ele.value;
-      cout << setw(20) <<"dimension: " << setw(10) << ele.dimension;
-      cout << setw(20) <<"declare: " << setw(10) << ele.declare << endl;
+      cout << setw(15) <<"value type: " << setw(8) << ele.value_type;
+      cout << setw(15) <<"value: " << setw(2) << ele.value;
+      cout << setw(15) <<"dimension: " << setw(3) << ele.dimension;
+      cout << setw(15) <<"declare: " << setw(3) << ele.declare << endl;
       if(ele.arguments_lists.empty() == false){
         cout << setw(26) <<"arguments in element: " << endl;
         for(auto& arg : ele.arguments_lists){
           if(arg.period_element.second){
-            cout << setw(15) << "start: " << setw(10) << arg.period_element.first;
-            cout << setw(15) << "end: " << setw(10) << arg.period_element.second << endl;
+            cout << setw(15) << "start: " << setw(3) << arg.period_element.first;
+            cout << setw(15) << "end: " << setw(3) << arg.period_element.second << endl;
             continue;
           }
-          cout << setw(15) <<"name: " << setw(10) << arg.name;
-          cout << setw(20) << "type: " << setw(10) << arg.type;
-          cout << setw(20) <<"row: " << setw(10) << arg.row;
+          cout << setw(15) <<"name: " << setw(8) << arg.name;
+          cout << setw(15) << "type: " << setw(8) << arg.type;
+          cout << setw(15) <<"row: " << setw(3) << arg.row;
           if(arg.pass_value)
-            cout << setw(30) <<"transfer type: address" << endl; 
+            cout << setw(25) <<"transfer type: address" << endl; 
           else 
-            cout << setw(30) <<"transfer type: value" << endl; 
+            cout << setw(25) <<"transfer type: value" << endl; 
         }
       }
       if(ele.use.empty() == false){
@@ -177,13 +181,13 @@ void SymbolTableController::print_table(){
     if(table.second.arguments.empty() == false){
       cout << "arguments in table: " << endl;
       for(auto& arg : table.second.arguments){
-        cout << setw(10) << "name: "<< setw(10) <<arg.name;
-        cout << setw(20) << "type: "<< setw(10) << arg.type;
-        cout << setw(20) << "row: "<< setw(10) << arg.row;
+        cout << setw(10) << "name: "<< setw(8) <<arg.name;
+        cout << setw(15) << "type: "<< setw(8) << arg.type;
+        cout << setw(15) << "row: "<< setw(8) << arg.row;
         if(arg.pass_value)
-          cout << setw(30) << "transfer type: address" << endl; 
+          cout << setw(25) << "transfer type: address" << endl; 
         else 
-          cout << setw(30) << "transfer type: value" << endl; 
+          cout << setw(25) << "transfer type: value" << endl; 
       }
     }
   }

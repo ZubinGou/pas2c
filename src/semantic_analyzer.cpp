@@ -67,7 +67,7 @@ void SemanticAnalyzer::program_head(const int& node_id) {  // bug alert
       int declaration = this->syntax_tree.find_inferior_node(node_id, 1).line;
       std::vector<Argument> default_value;
       this->symbol_table_controller.create_table(
-          "main", false, "", default_value, declaration);  // initalize the "main" table
+          "main", false, false, "", default_value, declaration);  // initalize the "main" table
     }
   }
 
@@ -108,7 +108,7 @@ void SemanticAnalyzer::program_head(const int& node_id) {  // bug alert
     }
     /*------------------------------------------------------------------*/
     int declaration = this->syntax_tree.find_inferior_node(node_id, 1).line;
-    symbol_table_controller.create_table("main", false, "", params, declaration);
+    symbol_table_controller.create_table("main", false, false, "", params, declaration);
     if (")" != this->syntax_tree.find_inferior_node(node_id, 4).type) {
       this->result = false;
     }
@@ -351,6 +351,9 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
         tmp[1] = type_var.value_type;
       }
 
+      if(type_var.value_type == "record")
+        return;
+
       for (auto& it : var) {
         // vector<Argument> argument_list;
         vector<int> new_use;
@@ -388,6 +391,9 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
         tmp[0] = "var";
         tmp[1] = type_var.value_type;
       }
+
+      if(type_var.value_type == "record")
+        return;
 
       for (auto& it : var) {
         vector<Argument> argument_list;
@@ -470,7 +476,7 @@ returnList SemanticAnalyzer::_type(const int& nodeID) {  // finished
 string SemanticAnalyzer::record_type(const int& node_id){
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if(cur_node.son_num == 3){
-    if(this->syntax_tree.find_inferior_node(cur_node.id, 0).type != "reocrd"){
+    if(this->syntax_tree.find_inferior_node(cur_node.id, 0).type != "record"){
       this->result = false;
       cout << "[semantic error 16] The syntax tree is wrong!"
           << endl;
@@ -481,13 +487,22 @@ string SemanticAnalyzer::record_type(const int& node_id){
           << endl;
     }
     else{ // unfinished
+      Node father = this->syntax_tree.node_dic[cur_node.father];
+      Node elder = this->syntax_tree.node_dic[father.father];
+      Node record_name = this->syntax_tree.find_inferior_node(elder.id, 0);
+      vector<returnList> var = this->idlist(record_name.id);
+      vector<Argument> list;
+      this->symbol_table_controller.create_table(var[0].id_name, false, true, "", list, cur_node.line);
       this->field_list(cur_node.son[1]);
+      return "record";
     }
+    return "";
   }
   else{
     this->result = false;
     cout << "[semantic error 16] The number of the current node's son is wrong!"
          << endl;
+    return "";
   }
 }
 
@@ -515,10 +530,8 @@ void SemanticAnalyzer::field_list(const int& node_id){
 void SemanticAnalyzer::fixed_fields(const int& node_id){
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if(cur_node.son_num == 3){
-    this->idlist(cur_node.son[0]);
-    this->_type(cur_node.son[2]);
-    vector<returnList> var = this->idlist(cur_node.son[2]);
-    returnList type_var = _type(cur_node.son[4]);
+    vector<returnList> var = this->idlist(cur_node.son[0]);
+    returnList type_var = _type(cur_node.son[2]);
     string tmp[2];
     if ((!type_var.empty() || !type_var.info.empty()) && var.size() > 0) {
       /*---bug alert----*/
@@ -538,9 +551,10 @@ void SemanticAnalyzer::fixed_fields(const int& node_id){
         item.name = it.id_name;
         item.element_type = tmp[0];
         item.value_type = tmp[1];
-        item.declare = stoi(it.row);
         item.value = it.info.size;
-        item.arguments_lists = argument_list;
+        item.declare = stoi(it.row);
+        item.dimension = type_var.info.len_period;
+        item.arguments_lists = type_var.info.period;
         item.use = new_use;
 
         if (!this->symbol_table_controller.insert_element2table(item, this->symbol_table_controller.current_table)) {
@@ -554,7 +568,6 @@ void SemanticAnalyzer::fixed_fields(const int& node_id){
   }
   else if(cur_node.son_num == 5){
     this->fixed_fields(cur_node.son[0]); // return type 
-
     vector<returnList> var = this->idlist(cur_node.son[2]);
     returnList type_var = _type(cur_node.son[4]);
     string tmp[2];
@@ -576,9 +589,10 @@ void SemanticAnalyzer::fixed_fields(const int& node_id){
         item.name = it.id_name;
         item.element_type = tmp[0];
         item.value_type = tmp[1];
-        item.declare = stoi(it.row);
         item.value = it.info.size;
-        item.arguments_lists = argument_list;
+        item.declare = stoi(it.row);
+        item.dimension = type_var.info.len_period;
+        item.arguments_lists = type_var.info.period;
         item.use = new_use;
 
         if (!this->symbol_table_controller.insert_element2table(item, this->symbol_table_controller.current_table)) {
@@ -700,14 +714,14 @@ void SemanticAnalyzer::subprogram_head(const int& node_id) {  // checked
     Node node_child = this->syntax_tree.find_inferior_node(node_id, 1);
     string subprogram_name = node_child.str_value;
     vector<Argument> parameters = formal_parameter(cur_node.son[2]);
-    this->symbol_table_controller.create_table(subprogram_name, false, "",
+    this->symbol_table_controller.create_table(subprogram_name, false, false, "",
                                                parameters, node_child.line);
   } else if (cur_node.son_num == 5) {
     Node node_child = this->syntax_tree.find_inferior_node(node_id, 1);
     string subprogram_name = node_child.str_value;
     string return_type = basic_type(cur_node.son[4]);
     vector<Argument> parameters = formal_parameter(cur_node.son[2]);
-    this->symbol_table_controller.create_table(subprogram_name, true,
+    this->symbol_table_controller.create_table(subprogram_name, true, false,
                                                return_type, parameters, node_child.line);
   } else {
     this->result = false;

@@ -60,12 +60,13 @@ struct SymbolTableElement{
 struct SymbolTable{
   SymbolTable(std::string parent, std::vector<SymbolTableElement > element_lists,  
                std::string return_type, std::vector<Argument > arguments,
-               std::string name = "", bool is_func = false, bool enabled = false){
+               std::string name = "", bool is_func = false, bool enabled = false, bool is_record = false){
                  this->parent = parent;
                  this->element_lists = element_lists;
                  this->name = name;
                  this->is_func = is_func;
                  this->enabled = enabled;
+                 this->is_record = is_record;
                  this->return_type = return_type;
                  this->arguments = arguments;
   }
@@ -75,6 +76,7 @@ struct SymbolTable{
   std::string name; // symbol table name
   bool is_func = false;  // true for functoin, false for procedure
   bool enabled = false;  // flag for direction and redirection
+  bool is_record = false;
   std::string return_type; 
   std::vector<Argument > arguments;  // argument list
 };
@@ -85,7 +87,7 @@ class SymbolTableController
     std::map<std::string, SymbolTable> table_lists;  // using table name to find its table
     
   public:
-    bool create_table(const std::string&, const bool&, const std::string&, std::vector<Argument >&, int& );
+    bool create_table(const std::string&, const bool&, const bool&, const std::string&, std::vector<Argument >&, int& );
     bool insert_element2table(const SymbolTableElement&, const std::string& );
     SymbolTableElement search_table(const std::string&, const std::string& );
     void locate_table(const std::string&);
