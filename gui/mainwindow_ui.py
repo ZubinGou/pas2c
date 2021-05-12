@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pt_c.sizePolicy().hasHeightForWidth())
         self.pt_c.setSizePolicy(sizePolicy)
         self.pt_c.setObjectName("pt_c")
-        self.pt_console = QtWidgets.QPlainTextEdit(self.s_all)
+        self.pt_console = Console(self.s_all)
         self.pt_console.setObjectName("pt_console")
         self.horizontalLayout.addWidget(self.s_all)
         MainWindow.setCentralWidget(self.mainwidget)
@@ -133,3 +133,4 @@ class Ui_MainWindow(object):
         self.actionRun.setShortcut(_translate("MainWindow", "F6"))
 
 from codeeditor import CodeEditor
+from p2ceditor import Console
