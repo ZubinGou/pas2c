@@ -1,4 +1,4 @@
-#include <spdlog/spdlog.h>
+// #include <spdlog/spdlog.h>
 #include "code_generator.h"
 #include "assert.h"
 
@@ -281,16 +281,15 @@ void CodeGenerator::var_declaration(int node_id) {
     pair<vector<string>, vector<int>> type_nums = _type(son[4]);
     vector<string> id_type = type_nums.first;
     vector<int> id_num = type_nums.second;
-    if (id_type[0] == "0") {      // 基本类型
+    if (id_type[0] == "0") {  // 基本类型
       target_append(id_type[1]);  // int float bool char
       vector<int> none;
       idlist(son[2], none);
-    } else {                      // 数组类型
+    } else if (id_type[0] == "1") {  // 数组类型
       target_append(id_type[1]);  // int float bool char
       idlist(son[2], id_num);
     }
-  } else if (son_num == 3) {  // array [ period ] of basic_type
-    // idlist : type
+  } else if (son_num == 3) {  // idlist : type
     pair<vector<string>, vector<int>> type_nums = _type(son[2]);
     vector<string> id_type = type_nums.first;
     vector<int> id_num = type_nums.second;
@@ -298,23 +297,35 @@ void CodeGenerator::var_declaration(int node_id) {
       target_append(id_type[1]);  // int float bool char
       vector<int> none;
       idlist(son[0], none);
-    } else {                      // 数组类型
+    } else if (id_type[0] == "1") {  // 数组类型
       target_append(id_type[1]);  // int float bool char
-      idlist(son[0], id_num);     // 需要传递数组的大小
+      idlist(son[0], id_num);
+    } else {  // record 类型
+      vector<int> none;
+      idlist(son[0], none);
     }
   }
 }
 
-// type -> basic_type | array [ period ] of basic_type
+// type -> basic_type | array [ period ] of basic_type ｜ record_type
 pair<vector<string>, vector<int>> CodeGenerator::_type(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   pair<vector<string>, vector<int>> ans;
   if (son_num == 1) {  // basic_type
-    string id_type = basic_type(son[0]);
-    ans.first.push_back("0");
-    ans.first.push_back(id_type);
-    return ans;
+    string var_type = get_token(son[0]);
+    if (var_type == "basic_type") {
+      string id_type = basic_type(son[0]);
+      ans.first.push_back("0");
+      ans.first.push_back(id_type);
+      return ans;
+    } else if (var_type == "record_type") {
+      record_type(son[0]);
+      ans.first.push_back("2");
+      return ans;
+    } else{ 
+      cerr << "Unexpected Expression" << endl;
+    }
   } else if (son_num == 6) {              // array [ period ] of basic_type
     string id_type = basic_type(son[5]);  // 类型 int float bool char
     ans.first.push_back("1");
@@ -363,6 +374,59 @@ std::vector<int> CodeGenerator::period(int node_id) {
     return nums;
   } else
     cerr << "Unexpected Expression" << endl;
+}
+
+// record_type -> record field_list end
+void CodeGenerator::record_type(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+  if (son_num == 3) {
+    field_list(son[1]);
+  }
+}
+
+// field_list -> fixed_fields ;
+void CodeGenerator::field_list(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+  if (son_num == 2) {
+    target_append("typedef struct {\n");
+    fixed_fields(son[0]);
+    target_append(";\n}");
+  }
+}
+
+// fixed_fields -> idlist : type | fixed_fields ; idlist : type
+void CodeGenerator::fixed_fields(int node_id) {
+  vector<int> son = get_son(node_id);
+  int son_num = son.size();
+  if (son_num == 3) {
+    pair<vector<string>, vector<int>> type_nums = _type(son[2]);
+    vector<string> id_type = type_nums.first;
+    vector<int> id_num = type_nums.second;
+    if (id_type[0] == "0") {  // 基本类型
+      target_append(id_type[1]);  // int float bool char
+      vector<int> none;
+      idlist(son[0], none);
+    } else {  // 数组类型
+      target_append(id_type[1]);  // int float bool char
+      idlist(son[0], id_num);
+    }
+  } else if (son_num == 5) {
+    fixed_fields(son[0]);
+    target_append(";\n");
+    pair<vector<string>, vector<int>> type_nums = _type(son[4]);
+    vector<string> id_type = type_nums.first;
+    vector<int> id_num = type_nums.second;
+    if (id_type[0] == "0") {  // 基本类型
+      target_append(id_type[1]);  // int float bool char
+      vector<int> none;
+      idlist(son[2], none);
+    } else if (id_type[0] == "1") {  // 数组类型
+      target_append(id_type[1]);  // int float bool char
+      idlist(son[2], id_num);
+    }
+  }
 }
 
 // subprogram_declarations -> subprogram_declarations subprogram ; | e
@@ -711,7 +775,7 @@ void CodeGenerator::variable_list(
     cerr << "Unexpected Expression" << endl;
 }
 
-// variable -> id id_varpart
+// variable -> id id_varpart | id . variable
 std::pair<string, string> CodeGenerator::variable(int node_id, bool* is_bool) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
@@ -725,6 +789,11 @@ std::pair<string, string> CodeGenerator::variable(int node_id, bool* is_bool) {
     // is_func = "_re" if is_func(tree[son[0]].value) else ""
     string is_func = "";
     return {var_type, has_ptr + tree[son[0]].str_value + is_func + var_part};
+  } if (son_num == 3) {  // id . variable
+    string var_type = get_var_type(tree[son[0]].str_value);
+    pair<string, string> var_part = variable(son[2], is_bool);
+    // 加入一个元组, (var的type, var) eg:(int, a[1][2])
+    return {var_type, tree[son[0]].str_value + "." + var_part.second};
   } else
     cerr << "Unexpected Expression" << endl;
 }

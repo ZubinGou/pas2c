@@ -79,9 +79,12 @@ class CodeGenerator {
   const_value | id = const_value const_value -> + num | - num | num | 'letter'
   var_declarations -> var var_declaration ; | e
   var_declaration -> var_declaration ; idlist : type | idlist : type
-  type -> basic_type | array [ period ] of basic_type
+  type -> basic_type | array [ period ] of basic_type ｜ record_type
   basic_type -> integer | real | boolean | char
   period -> period , digits .. digits | digits .. digits
+  record_type -> record field_list end
+  field_list -> fixed_fields ;
+  fixed_fields -> idlist : type | fixed_fields ; idlist : type
   subprogram_declarations -> subprogram_declarations subprogram ; | e
   subprogram -> subprogram_head ; subprogram_body
   subprogram_head -> procedure id formal_parameter | function id
@@ -104,6 +107,9 @@ class CodeGenerator {
   std::pair<std::vector<std::string>, std::vector<int>> _type(int node_id);
   std::string basic_type(int node_id);
   std::vector<int> period(int node_id);
+  void record_type(int node_id);
+  void field_list(int node_id);
+  void fixed_fields(int node_id);
   void subprogram_declarations(int node_id);
   void subprogram(int node_id);
   void subprogram_head(int node_id);
@@ -133,7 +139,7 @@ class CodeGenerator {
 //                | variable
   void variable_list(int node_id,
                      std::vector<std::pair<std::string, std::string>>& vlist);
-// variable -> id id_varpart
+// variable -> id id_varpart | id . variable
   std::pair<std::string, std::string> variable(int node_id, bool* is_bool=nullptr);
 // id_varpart -> [ expression_list ] | e
   std::string id_varpart(int node_id);
