@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "assert.h"
 
 #include <spdlog/spdlog.h>
 
@@ -35,6 +36,9 @@ std::vector<Token> Lexer::get_token_list() {
   while (get_token(token)) token_list.push_back(token);
   print_token_list();
   print_error_list();
+  // assert(error_list.size() == 0);
+  if(error_list.size() != 0) 
+    exit(1);
   return token_list;
 }
 
@@ -197,7 +201,7 @@ bool Lexer::get_token(Token& token) {
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
             state = 0;
             return true;
-          } else if ("write" == cur_word && last_col_pos >= 1 &&
+          } else if (("write" == cur_word || "writeln" == cur_word) && last_col_pos >= 1 &&
                      (last_col_pos == 1 || ' ' == cur_line[last_col_pos - 2])) {
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
             state = 0;

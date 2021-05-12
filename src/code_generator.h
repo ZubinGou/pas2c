@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 #include <sstream>
+#include <set>
 
 #include "semantic_analyzer.h"
 #include "syntax_tree.h"
@@ -44,11 +45,13 @@ class CodeGenerator {
   SymbolTableController table_ctrl;     // 符号表控制器
   std::stack<std::string> state_stack;  // 状态栈，标记作用域
   std::string target_code;              // 目标代码
+  std::set<std::string> head_file;      // 头文件集合
 
   // target_code manipulate
   void target_append(std::string code);  // 部分代码到目标代码
   void add_indent();                     // 为目标代码添加缩进
-  
+  void add_head_file();
+
   // debug
   void print_target_code();  // 打印目标代码
 
@@ -79,9 +82,12 @@ class CodeGenerator {
   const_value | id = const_value const_value -> + num | - num | num | 'letter'
   var_declarations -> var var_declaration ; | e
   var_declaration -> var_declaration ; idlist : type | idlist : type
-  type -> basic_type | array [ period ] of basic_type
+  type -> basic_type | array [ period ] of basic_type ｜ record_type
   basic_type -> integer | real | boolean | char
   period -> period , digits .. digits | digits .. digits
+  record_type -> record field_list end
+  field_list -> fixed_fields ;
+  fixed_fields -> idlist : type | fixed_fields ; idlist : type
   subprogram_declarations -> subprogram_declarations subprogram ; | e
   subprogram -> subprogram_head ; subprogram_body
   subprogram_head -> procedure id formal_parameter | function id
@@ -104,6 +110,9 @@ class CodeGenerator {
   std::pair<std::vector<std::string>, std::vector<int>> _type(int node_id);
   std::string basic_type(int node_id);
   std::vector<int> period(int node_id);
+  void record_type(int node_id);
+  void field_list(int node_id);
+  void fixed_fields(int node_id);
   void subprogram_declarations(int node_id);
   void subprogram(int node_id);
   void subprogram_head(int node_id);
@@ -127,13 +136,14 @@ class CodeGenerator {
 //            | for id assignop expression to expression do statement
 //            | read ( variable_list )
 //            | write ( expression_list )
+//            | writeln ( expression_list )
 //            | e 
   void statement(int node_id);
 // variable_list -> variable_list , variable
 //                | variable
   void variable_list(int node_id,
                      std::vector<std::pair<std::string, std::string>>& vlist);
-// variable -> id id_varpart
+// variable -> id id_varpart | id . variable
   std::pair<std::string, std::string> variable(int node_id, bool* is_bool=nullptr);
 // id_varpart -> [ expression_list ] | e
   std::string id_varpart(int node_id);

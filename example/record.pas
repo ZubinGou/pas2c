@@ -9,9 +9,10 @@ Books : record
   subject: array [1..100] of char;
   bookid: integer;
 end;
-a : array [1..100, 1..100] of char;
+a : array [1..100] of char;
 b : integer;
 
 Begin
-  b := Books.bookid
+  a[1] := Books.title[1];
+  b := Books.bookid;
 End.

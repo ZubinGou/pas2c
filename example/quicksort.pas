@@ -51,8 +51,7 @@ Begin
   While x<5 Do
     Begin
       y := a[x];
-      // write(" ");
-      write(y);
+      writeln(y);
       x := x+1
     End
 End.

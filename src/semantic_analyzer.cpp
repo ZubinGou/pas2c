@@ -1,4 +1,5 @@
 #include "semantic_analyzer.h"
+#include "assert.h"
 #include <cstdio>
 #include <map>
 #include <string>
@@ -7,7 +8,14 @@
 #include "symbol_table.h"
 using namespace std;
 
-// This file:build the symbol table base on the syntax tree
+
+/**************************************************************************
+ *    Semantic Analyzer by Weihang Su and Tianqiu Zhang
+ *    2021.5.1        version     3.0.1
+
+    In this file, we built the symbol table based on the syntax tree.
+    The Semanticanalyzer Class is defined in semantic_analyzer.h
+**************************************************************************/
 
 // constructor function:initialize the analyzer
 SemanticAnalyzer::SemanticAnalyzer(const SyntaxTree& tree) {  // checked
@@ -16,6 +24,9 @@ SemanticAnalyzer::SemanticAnalyzer(const SyntaxTree& tree) {  // checked
       SymbolTableController();  // create the symbol table controller
   this->result = true;          // there's no error before the analyse
   this->start_analyze();
+  // assert(this->result == true);
+  if (this->result == false)
+    exit(1);
 }
 
 void SemanticAnalyzer::start_analyze() {  // checked
@@ -411,7 +422,7 @@ void SemanticAnalyzer::var_declaration(const int& node_id) {  // alert
 
         if (!this->symbol_table_controller.insert_element2table(item, this->symbol_table_controller.current_table)) {
           this->result = false;
-          cout << "[semantic error 13] wrong about the symbol table:item reclaim "
+          cout << "[semantic error 14] wrong about the symbol table:item reclaim "
                   "or doesn't exist"
                << endl;
         }
@@ -450,7 +461,7 @@ returnList SemanticAnalyzer::_type(const int& nodeID) {  // finished
     }
     else{
       this->result = false;
-      cout << "[semantic error 16] The syntax tree is wrong!"
+      cout << "[semantic error 15] The syntax tree is wrong!"
           << endl;
     }
     int size_array = 0;
@@ -482,12 +493,12 @@ string SemanticAnalyzer::record_type(const int& node_id){
   if(cur_node.son_num == 3){
     if(this->syntax_tree.find_inferior_node(cur_node.id, 0).type != "record"){
       this->result = false;
-      cout << "[semantic error 16] The syntax tree is wrong!"
+      cout << "[semantic error 17] The syntax tree is wrong!"
           << endl;
     }
     else if(this->syntax_tree.find_inferior_node(cur_node.id, 2).type != "end"){
       this->result = false;
-      cout << "[semantic error 16] The syntax tree is wrong!"
+      cout << "[semantic error 18] The syntax tree is wrong!"
           << endl;
     }
     else{ // unfinished
@@ -505,7 +516,7 @@ string SemanticAnalyzer::record_type(const int& node_id){
   }
   else{
     this->result = false;
-    cout << "[semantic error 16] The number of the current node's son is wrong!"
+    cout << "[semantic error 19] The number of the current node's son is wrong!"
          << endl;
     return "";
   }
@@ -520,13 +531,13 @@ void SemanticAnalyzer::field_list(const int& node_id){
 
     if(this->syntax_tree.find_inferior_node(cur_node.id, 1).type != ";"){
       this->result = false;
-      cout << "[semantic error 16] The syntax tree is wrong!"
+      cout << "[semantic error 20] The syntax tree is wrong!"
           << endl;
     }
   }
   else{
     this->result = false;
-    cout << "[semantic error 16] The number of the current node's son is wrong!"
+    cout << "[semantic error 21] The number of the current node's son is wrong!"
          << endl;
   }
 }
@@ -564,7 +575,7 @@ void SemanticAnalyzer::fixed_fields(const int& node_id){
 
         if (!this->symbol_table_controller.insert_element2table(item, this->symbol_table_controller.current_table)) {
           this->result = false;
-          cout << "[semantic error 13] wrong about the symbol table:item reclaim "
+          cout << "[semantic error 22] wrong about the symbol table:item reclaim "
                   "or doesn't exist"
                << endl;
         }
@@ -602,7 +613,7 @@ void SemanticAnalyzer::fixed_fields(const int& node_id){
 
         if (!this->symbol_table_controller.insert_element2table(item, this->symbol_table_controller.current_table)) {
           this->result = false;
-          cout << "[semantic error 13] wrong about the symbol table:item reclaim "
+          cout << "[semantic error 23] wrong about the symbol table:item reclaim "
                   "or doesn't exist"
                << endl;
         }
@@ -611,7 +622,7 @@ void SemanticAnalyzer::fixed_fields(const int& node_id){
   }
   else{
     this->result = false;
-    cout << "[semantic error 16] The number of the current node's son is wrong!"
+    cout << "[semantic error 24] The number of the current node's son is wrong!"
          << endl;
   }
 }
@@ -623,7 +634,7 @@ string SemanticAnalyzer::basic_type(const int& nodeID) {  // finished
       node_child.type == "boolean" || node_child.type == "char") {
     return node_child.type;
   } else {
-    cout << "[semantic error 17] The token of the current node is wrong!" << endl;
+    cout << "[semantic error 25] The token of the current node is wrong!" << endl;
     return "";
   }
 }
@@ -638,7 +649,7 @@ vector<Argument> SemanticAnalyzer::period(const int& node_id) {  // finished
     if (node_child1.num_type != 1 || node_child1.num_value < 0) {
       this->result = false;
       printf(
-          "[semantic error 18]ling:%d   , column:%d: error of the index of "
+          "[semantic error 26]ling:%d   , column:%d: error of the index of "
           "array: not a uint",
           node_child2.line, node_child2.col);
       return period_array;
@@ -646,7 +657,7 @@ vector<Argument> SemanticAnalyzer::period(const int& node_id) {  // finished
     if (node_child2.num_type != 1 || node_child1.num_value < 0) {
       this->result = false;
       printf(
-          "[semantic error 19]ling:%d   , column:%d: error of the index of "
+          "[semantic error 27]ling:%d   , column:%d: error of the index of "
           "array: not a uint",
           node_child2.line, node_child2.col);
       return period_array;
@@ -654,7 +665,7 @@ vector<Argument> SemanticAnalyzer::period(const int& node_id) {  // finished
     if (node_child1.num_value > node_child2.num_value) {
       this->result = false;
       printf(
-          "[semantic error 20]ling:%d   , column:%d: error of the index of "
+          "[semantic error 28]ling:%d   , column:%d: error of the index of "
           "array",
           node_child2.line, node_child2.col);
       return period_array;
@@ -668,7 +679,7 @@ vector<Argument> SemanticAnalyzer::period(const int& node_id) {  // finished
     if (node_child1.num_type != 1 || node_child1.num_value < 0) {
       this->result = false;
       printf(
-          "[semantic error 21]ling:%d   , column:%d: error of the index of "
+          "[semantic error 29]ling:%d   , column:%d: error of the index of "
           "array: not a uint",
           node_child2.line, node_child2.col);
       return period_array;
@@ -676,7 +687,7 @@ vector<Argument> SemanticAnalyzer::period(const int& node_id) {  // finished
     if (node_child2.num_type != 1 || node_child1.num_value < 0) {
       this->result = false;
       printf(
-          "[semantic error 22]ling:%d   , column:%d: error of the index of "
+          "[semantic error 30]ling:%d   , column:%d: error of the index of "
           "array: not a uint",
           node_child2.line, node_child2.col);
       return period_array;
@@ -684,7 +695,7 @@ vector<Argument> SemanticAnalyzer::period(const int& node_id) {  // finished
     if (node_child1.num_value > node_child2.num_value) {
       this->result = false;
       printf(
-          "[semantic error 23]ling:%d   , column:%d: error of the index of "
+          "[semantic error 31]ling:%d   , column:%d: error of the index of "
           "array",
           node_child2.line, node_child2.col);
       return period_array;
@@ -702,7 +713,7 @@ void SemanticAnalyzer::subprogram_declarations(const int& node_id) {  // checked
     subprogram(cur_node.son[1]);
   } else if (cur_node.son_num != 1) {
     this->result = false;
-    cout << "[semantic error 24] error on son number of current node." << endl;
+    cout << "[semantic error 32] error on son number of current node." << endl;
   }
 }
 
@@ -730,7 +741,7 @@ void SemanticAnalyzer::subprogram_head(const int& node_id) {  // checked
                                                return_type, parameters, node_child.line);
   } else {
     this->result = false;
-    cout << "[semantic error25] error on son number of current node" << endl;
+    cout << "[semantic error 33] error on son number of current node" << endl;
   }
 }
 
@@ -748,7 +759,7 @@ vector<Argument> SemanticAnalyzer::formal_parameter(const int& node_id) {  // fi
   } else if (cur_node.son_num == 3) {
     parameters = parameter_list(cur_node.son[1]);
   } else {
-    cout << "[semantic error26] error on son number of current node" << endl;
+    cout << "[semantic error 34] error on son number of current node" << endl;
   }
   return parameters;
 }
@@ -780,7 +791,7 @@ vector<Argument> SemanticAnalyzer::parameter_list(const int& node_id) {
     }
   } else {
     this->result = false;
-    cout << "[semantic error27] error on son number of current node." << endl;
+    cout << "[semantic error 35] error on son number of current node." << endl;
   }
   return parameters;
 }
@@ -826,7 +837,7 @@ void SemanticAnalyzer::compound_statement(const int& node_id) {
   Node cur_node = this->syntax_tree.node_dic[node_id];
   if (this->syntax_tree.find_inferior_node(node_id, 0).type != "begin") {
   } else if (this->syntax_tree.find_inferior_node(node_id, 2).type != "end") {
-    cout << "[semantic error28] error on current node token" << endl;
+    cout << "[semantic error 36] error on current node token" << endl;
   } else {
     this->statement_list(cur_node.son[1]);
   }
@@ -841,7 +852,7 @@ void SemanticAnalyzer::statement_list(const int& node_id) {
     this->statement(cur_node.son[2]);
   } else {
     result = false;
-    cout << "[semantic error29] error on son number of current node." << endl;
+    cout << "[semantic error 37] error on son number of current node." << endl;
   }
 }
 
@@ -857,7 +868,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
     } else if (son_node.type == "compound_statement") {
       this->compound_statement(son_node.id);
     } else if (son_node.type != "e") {
-      cout << "[semantic error30] error on current node token." << endl;
+      cout << "[semantic error 38] error on current node token." << endl;
     }
   }
 
@@ -879,27 +890,27 @@ void SemanticAnalyzer::statement(const int& node_id) {
       if (var.type != return_type.type) {
         if (var.type == "real" && return_type.type == "integer") {
           this->result = false;
-          cout << "[semantic error31] row:" << var.row << " col:" << var.column
+          cout << "[semantic error 39] row:" << var.row << " col:" << var.column
                << ", pass int value to real variable." << endl;
         } else if (var.type == "integer" && return_type.type == "real") {
           this->result = false;
-          cout << "[semantic error32] row:" << var.row << " col:" << var.column
+          cout << "[semantic error 40] row:" << var.row << " col:" << var.column
                << ", pass real value to int variable." << endl;
         } else {
           this->result = false;
-          cout << "[semantic error33] row:" << var.row << " col:" << var.column
+          cout << "[semantic error 41] row:" << var.row << " col:" << var.column
                << ", cannot assign value, type does not match." << endl;
         }
       }
     } else {
       this->result = false;
-      cout << "[semantic error34] row:" << var.row << " col:" << var.column
+      cout << "[semantic error 42] row:" << var.row << " col:" << var.column
            << ", variable " << var.id_name << " is not defined." << endl;
     }
   }
 
   // statement -> while expression do statement | read ( variable_list ) |
-  // write ( expression_list )
+  // write ( expression_list ) | writeln ( expression_list )
   else if (cur_node.son_num == 4) {
     Node son_node = syntax_tree.find_inferior_node(node_id, 0);
     if (son_node.type == "while") {
@@ -909,7 +920,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
           this->statement(cur_node.son[3]);
         else {
           this->result = false;
-          cout << "[semantic error35] row:"
+          cout << "[semantic error 43] row:"
                << this->syntax_tree.find_inferior_node(node_id, 0).line
                << ", the condition after the while should be a boolean "
                   "expression"
@@ -924,14 +935,14 @@ void SemanticAnalyzer::statement(const int& node_id) {
             var.id_name, this->symbol_table_controller.current_table);
         if (result_item.empty() == true) {
           this->result = false;
-          cout << "[semantic error36] row:" << var.row << " col:" << var.column
+          cout << "[semantic error 44] row:" << var.row << " col:" << var.column
                << ", variable " << var.id_name << " is not defined." << endl;
         }
       }
-    } else if (son_node.type == "write") {  // todo: complete this action
+    } else if (son_node.type == "write" || son_node.type == "writeln") {  // todo: complete this action
       vector<returnList> exp_list = this->expression_list(cur_node.son[2]);
     } else {
-      cout << "[semantic error37] error on current node token." << endl;
+      cout << "[semantic error 45] error on current node token." << endl;
     }
   }
 
@@ -940,11 +951,11 @@ void SemanticAnalyzer::statement(const int& node_id) {
     returnList return_type = this->expression(cur_node.son[1]);
     if (return_type.empty() == true) {
       result = false;
-      cout << "[semantic error38] row:" << cur_node.line
+      cout << "[semantic error 46] row:" << cur_node.line
            << ", expression cannot be empty." << endl;
     } else if (return_type.type != "boolean") {
       result = false;
-      cout << "[semantic error39] row:" << cur_node.line
+      cout << "[semantic error 47] row:" << cur_node.line
            << ", the condition after if should be a boolean expression."
            << endl;
     }
@@ -963,7 +974,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
         son_node.str_value, this->symbol_table_controller.current_table);
     if (result_item.empty() == true) {
       result = false;
-      cout << "[semantic error40] row:" << son_node.line
+      cout << "[semantic error 48] row:" << son_node.line
            << " col:" << son_node.col << ", id " << son_node.str_value
            << " is not defined." << endl;
     }
@@ -976,7 +987,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
         this->statement(cur_node.son[7]);
       else {
         this->result = false;
-        cout << "[semantic error41] row:" << son_node.line
+        cout << "[semantic error 49] row:" << son_node.line
              << " col:" << son_node.col
              << ", the type of the iteration variable in the for statement "
                 "can only be int"
@@ -984,7 +995,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
       }
     } else {
       this->result = false;
-      cout << "[semantic error42] row:" << cur_node.line
+      cout << "[semantic error 50] row:" << cur_node.line
            << ", the statement is incomplete." << endl;
     }
 
@@ -1008,7 +1019,7 @@ vector<returnList> SemanticAnalyzer::variable_list(const int& node_id) {
     var_list.push_back(this->variable(cur_node.son[2]));
   } else {
     this->result = false;
-    cout << "[semantic error43]" << cur_node.id << " error on son number of current node." << endl;
+    cout << "[semantic error 51]" << cur_node.id << " error on son number of current node." << endl;
   }
   return var_list;
 }
@@ -1031,7 +1042,7 @@ returnList SemanticAnalyzer::variable(const int& node_id) {
                           to_string(son_id_node.col), item.value_type);
         } else {
           this->result = false;
-          cout << "[semantic error44] row:" << son_id_node.line
+          cout << "[semantic error 52] row:" << son_id_node.line
               << " col:" << son_id_node.col << " cannot operate on array name."
               << endl;
         }
@@ -1041,7 +1052,7 @@ returnList SemanticAnalyzer::variable(const int& node_id) {
       }
     } else {
       this->result = false;
-      cout << "[semantic error 45-1] row:" << son_id_node.line
+      cout << "[semantic error 53] row:" << son_id_node.line
           << " col:" << son_id_node.col << ", id " << son_id_node.str_value
           << " is not defined." << endl;
     }
@@ -1058,7 +1069,7 @@ returnList SemanticAnalyzer::variable(const int& node_id) {
       var = this->variable(cur_node.son[2]);
     } else {
       this->result = false;
-      cout << "[semantic error 45-2] row:" << son_id_node.line
+      cout << "[semantic error 54] row:" << son_id_node.line
           << " col:" << son_id_node.col << ", id " << son_id_node.str_value
           << " is not defined." << endl;
     }
@@ -1090,7 +1101,7 @@ void SemanticAnalyzer::id_varpart(const int& node_id) {
             dimension++;
             if((cnt == dimension) && (exp.info.len_period) && (exp.info.size < bound.period_element.first || exp.info.size > bound.period_element.second)){
               this->result = false;
-              cout << "[semantic error46] row: "
+              cout << "[semantic error 55] row: "
                   << this->syntax_tree.find_inferior_node(node_id, 0).line
                   << ", array index out of bounds." << endl;
             }
@@ -1100,7 +1111,7 @@ void SemanticAnalyzer::id_varpart(const int& node_id) {
     }
   } else if (cur_node.son_num != 1) {
     this->result = false;
-    cout << "[semantic error47] error on son number of current node." << endl;
+    cout << "[semantic error 56] error on son number of current node." << endl;
   }
 }
 // procedure_call -> id | id ( expression_list )
@@ -1115,19 +1126,19 @@ void SemanticAnalyzer::procedure_call(const int& node_id) {
       if (item.element_type == "procedure" || item.element_type == "function") {
         if (item.arguments_lists.size() != 0) {
           this->result = false;
-          cout << "[semantic error48] row:" << son_node.line
+          cout << "[semantic error 57] row:" << son_node.line
                << " col:" << son_node.col
                << ", procedure/function need parameters." << endl;
         }
       } else {
         this->result = false;
-        cout << "[semantic error49] row:" << son_node.line
+        cout << "[semantic error 58] row:" << son_node.line
              << " col:" << son_node.col
              << ", Cannot be called as a procedure/function." << endl;
       }
     } else {
       this->result = false;
-      cout << "[semantic error50] row:" << son_node.line
+      cout << "[semantic error 59] row:" << son_node.line
            << " col:" << son_node.col << ", " << son_node.str_value
            << " is not defined." << endl;
     }
@@ -1150,37 +1161,37 @@ void SemanticAnalyzer::procedure_call(const int& node_id) {
                 son_node.str_value, args);
             if (return_type == "ERROR") {
               this->result = false;
-              cout << "[semantic error51] row:" << son_node.line
+              cout << "[semantic error 60] row:" << son_node.line
                    << " col:" << son_node.col
                    << ", parameters do not match arguments." << endl;
             }
           } else {
             this->result = false;
-            cout << "[semantic error52] row:" << son_node.line
+            cout << "[semantic error 61] row:" << son_node.line
                  << " col:" << son_node.col
                  << ", this procedure/function needs parameters." << endl;
           }
         } else {
           this->result = false;
-          cout << "[semantic error53] row:" << son_node.line
+          cout << "[semantic error 62] row:" << son_node.line
                << " col:" << son_node.col
                << ", this procedure/function does not need parameters." << endl;
         }
       } else {
         this->result = false;
-        cout << "[semantic error54] row:" << son_node.line
+        cout << "[semantic error 63] row:" << son_node.line
              << " col:" << son_node.col << ", " << son_node.str_value
              << "cannot use as procedure/function." << endl;
       }
     } else {
       this->result = false;
-      cout << "[semantic error55] row:" << son_node.line
+      cout << "[semantic error 64] row:" << son_node.line
            << " col:" << son_node.col << ", " << son_node.str_value
            << " is not defined" << endl;
     }
   } else {
     this->result = false;
-    cout << "[semantic error56] error on son number of current node." << endl;
+    cout << "[semantic error 65] error on son number of current node." << endl;
   }
 }
 // else_part -> else statement | None
@@ -1207,7 +1218,7 @@ vector<returnList> SemanticAnalyzer::expression_list(const int& node_id) {
     }
   } else {
     this->result = false;
-    cout << "[semantic error57] error on son number of current node." << endl;
+    cout << "[semantic error 66] error on son number of current node." << endl;
   }
   return exp_list;
 }
@@ -1232,12 +1243,12 @@ returnList SemanticAnalyzer::expression(const int& node_id) {
                            to_string(son_relop_node.col), "");
         } else {
           this->result = false;
-          cout << "[semantic error58] row: " << son_relop_node.line
+          cout << "[semantic error 67] row: " << son_relop_node.line
                << ", this type of data cannot compare." << endl;
         }
       } else {
         this->result = false;
-        cout << "[semantic error59] row: " << son_relop_node.line
+        cout << "[semantic error 68] row: " << son_relop_node.line
              << ", different type of data cannot compare." << endl;
       }
     }
@@ -1265,7 +1276,7 @@ returnList SemanticAnalyzer::simple_expression(const int& node_id) {
                                  to_string(son_addop_node.col), "");
           } else {
             this->result = false;
-            cout << "[semantic error60] row: " << son_addop_node.line
+            cout << "[semantic error 69] row: " << son_addop_node.line
                  << ", type of expression does not match for operation or."
                  << endl;
           }
@@ -1276,7 +1287,7 @@ returnList SemanticAnalyzer::simple_expression(const int& node_id) {
                                  to_string(son_addop_node.col), "");
           } else {
             this->result = false;
-            cout << "[semantic error61] row: " << son_addop_node.line
+            cout << "[semantic error 70] row: " << son_addop_node.line
                  << ", type of expression does not match for operation addop."
                  << endl;
           }
@@ -1284,7 +1295,7 @@ returnList SemanticAnalyzer::simple_expression(const int& node_id) {
       } else {                                   // exp type != term type
         if (son_addop_node.str_value == "or") {  // op is or
           this->result = false;
-          cout << "[semantic error62] row: " << son_addop_node.line
+          cout << "[semantic error 71] row: " << son_addop_node.line
                << ", type of expression does not match for operation or."
                << endl;
         } else {  // op is addop
@@ -1295,7 +1306,7 @@ returnList SemanticAnalyzer::simple_expression(const int& node_id) {
                            to_string(son_addop_node.col), "");
           else {
             this->result = false;
-            cout << "[semantic error63] row: " << son_addop_node.line
+            cout << "[semantic error 72] row: " << son_addop_node.line
                  << ", type of expression does not match for operation addop."
                  << endl;
           }
@@ -1304,7 +1315,7 @@ returnList SemanticAnalyzer::simple_expression(const int& node_id) {
     }
   } else {
     this->result = false;
-    cout << "[semantic error64] error on son number of current node." << endl;
+    cout << "[semantic error 73] error on son number of current node." << endl;
   }
   return sim_exp;
 }
@@ -1330,7 +1341,7 @@ returnList SemanticAnalyzer::term(const int& node_id) {
                               to_string(son_mulop_node.col), "");
           else {
             this->result = false;
-            cout << "[semantic error65] row: " << son_mulop_node.line
+            cout << "[semantic error 74] row: " << son_mulop_node.line
                  << ", type of expression does not match for operation mulop."
                  << endl;
           }
@@ -1348,7 +1359,7 @@ returnList SemanticAnalyzer::term(const int& node_id) {
                            to_string(son_mulop_node.col), "");
           } else {
             this->result = false;
-            cout << "[semantic error66] row: " << son_mulop_node.line
+            cout << "[semantic error 75] row: " << son_mulop_node.line
                  << ", type of expression does not match for operation mulop."
                  << endl;
           }
@@ -1360,13 +1371,13 @@ returnList SemanticAnalyzer::term(const int& node_id) {
                            to_string(son_mulop_node.col), "");
           else {
             this->result = false;
-            cout << "[semantic error67] row: " << son_mulop_node.line
+            cout << "[semantic error 76] row: " << son_mulop_node.line
                  << ", type of expression does not match for operation mulop."
                  << endl;
           }
         } else {
           this->result = false;
-          cout << "[semantic error68] row: " << son_mulop_node.line
+          cout << "[semantic error 77] row: " << son_mulop_node.line
                << ", type of expression does not match for operation mulop."
                << endl;
         }
@@ -1378,7 +1389,7 @@ returnList SemanticAnalyzer::term(const int& node_id) {
                          to_string(son_mulop_node.col), "");
         else {
           this->result = false;
-          cout << "[semantic error69] row: " << son_mulop_node.line
+          cout << "[semantic error 78] row: " << son_mulop_node.line
                << ", type of expression does not match for operation mulop."
                << endl;
         }
@@ -1386,7 +1397,7 @@ returnList SemanticAnalyzer::term(const int& node_id) {
     }
   } else {
     this->result = false;
-    cout << "[semantic error70] error on son number of current node." << endl;
+    cout << "[semantic error 79] error on son number of current node." << endl;
   }
   return term;
 }
@@ -1413,7 +1424,7 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
           break;
         default:
           this->result = false;
-          cout << "[semantic error71] row:" << son_node.line
+          cout << "[semantic error 80] row:" << son_node.line
                << " col:" << son_node.col
                << ", the type is not basic type of Pascal." << endl;
           return factor;
@@ -1445,7 +1456,7 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
                          to_string(son_node.line), to_string(son_node.col), "");
         else {
           this->result = false;
-          cout << "[semantic error72] row:" << son_node.line
+          cout << "[semantic error 81] row:" << son_node.line
                << " col:" << son_node.col
                << ", only boolean and integer can use not." << endl;
         }
@@ -1459,7 +1470,7 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
                          to_string(son_node.line), to_string(son_node.col), "");
         else {
           this->result = false;
-          cout << "[semantic error73] row:" << son_node.line
+          cout << "[semantic error 82] row:" << son_node.line
                << " col:" << son_node.col
                << ", only real and integer can use uminus." << endl;
         }
@@ -1491,7 +1502,7 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
               son_node.str_value, args);
           if (return_type == "") {
             this->result = false;
-            cout << "[semantic error74] row:" << son_node.line
+            cout << "[semantic error 83] row:" << son_node.line
                  << " col:" << son_node.col << ", parameters do not match."
                  << endl;
           } else
@@ -1501,18 +1512,18 @@ returnList SemanticAnalyzer::factor(const int& node_id) {
         }
       } else {
         this->result = false;
-        cout << "[semantic error75] row:" << son_node.line
+        cout << "[semantic error 84] row:" << son_node.line
              << " col:" << son_node.col
              << ", this is neither a function nor a procedure." << endl;
       }
     } else {
       this->result = false;
-      cout << "[semantic error76] row:" << son_node.line
+      cout << "[semantic error 85] row:" << son_node.line
            << " col:" << son_node.col << ", is not defined." << endl;
     }
   } else {
     this->result = false;
-    cout << "[semantic error77] error on son number of current node." << endl;
+    cout << "[semantic error 86] error on son number of current node." << endl;
   }
 
   return factor;
