@@ -136,6 +136,7 @@ class CodeGenerator {
 //            | for id assignop expression to expression do statement
 //            | read ( variable_list )
 //            | write ( expression_list )
+//            | writeln ( expression_list )
 //            | e 
   void statement(int node_id);
 // variable_list -> variable_list , variable

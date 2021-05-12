@@ -15,7 +15,7 @@
     ],
     "T": [
         "program", "function", "begin", "end", "procedure", 
-        "read", "write",
+        "read", "write", "writeln",
         "const", "var", "array", 
         "uminus", "addop", "mulop", "relop", "not", "assignop",
         "id", "num", "letter", "digits",
@@ -53,7 +53,7 @@
         "subprogram_body": [["const_declarations", "var_declarations", "compound_statement"]], 
         "compound_statement": [["begin", "statement_list", "end"]], 
         "statement_list": [["statement_list", ";", "statement"], ["statement"]], 
-        "statement": [["variable", "assignop", "expression"], ["procedure_call"], ["compound_statement"], ["if", "expression", "then", "statement", "else_part"], ["while", "expression", "do", "statement"], ["for", "id", "assignop", "expression", "to", "expression", "do", "statement"], ["read", "(", "variable_list", ")"], ["write", "(", "expression_list", ")"], ["e"]], 
+        "statement": [["variable", "assignop", "expression"], ["procedure_call"], ["compound_statement"], ["if", "expression", "then", "statement", "else_part"], ["while", "expression", "do", "statement"], ["for", "id", "assignop", "expression", "to", "expression", "do", "statement"], ["read", "(", "variable_list", ")"], ["write", "(", "expression_list", ")"], ["writeln", "(", "expression_list", ")"], ["e"]], 
         "variable_list": [["variable_list", ",", "variable"], ["variable"]], 
         "variable": [["id", "id_varpart"], ["id", ".", "variable"]], 
         "id_varpart": [["[", "expression_list", "]"], ["e"]], 

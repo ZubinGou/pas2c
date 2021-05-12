@@ -65,7 +65,7 @@ class Lexer {
       "array",    "begin", "const", "else", "do",        "end",     "for",
       "function", "if",    "not",   "of",   "procedure", "program", "record",
       "then",     "to",    "type",  "var",  "while",     "read",    "write",
-      "uminus",   "and",   "div",   "mod",  "or"};
+      "writeln",  "uminus","and",   "div",   "mod",  "or"};
   inline static const std::set<std::string> IDENTIFIER = {
       "integer", "real", "char", "boolean", "text"};
 };

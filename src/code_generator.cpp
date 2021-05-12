@@ -33,6 +33,12 @@ void CodeGenerator::add_indent() {  // 为目标代码添加缩进
   string content;
   while (sstream) {
     getline(sstream, line);
+    // if (line[line.size() - 1] == '"') {
+    //   string line1;
+    //   getline(sstream, line1);
+    //   line = line + "\\n" +line1;
+    // }
+
     if (line == "") continue;
     content = "";
     for (int i = 0; i < space_len; i++) content += "    ";
@@ -611,6 +617,7 @@ void CodeGenerator::statement_list(int node_id) {
 //            | for id assignop expression to expression do statement
 //            | read ( variable_list )
 //            | write ( expression_list )
+//            | writeln ( expression_list )
 //            | e
 void CodeGenerator::statement(int node_id) {
   vector<int> son = get_son(node_id);
@@ -699,6 +706,7 @@ void CodeGenerator::statement(int node_id) {
     //           | while expression do statement
     //           | read ( variable_list )
     //           | write ( expression_list )
+    //           | writeln ( expression_list )
     if (tree[son[0]].type == "read") {
       match(son[0], "read");
       target_append("scanf");
@@ -727,8 +735,8 @@ void CodeGenerator::statement(int node_id) {
       target_append(");\n");
       head_file.insert("#include <stdio.h>\n");
     }
-    if (tree[son[0]].type == "write") {
-      match(son[0], "write");
+    if (tree[son[0]].type == "write" || tree[son[0]].type == "writeln") {
+      // match(son[0], "write");
       target_append("printf");
       match(son[1], "(");
 
@@ -749,6 +757,8 @@ void CodeGenerator::statement(int node_id) {
       }
 
       target_append(join_vec(trans_tlist, " "));
+      if (tree[son[0]].type == "writeln")
+        target_append("\\n");
       target_append("\"");
       target_append(", ");
 
