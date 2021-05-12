@@ -201,7 +201,7 @@ bool Lexer::get_token(Token& token) {
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
             state = 0;
             return true;
-          } else if ("write" == cur_word && last_col_pos >= 1 &&
+          } else if (("write" == cur_word || "writeln" == cur_word) && last_col_pos >= 1 &&
                      (last_col_pos == 1 || ' ' == cur_line[last_col_pos - 2])) {
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
             state = 0;

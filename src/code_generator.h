@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 #include <sstream>
+#include <set>
 
 #include "semantic_analyzer.h"
 #include "syntax_tree.h"
@@ -44,11 +45,13 @@ class CodeGenerator {
   SymbolTableController table_ctrl;     // 符号表控制器
   std::stack<std::string> state_stack;  // 状态栈，标记作用域
   std::string target_code;              // 目标代码
+  std::set<std::string> head_file;      // 头文件集合
 
   // target_code manipulate
   void target_append(std::string code);  // 部分代码到目标代码
   void add_indent();                     // 为目标代码添加缩进
-  
+  void add_head_file();
+
   // debug
   void print_target_code();  // 打印目标代码
 
@@ -133,6 +136,7 @@ class CodeGenerator {
 //            | for id assignop expression to expression do statement
 //            | read ( variable_list )
 //            | write ( expression_list )
+//            | writeln ( expression_list )
 //            | e 
   void statement(int node_id);
 // variable_list -> variable_list , variable

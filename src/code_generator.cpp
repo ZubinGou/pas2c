@@ -13,6 +13,7 @@ string join_vec(vector<string> vec, string sep) {
 
 std::string CodeGenerator::run() {
   programstruct(1);
+  add_head_file();
   add_indent();
   return this->target_code;
 }
@@ -32,6 +33,12 @@ void CodeGenerator::add_indent() {  // 为目标代码添加缩进
   string content;
   while (sstream) {
     getline(sstream, line);
+    // if (line[line.size() - 1] == '"') {
+    //   string line1;
+    //   getline(sstream, line1);
+    //   line = line + "\\n" +line1;
+    // }
+
     if (line == "") continue;
     content = "";
     for (int i = 0; i < space_len; i++) content += "    ";
@@ -46,6 +53,12 @@ void CodeGenerator::add_indent() {  // 为目标代码添加缩进
       content += line;
     }
     target_code += content + "\n";
+  }
+}
+
+void CodeGenerator::add_head_file() {
+  for (auto item : head_file) {
+    target_code = item + target_code;
   }
 }
 
@@ -126,7 +139,6 @@ void CodeGenerator::programstruct(int node_id) {
   int son_num = son.size();
 
   if (son_num == 4) {
-    target_append("#include<stdio.h>\n");  // TODO:是否更改头文件解析方式？
     program_head(son[0]);
     program_body(son[2]);
     state_stack.pop();
@@ -243,8 +255,9 @@ std::vector<std::string> CodeGenerator::const_value(int node_id) {
       num = to_string(int(val));
     else if (id_type == "float")
       num = to_string(val);
-    else if (id_type == "bool")
+    else if (id_type == "bool"){
       num = val ? "true" : "false";
+    }
 
     type_value.push_back(id_type);
     type_value.push_back(num);
@@ -351,6 +364,8 @@ std::string CodeGenerator::basic_type(int node_id) {
     string res = "";
     if (type_pas2c.find(var_type) != type_pas2c.end())
       res = type_pas2c[var_type];
+    if (res == "bool")
+      head_file.insert("#include <stdbool.h>\n");
     return res;
   } else
     cerr << "Unexpected Expression" << endl;
@@ -390,7 +405,7 @@ void CodeGenerator::field_list(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (son_num == 2) {
-    target_append("typedef struct {\n");
+    target_append("struct {\n");
     fixed_fields(son[0]);
     target_append(";\n}");
   }
@@ -602,6 +617,7 @@ void CodeGenerator::statement_list(int node_id) {
 //            | for id assignop expression to expression do statement
 //            | read ( variable_list )
 //            | write ( expression_list )
+//            | writeln ( expression_list )
 //            | e
 void CodeGenerator::statement(int node_id) {
   vector<int> son = get_son(node_id);
@@ -690,6 +706,7 @@ void CodeGenerator::statement(int node_id) {
     //           | while expression do statement
     //           | read ( variable_list )
     //           | write ( expression_list )
+    //           | writeln ( expression_list )
     if (tree[son[0]].type == "read") {
       match(son[0], "read");
       target_append("scanf");
@@ -716,9 +733,10 @@ void CodeGenerator::statement(int node_id) {
 
       match(son[3], ")");
       target_append(");\n");
+      head_file.insert("#include <stdio.h>\n");
     }
-    if (tree[son[0]].type == "write") {
-      match(son[0], "write");
+    if (tree[son[0]].type == "write" || tree[son[0]].type == "writeln") {
+      // match(son[0], "write");
       target_append("printf");
       match(son[1], "(");
 
@@ -739,12 +757,15 @@ void CodeGenerator::statement(int node_id) {
       }
 
       target_append(join_vec(trans_tlist, " "));
+      if (tree[son[0]].type == "writeln")
+        target_append("\\n");
       target_append("\"");
       target_append(", ");
 
       target_append(join_vec(elist, ", "));
       match(son[3], ")");
       target_append(");\n");
+      head_file.insert("#include <stdio.h>\n");
     }
 
     if (tree[son[0]].type == "while") {

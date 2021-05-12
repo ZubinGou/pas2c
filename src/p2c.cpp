@@ -1,21 +1,26 @@
 #include <spdlog/spdlog.h>
-#include <unistd.h>
-
 #include <cstring>
 #include <fstream>
 
 #include "code_generator.h"
 #include "config.h"
+#include "getopt.h"
 #include "parser.h"
 #include "semantic_analyzer.h"
 
 using namespace std;  // recommend only use it in .cpp
 
+#ifdef _WIN32
+string GRAMMAR_FILE = "..\\include\\grammar.json";
+string INPUT_FILE;
+string OUTPUT_FILE = "..\\output\\";
+string LOG_FILE = ".\\log.txt";
+#else
 string GRAMMAR_FILE = "../include/grammar.json";
 string INPUT_FILE;
-// string INPUT_FILE = "../example/quicksort.pas";
-string OUTPUT_FILE;
+string OUTPUT_FILE = "../output/";
 string LOG_FILE = "./log.txt";
+#endif
 
 bool IS_DEBUG = false;
 bool IS_LOG = false;
@@ -25,8 +30,7 @@ bool has_suffix(const string &str, const string &suffix) {
          str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
-string get_base_name(string const & path)
-{
+string get_base_name(string const &path) {
   return path.substr(path.find_last_of("/\\") + 1);
 }
 
@@ -57,9 +61,10 @@ void parsing_parameters(int argc, char *argv[]) {
     spdlog::error("src file must be xxx.pas");
     exit(-1);
   }
-  OUTPUT_FILE = "../output/" + base_name.substr(0, base_name.length() - 4) + ".c";
+  OUTPUT_FILE += base_name.substr(0, base_name.length() - 4) + ".c";
 
   int opt;
+  optind++;  // ignore the parameter: src.pas
   // 选项后有冒号，表示必须后面有参数
   const char *optstring = "dg:hlo:v";
   while ((opt = getopt(argc, argv, optstring)) != -1) {
@@ -69,8 +74,6 @@ void parsing_parameters(int argc, char *argv[]) {
         spdlog::info("DEBUG is on.");
         break;
       case 'g':
-        printf("parameter 'b' specified with the value %s\n", optarg);
-        cout << "get optarg: " << optarg << endl;
         GRAMMAR_FILE = string(optarg);
         spdlog::info("Set Pascal-S grammar to {}", GRAMMAR_FILE);
         break;
@@ -111,6 +114,10 @@ int main(int argc, char *argv[]) {
 
   // change log pattern
   // spdlog::set_pattern("[%H:%M:%S %z] [%n] [%^---%L---%$] [thread %t] %v");
+  spdlog::debug("Grammar file: {}", GRAMMAR_FILE);
+  spdlog::debug("Input file: {}", INPUT_FILE);
+  spdlog::debug("Output file: {}", OUTPUT_FILE);
+  spdlog::debug("Log file: {}", LOG_FILE);
 
   spdlog::info("**** Section 0: Lexer & Parser ****");
   Parser parser(GRAMMAR_FILE, INPUT_FILE);
