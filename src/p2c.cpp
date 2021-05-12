@@ -12,7 +12,7 @@
 using namespace std;  // recommend only use it in .cpp
 
 #ifdef _WIN32
-string GRAMMAR_FILE = "..\\include\\grammar.json";
+string GRAMMAR_FILE = "..\\..\\include\\grammar.json";
 string INPUT_FILE;
 string OUTPUT_FILE = "..\\output\\";
 string LOG_FILE = ".\\log.txt";
