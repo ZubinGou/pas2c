@@ -910,7 +910,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
   }
 
   // statement -> while expression do statement | read ( variable_list ) |
-  // write ( expression_list )
+  // write ( expression_list ) | writeln ( expression_list )
   else if (cur_node.son_num == 4) {
     Node son_node = syntax_tree.find_inferior_node(node_id, 0);
     if (son_node.type == "while") {
@@ -939,7 +939,7 @@ void SemanticAnalyzer::statement(const int& node_id) {
                << ", variable " << var.id_name << " is not defined." << endl;
         }
       }
-    } else if (son_node.type == "write") {  // todo: complete this action
+    } else if (son_node.type == "write" || son_node.type == "writeln") {  // todo: complete this action
       vector<returnList> exp_list = this->expression_list(cur_node.son[2]);
     } else {
       cout << "[semantic error 45] error on current node token." << endl;
