@@ -870,8 +870,10 @@ void CodeGenerator::else_part(int node_id) {
     statement(son[1]);
     // target_append(";");
     target_append("}\n");
-  } else if (son_num == 1)  // 空
-    match(son[0], nullptr);
+  } 
+  else if (son_num == 1){  // 空
+    // match(son[0], nullptr);
+  }
   else
     cerr << "Unexpected Expression" << endl;
 }

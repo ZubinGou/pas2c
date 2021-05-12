@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "assert.h"
 
 #include <spdlog/spdlog.h>
 
@@ -35,6 +36,9 @@ std::vector<Token> Lexer::get_token_list() {
   while (get_token(token)) token_list.push_back(token);
   print_token_list();
   print_error_list();
+  // assert(error_list.size() == 0);
+  if(error_list.size() != 0) 
+    exit(1);
   return token_list;
 }
 
