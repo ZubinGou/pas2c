@@ -1,6 +1,4 @@
 #include <spdlog/spdlog.h>
-#include "unistd.h"
-
 #include <cstring>
 #include <fstream>
 
