@@ -1,4 +1,5 @@
 #include "semantic_analyzer.h"
+#include "assert.h"
 #include <cstdio>
 #include <map>
 #include <string>
@@ -23,6 +24,9 @@ SemanticAnalyzer::SemanticAnalyzer(const SyntaxTree& tree) {  // checked
       SymbolTableController();  // create the symbol table controller
   this->result = true;          // there's no error before the analyse
   this->start_analyze();
+  // assert(this->result == true);
+  if (this->result == false)
+    exit(1);
 }
 
 void SemanticAnalyzer::start_analyze() {  // checked
