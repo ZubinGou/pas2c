@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include<stdio.h>
 int x, y;
 int gcd(int a, int b) {
     if (b==0) {

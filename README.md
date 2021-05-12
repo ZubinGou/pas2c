@@ -49,7 +49,7 @@ cmake .. && cmake --build .
 - run (in folder `build`):
     - linux: `./p2c ../example/gcd.pas`
     - win:`.\Debug\p2c.exe ..\example\gcd.pas`
-      - 注意：变换 `p2c.exe` 的路径后需要 `-g` 指定 `grammar.json` 路径，详见 `p2c.cpp` 代码。
+      - `p2c.exe` 的 `grammar.json` 路径默认是相对于 `build` 目录的，改变目录运行需要 `-g` 指定语法路径
 - test:
 ```sh
 ctest
