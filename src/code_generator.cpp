@@ -817,15 +817,12 @@ std::pair<string, string> CodeGenerator::variable(int node_id, bool* is_bool) {
     string var_type = get_var_type(tree[son[0]].str_value);
     if (var_type == "boolean") *is_bool = true;
     string var_part = id_varpart(son[1]);
-    // 加入一个元组, (var的type, var) eg:(int, a[1][2])
     string has_ptr = is_addr(tree[son[0]].str_value) ? "*" : "";
-    // is_func = "_re" if is_func(tree[son[0]].value) else ""
     string is_func = "";
     return {var_type, has_ptr + tree[son[0]].str_value + is_func + var_part};
   } if (son_num == 3) {  // id . variable
     string var_type = get_var_type(tree[son[0]].str_value);
     pair<string, string> var_part = variable(son[2], is_bool);
-    // 加入一个元组, (var的type, var) eg:(int, a[1][2])
     return {var_type, tree[son[0]].str_value + "." + var_part.second};
   } else
     spdlog::error("Unexpected Expression");
@@ -846,12 +843,9 @@ std::string CodeGenerator::id_varpart(int node_id) {
     string id_value = tree[id].str_value;
     vector<int> blist = get_bound(id_value);
 
-    // elist_trans = ["[{}{}]".format(exp, "-" + str(bound)) for exp, bound in
-    // zip(elist, blist) ]
     vector<string> elist_trans;
     for (int i = 0; i < (int)elist.size(); i++){
       elist_trans.push_back("[" + elist[i] + "]");
-      // elist_trans.push_back(elist[i] + "-" + to_string(blist[i]));
     }
     return join_vec(elist_trans, "");
   } else if (son_num == 1) {
