@@ -68,7 +68,7 @@
         </property>
        </widget>
       </widget>
-      <widget class="QPlainTextEdit" name="pt_console"/>
+      <widget class="Console" name="pt_console"/>
      </widget>
     </item>
    </layout>
@@ -230,6 +230,11 @@ font: 75 12pt &quot;Arial&quot;;</string>
    <class>CodeEditor</class>
    <extends>QPlainTextEdit</extends>
    <header>codeeditor</header>
+  </customwidget>
+  <customwidget>
+   <class>Console</class>
+   <extends>QPlainTextEdit</extends>
+   <header>p2ceditor</header>
   </customwidget>
  </customwidgets>
  <resources/>
