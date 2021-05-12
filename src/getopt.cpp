@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <string>
 
 int opterr = 1, /* if error message should be printed */
     optind = 1, /* index into parent argv vector */
@@ -7,9 +8,9 @@ int opterr = 1, /* if error message should be printed */
     optreset;   /* reset getopt */
 char *optarg;   /* argument associated with option */
 
-#define BADCH (int)'?'
-#define BADARG (int)':'
-#define EMSG ""
+const int BADCH = (int)'?';
+const int BADARG = (int)':';
+char * EMSG = (char *)"";
 
 /*
  * getopt --
