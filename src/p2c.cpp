@@ -74,8 +74,6 @@ void parsing_parameters(int argc, char *argv[]) {
         spdlog::info("DEBUG is on.");
         break;
       case 'g':
-        printf("parameter 'b' specified with the value %s\n", optarg);
-        cout << "get optarg: " << optarg << endl;
         GRAMMAR_FILE = string(optarg);
         spdlog::info("Set Pascal-S grammar to {}", GRAMMAR_FILE);
         break;

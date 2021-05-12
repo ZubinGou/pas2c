@@ -26,7 +26,7 @@
 
 ```
 
-# pas2c
+# Pas2c
 Yet Another Pascal to C Compiler.
 
 ## Features
@@ -64,4 +64,3 @@ cpack
 ## TODO
 - 语法树可视化：寻找合适树可视化工具、框架、轮子
 - GUI
-- CLI
