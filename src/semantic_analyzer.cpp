@@ -1178,10 +1178,12 @@ void SemanticAnalyzer::procedure_call(const int& node_id) {
                << ", this procedure/function does not need parameters." << endl;
         }
       } else {
-        this->result = false;
-        cout << "[semantic error 63] row:" << son_node.line
-             << " col:" << son_node.col << ", " << son_node.str_value
-             << "cannot use as procedure/function." << endl;
+        if(cur_node.str_value != "writeln"){
+          this->result = false;
+          cout << "[semantic error 63] row:" << son_node.line
+              << " col:" << son_node.col << ", " << son_node.str_value
+              << "cannot use as procedure/function." << endl;
+        }
       }
     } else {
       this->result = false;
