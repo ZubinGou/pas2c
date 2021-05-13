@@ -80,7 +80,7 @@ int CodeGenerator::get_father(int node_id) {
 }
 
 void CodeGenerator::match(int node_id, std::string token) {
-  spdlog::debug("match: {} <-> {}", this->tree[node_id].type, token);
+  // spdlog::debug("match: {} <-> {}", this->tree[node_id].type, token);
   assert(this->tree[node_id].type == token);
 }  // match current node and token
 

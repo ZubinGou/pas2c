@@ -2,6 +2,7 @@
 /bin
 /build
 /gui/__pycache__
+temp*
 
 # VSCode
 # /.vscode

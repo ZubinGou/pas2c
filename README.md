@@ -64,3 +64,4 @@ cpack
 ## TODO
 - 语法树可视化：寻找合适树可视化工具、框架、轮子
 - GUI
+- CLI: to be MORE portable
