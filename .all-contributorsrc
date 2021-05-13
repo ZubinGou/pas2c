@@ -64,6 +64,17 @@
         "test",
         "doc"
       ]
+    },
+    {
+      "login": "386681404",
+      "name": "Terence Deng",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45114787?v=4",
+      "profile": "https://github.com/386681404",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
