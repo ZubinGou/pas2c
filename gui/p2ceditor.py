@@ -10,7 +10,7 @@ from math import e, acos, asin, atan, sqrt, factorial, log10, pi, e, sin, cos, t
 from qdarkstyle import load_stylesheet
 from codeeditor import PascalHighlighter, CHighlighter
 
-OUTPUT_DIR = 'output'
+OUTPUT_DIR = '.'
 
 class Filter(QObject):
     def eventFilter(self, widget, event):
@@ -65,9 +65,9 @@ class Pas2CEditor(QMainWindow):
         self.ui.actionRun.triggered.connect(self.runAction)
 
     def setupFont(self):
-        self.ui.pt_c.setStyleSheet('font: 15pt;')
-        self.ui.pt_pas.setStyleSheet('font: 15pt;')
-        self.ui.pt_console.setStyleSheet('font: 15pt;')
+        self.ui.pt_c.setStyleSheet('font: 12pt;')
+        self.ui.pt_pas.setStyleSheet('font: 12pt;')
+        self.ui.pt_console.setStyleSheet('font: 12pt;')
 
     def newAction(self):
         self.ui.pt_pas.setPlainText('')
@@ -95,30 +95,36 @@ class Pas2CEditor(QMainWindow):
         with open(os.path.join("tmp.pas"), "w", encoding='utf-8') as f:
             f.write(self.ui.pt_pas.toPlainText())
         cmd = [os.path.join(".", "p2c"), "tmp.pas", "-l",
-               "-o", os.path.join(OUTPUT_DIR, 'tmp.c'), "-g", "grammar.json"]
+               "-o", os.path.join(OUTPUT_DIR, 'tmp.c'), "-g", "grammar.json", "-d"]
         print(" ".join(cmd))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         for c in iter(lambda: p.stdout.read(1), b''):
+            info_str = c.decode('utf-8')
+            if '\r' == info_str:
+                continue
+            elif '\n' == info_str:
+                info_str = '\r\n'
             self.ui.pt_console.moveCursor(QTextCursor.End)
-            self.ui.pt_console.insertPlainText(c.decode('utf-8'))
+            self.ui.pt_console.insertPlainText(info_str)
         p.wait()
         log = self.ui.pt_console.toPlainText()
-        if '[error]' or '[critical]' in log:
+        if '[error]' in log or '[critical]' in log:
+            print("No")
             self.ui.actionRun.setEnabled(False)
             os.remove('tmp.pas')
-            os.remove('log.txt')
+            # os.remove('log.txt')
             return
         with open(os.path.join(OUTPUT_DIR, 'tmp.c'), 'r', encoding='utf-8') as f:
             self.ui.pt_c.setPlainText(f.read())
         os.remove('tmp.pas')
-        os.remove('log.txt')
+        # os.remove('log.txt')
         self.ui.actionRun.setEnabled(True)
 
     def saveAction(self):
         filename = QFileDialog().getSaveFileName(self.ui.mainwidget, 'Save file',
                                                  filter='*.pas', initialFilter='*.pas')[0]
         if os.path.exists(filename):
-            with open(filename, 'w') as f:
+            with open(filename, 'w', encoding='utf-8') as f:
                 text = self.ui.pt_pas.toPlainText()
                 f.write(text)
 

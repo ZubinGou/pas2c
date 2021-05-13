@@ -2,6 +2,11 @@
 /bin
 /build
 /gui/__pycache__
+/gui/build
+/gui/dist
+/gui/p2c.exe
+/gui/grammar.json
+/gui/logo.png
 
 # VSCode
 # /.vscode
