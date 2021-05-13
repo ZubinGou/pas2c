@@ -1,7 +1,7 @@
 
 Program example(input, output);
 
-Var x, y : integer;
+Var x, y : integer1;
 Function gcd( a, b : integer) : integer;
 Begin
   If b = 0 Then gcd := a

@@ -6,7 +6,7 @@
 using namespace std;  // recommend only use it in .cpp
 
 const string GRAMMAR_FILE = "../include/grammar.json";
-const string INPUT_FILE = "../example/pascal-s-test/test8.pas";
+const string INPUT_FILE = "../gui/gcd.pas";
 
 int main() {
   cout << "\n*** Section 0 ***\n";
