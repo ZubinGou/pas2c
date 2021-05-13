@@ -1,6 +1,7 @@
+{Bonus Features: Record}
 
 Program example(input, output);
-{下面如果是空行会有bug}
+
 
 var
 Books : record
