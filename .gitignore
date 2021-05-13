@@ -3,6 +3,8 @@
 /build
 /gui/__pycache__
 temp*
+/node_modules
+/package*.json
 
 # VSCode
 # /.vscode
