@@ -1,4 +1,4 @@
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 #include "code_generator.h"
 #include "assert.h"
 
@@ -138,7 +138,7 @@ void CodeGenerator::programstruct(int node_id) {
     program_body(son[2]);
     state_stack.pop();
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[0]");
 }
 
 // program_head -> program id ( idlist ) | program id
@@ -148,7 +148,7 @@ void CodeGenerator::program_head(int node_id) {
   // pascal's program_head is not needed in C
   if (son_num == 5) {}
   else if (son_num == 2) {}
-  else spdlog::error("Unexpected Expression");
+  else spdlog::error("Unexpected Expression[1]");
 }
 
 // program_body -> const_declarations var_declarations subprogram_declarations
@@ -163,7 +163,7 @@ void CodeGenerator::program_body(int node_id) {
     subprogram_declarations(son[2]);
     compound_statement(son[3]);
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[2]");
 }
 
 // idlist -> idlist , id | id
@@ -189,7 +189,7 @@ void CodeGenerator::idlist(int node_id, vector<int> id_num, string id_type,
     if (!id_num.empty())
       for (auto num : id_num) target_append("[" + to_string(num) + "]");
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[3]");
 }
 
 // const_declarations -> const const_declaration ; | e
@@ -199,8 +199,9 @@ void CodeGenerator::const_declarations(int node_id) {
   if (son_num == 3) {
     const_declaration(son[1]);
     target_append(";\n");
+  } else if (son_num == 1) {
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[4]");
 }
 
 // const_declaration -> const_declaration ; id = const_value | id = const_value
@@ -224,7 +225,7 @@ void CodeGenerator::const_declaration(int node_id) {
     target_append("const " + id_type + " ");
     target_append(get_str_value(son[0]) + " = " + id_value);
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[5]");
 }
 
 // const_value -> + num | - num | num | "letter"
@@ -266,7 +267,7 @@ std::vector<std::string> CodeGenerator::const_value(int node_id) {
     type_value.push_back("'" + id_value + "'");
     return type_value;
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[6]");
 }
 
 // var_declarations -> var var_declaration ; | e
@@ -277,7 +278,7 @@ void CodeGenerator::var_declarations(int node_id) {
     var_declaration(son[1]);
     target_append(";\n");
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[7]");
 }
 
 // var_declaration -> var_declaration ; idlist : type | idlist : type
@@ -302,7 +303,7 @@ void CodeGenerator::var_declaration(int node_id) {
       vector<int> none;
       idlist(son[0], none);
     } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("[Unexpected Expression[8]");
   } else if (son_num == 3) {  // idlist : type
     pair<vector<string>, vector<int>> type_nums = _type(son[2]);
     vector<string> id_type = type_nums.first;
@@ -318,9 +319,9 @@ void CodeGenerator::var_declaration(int node_id) {
       vector<int> none;
       idlist(son[0], none);
     } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("[Unexpected Expression[8]");
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[8]");
 }
 
 // type -> basic_type | array [ period ] of basic_type ｜ record_type
@@ -340,7 +341,7 @@ pair<vector<string>, vector<int>> CodeGenerator::_type(int node_id) {
       ans.first.push_back("2");
       return ans;
     } else{ 
-      spdlog::error("Unexpected Expression");
+      spdlog::error("Unexpected Expression[9]");
     }
   } else if (son_num == 6) { 
     string id_type = basic_type(son[5]);
@@ -349,7 +350,7 @@ pair<vector<string>, vector<int>> CodeGenerator::_type(int node_id) {
     ans.second = period(son[2]);
     return ans;
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[9]");
 }
 
 // basic_type -> integer | real | boolean | char
@@ -371,7 +372,7 @@ std::string CodeGenerator::basic_type(int node_id) {
       head_file.insert("#include <stdbool.h>\n");
     return res;
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[10]");
 }
 
 // period -> period , digits .. digits | digits .. digits
@@ -391,7 +392,7 @@ std::vector<int> CodeGenerator::period(int node_id) {
     nums.push_back(right - left + 1);
     return nums;
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[11]");
 }
 
 // record_type -> record field_list end
@@ -401,7 +402,7 @@ void CodeGenerator::record_type(int node_id) {
   if (son_num == 3) {
     field_list(son[1]);
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[12]");
 }
 
 // field_list -> fixed_fields ;
@@ -413,7 +414,7 @@ void CodeGenerator::field_list(int node_id) {
     fixed_fields(son[0]);
     target_append(";\n}");
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[13]");
 }
 
 // fixed_fields -> idlist : type | fixed_fields ; idlist : type
@@ -435,7 +436,7 @@ void CodeGenerator::fixed_fields(int node_id) {
       vector<int> none;
       idlist(son[0], none);
     } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[14]");
   } else if (son_num == 5) {
     fixed_fields(son[0]);
     target_append(";\n");
@@ -453,9 +454,9 @@ void CodeGenerator::fixed_fields(int node_id) {
       vector<int> none;
       idlist(son[0], none);
     } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[14]");
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[14]");
 }
 
 // subprogram_declarations -> subprogram_declarations subprogram ; | e
@@ -465,8 +466,9 @@ void CodeGenerator::subprogram_declarations(int node_id) {
   if (son_num == 3) {
     subprogram_declarations(son[0]);
     subprogram(son[1]);
+  } else if (son_num == 3) {
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[15]");
 }
 
 // subprogram -> subprogram_head ; subprogram_body
@@ -478,7 +480,7 @@ void CodeGenerator::subprogram(int node_id) {
     subprogram_body(son[2]);
     state_stack.pop();
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[16]");
 }
 
 // subprogram_head -> procedure id formal_parameter | function id
@@ -503,7 +505,7 @@ void CodeGenerator::subprogram_head(
 
     formal_parameter(son[2]);
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[17]");
 }
 
 // formal_parameter -> ( parameter_list ) | e
@@ -517,7 +519,7 @@ void CodeGenerator::formal_parameter(int node_id) {
   } else if (son_num == 1) {
     target_append("()");
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[18]");
 }
 
 // parameter_list -> parameter_list ; parameter | parameter
@@ -531,7 +533,7 @@ void CodeGenerator::parameter_list(int node_id) {
   } else if (son_num == 1) {
     parameter(son[0]);
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[19]");
 }
 
 // parameter -> var_parameter | value_parameter
@@ -545,7 +547,7 @@ void CodeGenerator::parameter(int node_id) {
     else  // pass value
       value_parameter(son[0]);
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[20]");
 }
 
 // var_parameter -> var value_parameter
@@ -555,7 +557,7 @@ void CodeGenerator::var_parameter(int node_id) {
   if (son_num == 2) {
     value_parameter(son[1]);
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[21]");
 }
 
 // value_parameter -> idlist : basic_type
@@ -574,7 +576,7 @@ void CodeGenerator::value_parameter(int node_id) {
     else
       idlist(son[0], none, id_type);
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[22]");
 }
 
 // subprogram_body -> const_declarations var_declarations compound_statement
@@ -588,7 +590,7 @@ void CodeGenerator::subprogram_body(int node_id) {
     compound_statement(son[2]);
     target_append("}\n");
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[23]");
 }
 
 // compound_statement -> begin statement_list end
@@ -616,7 +618,7 @@ void CodeGenerator::compound_statement(int node_id) {
       target_append("}\n");
     }
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[24]");
 }
 // statement_list -> statement_list ; statement
 //                 | statement
@@ -630,7 +632,7 @@ void CodeGenerator::statement_list(int node_id) {
   } else if (son_num == 1) {
     statement(son[0]);
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[25]");
 }
 // statement -> variable assignop expression
 //            | procedure_call
@@ -790,7 +792,7 @@ void CodeGenerator::statement(int node_id) {
       statement(son[3]);
     }
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[26]");
 }
 // variable_list -> variable_list , variable
 //                | variable
@@ -805,7 +807,7 @@ void CodeGenerator::variable_list(
   } else if (son_num == 1)  // variable
     vlist.push_back(variable(son[0]));
   else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[27]");
 }
 
 // variable -> id id_varpart | id . variable
@@ -825,7 +827,7 @@ std::pair<string, string> CodeGenerator::variable(int node_id, bool* is_bool) {
     pair<string, string> var_part = variable(son[2], is_bool);
     return {var_type, tree[son[0]].str_value + "." + var_part.second};
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[28]");
 }
 
 // id_varpart -> [ expression_list ] | e
@@ -852,7 +854,7 @@ std::string CodeGenerator::id_varpart(int node_id) {
     match(son[0], "e");
     return "";
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[29]");
 }
 
 // procedure_call -> id | id ( expression_list )
@@ -881,7 +883,7 @@ void CodeGenerator::procedure_call(int node_id) {
     match(son[3], ")");
     target_append(")");
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[30]");
 }
 
 // else_part -> else statement | e
@@ -900,7 +902,7 @@ void CodeGenerator::else_part(int node_id) {
     match(son[0], "e");
   }
   else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[31]");
 }
 
 // expression_list -> expression_list , expression
@@ -919,7 +921,7 @@ void CodeGenerator::expression_list(int node_id,
     elist.push_back(expression(son[0]));
     tlist.push_back(get_exp_type(son[0]));
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[32]");
 }
 
 // expression -> simple_expression relop simple_expression
@@ -941,7 +943,7 @@ std::string CodeGenerator::expression(
   } else if (son_num == 1)  // simple_expression
     return simple_expression(son[0]);
   else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[33]");
 }
 
 // simple_expression -> simple_expression addop term
@@ -959,7 +961,7 @@ string CodeGenerator::simple_expression(int node_id) {
   } else if (son_num == 1)  // term
     return term(son[0]);
   else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[34]");
 }
 
 // term -> term mulop factor
@@ -981,7 +983,7 @@ string CodeGenerator::term(int node_id) {
     string _factor = factor(son[0]);
     return _factor;
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[35]");
 }
 
 // factor -> num
@@ -1049,5 +1051,5 @@ string CodeGenerator::factor(int node_id, bool* is_bool) {
       return "-" + _factor;
     }
   } else
-    spdlog::error("Unexpected Expression");
+    spdlog::error("Unexpected Expression[36]");
 }

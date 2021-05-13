@@ -215,7 +215,7 @@ bool Lexer::get_token(Token& token) {
               token.renew("mulop", line_pos, last_col_pos, cur_word, 0);
               state = 0;
             } else if ("or" == cur_word) {
-              token.renew("addlop", line_pos, last_col_pos, cur_word, 0);
+              token.renew("addop", line_pos, last_col_pos, cur_word, 0);
               state = 0;
             } else {
               token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
