@@ -75,7 +75,7 @@ int CodeGenerator::get_father(int node_id) {
 }
 
 void CodeGenerator::match(int node_id, std::string token) {
-  spdlog::debug("match: {} <-> {}", this->tree[node_id].type, token);
+  // spdlog::debug("match: {} <-> {}", this->tree[node_id].type, token);
   assert(this->tree[node_id].type == token);
 }
 
@@ -277,8 +277,8 @@ void CodeGenerator::var_declarations(int node_id) {
   if (son_num == 3) {
     var_declaration(son[1]);
     target_append(";\n");
-  } else
-    spdlog::error("Unexpected Expression[7]");
+  } 
+    // spdlog::error("Unexpected Expression[7]");
 }
 
 // var_declaration -> var_declaration ; idlist : type | idlist : type
