@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
   if (IS_LOG) {
     try {
       // auto file_logger = spdlog::basic_logger_mt("@", LOG_FILE);
-      auto file_logger = spdlog::rotating_logger_mt("@", LOG_FILE, 1024 * 1024 * 5, 3, true);
+      auto file_logger = spdlog::rotating_logger_mt("@", LOG_FILE, 1024 * 1024 * 5, 1, true);
       spdlog::set_default_logger(file_logger);
       // freopen(LOG_FILE.c_str(), "w", stdout);
     } catch (const spdlog::spdlog_ex &ex) {
