@@ -17,7 +17,6 @@ class Filter(QObject):
         # FocusOut event
         if event.type() == QEvent.FocusOut:
             # do custom stuff
-
             widget.setReadOnly(True)
             return False
         else:
@@ -37,7 +36,6 @@ class Console(QPlainTextEdit):
         print(out)
         p.wait()
         self.setPlainText(out)
-        # os.remove(os.path.join(OUTPUT_DIR, 'tmp.c'))
         try:
             os.remove(os.path.join(OUTPUT_DIR, 'tmp'))
         except:
@@ -57,6 +55,7 @@ class Pas2CEditor(QMainWindow):
         self.highlight_pas = PascalHighlighter(self.ui.pt_pas.document())
         self.highlight_c = CHighlighter(self.ui.pt_c.document())
         self.setupActions()
+        self.setupFont()
 
     def setupActions(self):
         self.ui.actionNew.triggered.connect(self.newAction)
@@ -64,6 +63,11 @@ class Pas2CEditor(QMainWindow):
         self.ui.actionSave.triggered.connect(self.saveAction)
         self.ui.actionCompile.triggered.connect(self.compileAction)
         self.ui.actionRun.triggered.connect(self.runAction)
+
+    def setupFont(self):
+        self.ui.pt_c.setStyleSheet('font: 15pt;')
+        self.ui.pt_pas.setStyleSheet('font: 15pt;')
+        self.ui.pt_console.setStyleSheet('font: 15pt;')
 
     def newAction(self):
         self.ui.pt_pas.setPlainText('')
@@ -74,7 +78,7 @@ class Pas2CEditor(QMainWindow):
         filename = QFileDialog().getOpenFileName(
             self.ui.mainwidget, "Open File")[0]
         if os.path.exists(filename) and self.ui.pt_pas.document().isModified():
-            answer = QMessageBox.question(self.ui, "Modified Code",
+            answer = QMessageBox.question(self.ui.mainwidget, "Modified Code",
                                           """<b>The current code is modified</b>
                    <p>What do you want to do?</p>
                 """,
@@ -84,14 +88,10 @@ class Pas2CEditor(QMainWindow):
                 return
         if os.path.exists(filename):
             text = open(filename, encoding='utf-8').read()
-            # if len(text.split('\n')) < 30:
-            #     text += '\n' * (30-len(text.split('\n')))
             self.ui.pt_pas.setPlainText(text)
             self.restoreEditor()
 
     def compileAction(self):
-        # self.ui.pt_console.setReadOnly(False)
-        # self.ui.pt_c.setReadOnly(False)
         with open(os.path.join("tmp.pas"), "w", encoding='utf-8') as f:
             f.write(self.ui.pt_pas.toPlainText())
         cmd = [os.path.join(".", "p2c"), "tmp.pas", "-l",
@@ -102,6 +102,12 @@ class Pas2CEditor(QMainWindow):
             self.ui.pt_console.moveCursor(QTextCursor.End)
             self.ui.pt_console.insertPlainText(c.decode('utf-8'))
         p.wait()
+        log = self.ui.pt_console.toPlainText()
+        if '[error]' or '[critical]' in log:
+            self.ui.actionRun.setEnabled(False)
+            os.remove('tmp.pas')
+            os.remove('log.txt')
+            return
         with open(os.path.join(OUTPUT_DIR, 'tmp.c'), 'r', encoding='utf-8') as f:
             self.ui.pt_c.setPlainText(f.read())
         os.remove('tmp.pas')
@@ -129,7 +135,7 @@ class Pas2CEditor(QMainWindow):
         self.ui.pt_console.clear()
         p.wait()
         self.ui.pt_console.setReadOnly(False)
-        # print(self.ui.pt_console.isReadOnly())
+        self.ui.actionRun.setEnabled(False)
 
     def restoreEditor(self):
         # Enable/Disable actions
@@ -139,7 +145,6 @@ class Pas2CEditor(QMainWindow):
         self.ui.pt_pas.setFocus()
         self.ui.pt_c.clear()
         self.ui.pt_console.clear()
-
 
 if __name__ == "__main__":
     app = QApplication(argv)

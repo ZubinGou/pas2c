@@ -380,6 +380,7 @@ void Parser::analyze() {
   Token temp_token;
   // for record error
   bool error_occur = false;
+  size_t error_cnt = 0;
   pair<string, string> error_msg;
   pair<int, int> error_pos = make_pair(-1, -1);
   // for analysis
@@ -456,6 +457,12 @@ void Parser::analyze() {
         drop_cnt = 0;
         lookahead_idx = 0;
         lookahead_len = 0;
+        error_cnt++;
+        if (error_cnt > 30) {
+          pass_analyze = false;
+          spdlog::error("[Syntax] Meet errors and recovery price is too high.");
+          exit(1);
+        }
         if (error_pos.first != -1) {
           spdlog::error("[Syntax] Error in [{}, {}]: ", error_pos.first, error_pos.second);
           if (strategy == DROP) {

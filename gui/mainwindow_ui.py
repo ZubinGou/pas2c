@@ -102,7 +102,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "8086-emulator"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "P2C Editor"))
         self.toolbarDefault.setWindowTitle(_translate("MainWindow", "Default bar"))
         self.actionNew.setText(_translate("MainWindow", "&New"))
         self.actionNew.setToolTip(_translate("MainWindow", "Create a new program"))
