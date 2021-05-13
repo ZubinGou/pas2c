@@ -30,9 +30,13 @@
 Yet Another Pascal to C Compiler.
 
 ## Features
+- Multi-platform compatibility: Linux, Windows, Mac
 - Extended Pascal grammar: eg. `record`
-- CLI & GUI
-- Log module
+- Custom Pascal grammar with `.json`
+- Error handling and recovery
+- CLI (just like `gcc`)
+- GUI with editer
+- Global llog module
 
 ## Roadmap
 1. Lexer & Parser
