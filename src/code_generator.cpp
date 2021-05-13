@@ -1,6 +1,7 @@
-#include "spdlog/spdlog.h"
 #include "code_generator.h"
+
 #include "assert.h"
+#include "spdlog/spdlog.h"
 
 using namespace std;
 
@@ -146,9 +147,10 @@ void CodeGenerator::program_head(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   // pascal's program_head is not needed in C
-  if (son_num == 5) {}
-  else if (son_num == 2) {}
-  else spdlog::error("Unexpected Expression[1]");
+  if (son_num == 5) {
+  } else if (son_num == 2) {
+  } else
+    spdlog::error("Unexpected Expression[1]");
 }
 
 // program_body -> const_declarations var_declarations subprogram_declarations
@@ -252,7 +254,7 @@ std::vector<std::string> CodeGenerator::const_value(int node_id) {
       num = to_string(int(val));
     else if (id_type == "float")
       num = to_string(val);
-    else if (id_type == "bool"){
+    else if (id_type == "bool") {
       num = val ? "true" : "false";
     }
 
@@ -277,8 +279,8 @@ void CodeGenerator::var_declarations(int node_id) {
   if (son_num == 3) {
     var_declaration(son[1]);
     target_append(";\n");
-  } 
-    // spdlog::error("Unexpected Expression[7]");
+  }
+  // spdlog::error("Unexpected Expression[7]");
 }
 
 // var_declaration -> var_declaration ; idlist : type | idlist : type
@@ -303,7 +305,7 @@ void CodeGenerator::var_declaration(int node_id) {
       vector<int> none;
       idlist(son[0], none);
     } else
-    spdlog::error("[Unexpected Expression[8]");
+      spdlog::error("[Unexpected Expression[8]");
   } else if (son_num == 3) {  // idlist : type
     pair<vector<string>, vector<int>> type_nums = _type(son[2]);
     vector<string> id_type = type_nums.first;
@@ -319,7 +321,7 @@ void CodeGenerator::var_declaration(int node_id) {
       vector<int> none;
       idlist(son[0], none);
     } else
-    spdlog::error("[Unexpected Expression[8]");
+      spdlog::error("[Unexpected Expression[8]");
   } else
     spdlog::error("Unexpected Expression[8]");
 }
@@ -329,7 +331,7 @@ pair<vector<string>, vector<int>> CodeGenerator::_type(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   pair<vector<string>, vector<int>> ans;
-  if (son_num == 1) { 
+  if (son_num == 1) {
     string var_type = get_token(son[0]);
     if (var_type == "basic_type") {
       string id_type = basic_type(son[0]);
@@ -340,10 +342,10 @@ pair<vector<string>, vector<int>> CodeGenerator::_type(int node_id) {
       record_type(son[0]);
       ans.first.push_back("2");
       return ans;
-    } else{ 
+    } else {
       spdlog::error("Unexpected Expression[9]");
     }
-  } else if (son_num == 6) { 
+  } else if (son_num == 6) {
     string id_type = basic_type(son[5]);
     ans.first.push_back("1");
     ans.first.push_back(id_type);
@@ -368,8 +370,7 @@ std::string CodeGenerator::basic_type(int node_id) {
     string res = "";
     if (type_pas2c.find(var_type) != type_pas2c.end())
       res = type_pas2c[var_type];
-    if (res == "bool")
-      head_file.insert("#include <stdbool.h>\n");
+    if (res == "bool") head_file.insert("#include <stdbool.h>\n");
     return res;
   } else
     spdlog::error("Unexpected Expression[10]");
@@ -429,14 +430,14 @@ void CodeGenerator::fixed_fields(int node_id) {
       target_append(id_type[1]);
       vector<int> none;
       idlist(son[0], none);
-    } else if (id_type[0] == "1"){  // array type
+    } else if (id_type[0] == "1") {  // array type
       target_append(id_type[1]);
       idlist(son[0], id_num);
     } else if (id_type[0] == "2") {  // record type
       vector<int> none;
       idlist(son[0], none);
     } else
-    spdlog::error("Unexpected Expression[14]");
+      spdlog::error("Unexpected Expression[14]");
   } else if (son_num == 5) {
     fixed_fields(son[0]);
     target_append(";\n");
@@ -454,7 +455,7 @@ void CodeGenerator::fixed_fields(int node_id) {
       vector<int> none;
       idlist(son[0], none);
     } else
-    spdlog::error("Unexpected Expression[14]");
+      spdlog::error("Unexpected Expression[14]");
   } else
     spdlog::error("Unexpected Expression[14]");
 }
@@ -485,11 +486,10 @@ void CodeGenerator::subprogram(int node_id) {
 
 // subprogram_head -> procedure id formal_parameter | function id
 // formal_parameter : basic_type
-void CodeGenerator::subprogram_head(
-    int node_id) {
+void CodeGenerator::subprogram_head(int node_id) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
-  if (son_num == 3) {  // procedure
+  if (son_num == 3) {       // procedure
     target_append("void");  // procedure equal to "void function()"
     string value = get_str_value(son[1]);  // function name
     state_stack.push(value);
@@ -771,8 +771,7 @@ void CodeGenerator::statement(int node_id) {
       }
 
       target_append(join_vec(trans_tlist, " "));
-      if (tree[son[0]].type == "writeln")
-        target_append("\\n");
+      if (tree[son[0]].type == "writeln") target_append("\\n");
       target_append("\"");
       target_append(", ");
 
@@ -822,7 +821,8 @@ std::pair<string, string> CodeGenerator::variable(int node_id, bool* is_bool) {
     string has_ptr = is_addr(tree[son[0]].str_value) ? "*" : "";
     string is_func = "";
     return {var_type, has_ptr + tree[son[0]].str_value + is_func + var_part};
-  } if (son_num == 3) {  // id . variable
+  }
+  if (son_num == 3) {  // id . variable
     string var_type = get_var_type(tree[son[0]].str_value);
     pair<string, string> var_part = variable(son[2], is_bool);
     return {var_type, tree[son[0]].str_value + "." + var_part.second};
@@ -846,8 +846,8 @@ std::string CodeGenerator::id_varpart(int node_id) {
     vector<int> blist = get_bound(id_value);
 
     vector<string> elist_trans;
-    for (int i = 0; i < (int)elist.size(); i++){
-      if (blist[i] != 0)
+    for (int i = 0; i < (int)elist.size(); i++) {
+      if (i < blist.size() && blist[i] != 0)
         elist_trans.push_back("[" + elist[i] + "-" + to_string(blist[i]) + "]");
       else
         elist_trans.push_back("[" + elist[i] + "]");
@@ -900,11 +900,9 @@ void CodeGenerator::else_part(int node_id) {
     statement(son[1]);
     // target_append(";");
     target_append("}\n");
-  } 
-  else if (son_num == 1){
+  } else if (son_num == 1) {
     match(son[0], "e");
-  }
-  else
+  } else
     spdlog::error("Unexpected Expression[31]");
 }
 
@@ -929,8 +927,7 @@ void CodeGenerator::expression_list(int node_id,
 
 // expression -> simple_expression relop simple_expression
 //             | simple_expression
-std::string CodeGenerator::expression(
-    int node_id, bool* is_bool) {
+std::string CodeGenerator::expression(int node_id, bool* is_bool) {
   vector<int> son = get_son(node_id);
   int son_num = son.size();
   if (is_bool) *is_bool = false;
