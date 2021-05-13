@@ -1,6 +1,7 @@
+#include <spdlog/sinks/basic_file_sink.h>     // support for basic file logging
+#include <spdlog/sinks/rotating_file_sink.h>  // support for rotating file logging
 #include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h> // support for basic file logging
-#include <spdlog/sinks/rotating_file_sink.h> // support for rotating file logging
+
 #include <cstring>
 #include <fstream>
 
@@ -102,16 +103,13 @@ int main(int argc, char *argv[]) {
   parsing_parameters(argc, argv);
 
   if (IS_LOG) {
-    try 
-    {
-        // create a file rotating logger with 5mb size max and 3 rotated files
-        auto file_logger = spdlog::rotating_logger_mt("@", LOG_FILE, 1024 * 1024 * 5, 3);
-        // spdlog::set_default_logger(my_logger);
-        spdlog::set_default_logger(file_logger);
-    }
-    catch (const spdlog::spdlog_ex& ex)
-    {
-        std::cout << "Log initialization failed: " << ex.what() << std::endl;
+    try {
+      // auto file_logger = spdlog::basic_logger_mt("@", LOG_FILE);
+      auto file_logger = spdlog::rotating_logger_mt("@", LOG_FILE, 1024 * 1024 * 5, 3, true);
+      spdlog::set_default_logger(file_logger);
+      // freopen(LOG_FILE.c_str(), "w", stdout);
+    } catch (const spdlog::spdlog_ex &ex) {
+      std::cout << "Log initialization failed: " << ex.what() << std::endl;
     }
   }
 
