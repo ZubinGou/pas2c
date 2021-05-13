@@ -737,7 +737,7 @@ void CodeGenerator::statement(int node_id) {
         if (var_type == "boolean") target_append("%d");
         if (var_type == "integer") target_append("%d");
         if (var_type == "char") target_append("%c");
-        if (var_type == "read") target_append("%f");
+        if (var_type == "real") target_append("%f");
       }
       target_append("\"");
 
