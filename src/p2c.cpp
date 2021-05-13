@@ -79,7 +79,7 @@ void parsing_parameters(int argc, char *argv[]) {
         break;
       case 'l':
         IS_LOG = true;
-        spdlog::info("Log is output to log.txt");
+        spdlog::info("Log is output to {}", LOG_FILE);
         break;
       case 'o':
         OUTPUT_FILE = string(optarg);
@@ -99,6 +99,7 @@ void parsing_parameters(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
   parsing_parameters(argc, argv);
   if (IS_LOG) freopen(LOG_FILE.c_str(), "w", stdout);
+  cout << "FUCK !!!!" << endl;
 
   if (IS_DEBUG)
     spdlog::set_level(spdlog::level::debug);  // Set global log level to debug
