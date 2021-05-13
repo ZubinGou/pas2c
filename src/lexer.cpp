@@ -1,5 +1,4 @@
 #include "lexer.h"
-#include "assert.h"
 
 #include <spdlog/spdlog.h>
 
@@ -7,6 +6,10 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <string>
+
+#include "assert.h"
 
 using namespace std;
 
@@ -17,17 +20,18 @@ Lexer::Lexer(const std::string& inputfile) {
   col_pos = 1;
   state = 0;
   spdlog::debug("Input File:");
-  while(cur_line.length() == 0) {
+  while (cur_line.length() == 0) {
     string tmp;
     if (!getline(input, tmp)) {
       spdlog::critical("the input file is empty!");
       exit(1);
-    }    
+    }
     cur_line = "";
     transform(tmp.begin(), tmp.end(), back_inserter(cur_line), ::tolower);
-    line_pos++;  
-    if (spdlog::get_level() == spdlog::level::debug)
-      cout << "\t\t line " + to_string(line_pos) + " : " << cur_line << endl;
+    line_pos++;
+    spdlog::set_pattern("\t\t%v");
+    spdlog::debug("\t\t line " + to_string(line_pos) + " : " + cur_line);
+    spdlog::set_pattern("%+");
   }
 }
 
@@ -37,8 +41,7 @@ std::vector<Token> Lexer::get_token_list() {
   print_token_list();
   print_error_list();
   // assert(error_list.size() == 0);
-  if(error_list.size() != 0) 
-    exit(1);
+  if (error_list.size() != 0) exit(1);
   return token_list;
 }
 
@@ -54,14 +57,14 @@ bool Lexer::get_token(Token& token) {
     }
   }
 
-  while (col_pos < 1+int(cur_line.length())) {
+  while (col_pos < 1 + int(cur_line.length())) {
     if (0 == state) {            // beginning state
       if (isdigit(temp_char)) {  // 0-9
         cur_word = temp_char;
         last_col_pos = col_pos;
         state = 2;
         col_pos++;
-        if (col_pos == 1+int(cur_line.length())) {
+        if (col_pos == 1 + int(cur_line.length())) {
           token.renew("num", line_pos, last_col_pos, "", stoi(cur_word.c_str()),
                       Integer);
           state = 0;
@@ -72,7 +75,7 @@ bool Lexer::get_token(Token& token) {
         last_col_pos = col_pos;
         state = 1;
         col_pos++;
-        if (col_pos == 1+int(cur_line.length())) {
+        if (col_pos == 1 + int(cur_line.length())) {
           token.renew("id", line_pos, last_col_pos, cur_word, 0);
           state = 0;
           return true;
@@ -148,7 +151,7 @@ bool Lexer::get_token(Token& token) {
       } else {  // illegal character
         error_list.push_back(Error("Illegal character.", line_pos, col_pos));
         col_pos++;
-        if (col_pos == 1+int(cur_line.length())) {
+        if (col_pos == 1 + int(cur_line.length())) {
           if (!get_new_line()) return false;
           temp_char = get_char();  // get a new char
           while (temp_char == 0) {
@@ -166,7 +169,7 @@ bool Lexer::get_token(Token& token) {
       if (isdigit(t_char) || isalpha(t_char)) {
         cur_word += t_char;
         col_pos++;
-        if (col_pos == 1+int(cur_line.length())) {
+        if (col_pos == 1 + int(cur_line.length())) {
           if (RESERVED_WORDS.count(cur_word) != 0)
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
           else if (cur_word == "true")
@@ -180,7 +183,7 @@ bool Lexer::get_token(Token& token) {
         }
       } else {
         if (RESERVED_WORDS.count(cur_word) != 0) {  // reserved words
-          if ("program" == cur_word && col_pos < 1+int(cur_line.length()) &&
+          if ("program" == cur_word && col_pos < 1 + int(cur_line.length()) &&
               ' ' == cur_line[col_pos - 1]) {
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
             state = 0;
@@ -191,7 +194,7 @@ bool Lexer::get_token(Token& token) {
             state = 0;
             return true;
           } else if ("array" == cur_word && ' ' == cur_line[last_col_pos - 2] &&
-                     col_pos < 1+int(cur_line.length()) &&
+                     col_pos < 1 + int(cur_line.length()) &&
                      '[' == cur_line[col_pos - 1]) {
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
             state = 0;
@@ -201,15 +204,16 @@ bool Lexer::get_token(Token& token) {
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
             state = 0;
             return true;
-          } else if (("write" == cur_word || "writeln" == cur_word) && last_col_pos >= 1 &&
+          } else if (("write" == cur_word || "writeln" == cur_word) &&
+                     last_col_pos >= 1 &&
                      (last_col_pos == 1 || ' ' == cur_line[last_col_pos - 2])) {
             token.renew(cur_word, line_pos, last_col_pos, cur_word, 0);
             state = 0;
             return true;
           } else if (last_col_pos >= 1 &&
                      (last_col_pos == 1 || ' ' == cur_line[last_col_pos - 2]) &&
-                     (col_pos == 1+int(cur_line.length()) ||
-                      (col_pos < 1+int(cur_line.length()) &&
+                     (col_pos == 1 + int(cur_line.length()) ||
+                      (col_pos < 1 + int(cur_line.length()) &&
                        ' ' == cur_line[col_pos - 1]))) {
             if ("div" == cur_word || "and" == cur_word || "mod" == cur_word) {
               token.renew("mulop", line_pos, last_col_pos, cur_word, 0);
@@ -249,14 +253,14 @@ bool Lexer::get_token(Token& token) {
       if (isdigit(cur_line[col_pos - 1])) {
         cur_word += cur_line[col_pos - 1];
         col_pos++;
-        if (col_pos == 1+int(cur_line.length())) {
+        if (col_pos == 1 + int(cur_line.length())) {
           token.renew("num", line_pos, last_col_pos, "", stoi(cur_word.c_str()),
                       Integer);
           state = 0;
           return true;
         }
       } else if ('.' == cur_line[col_pos - 1] &&
-                 col_pos + 1 < 1+int(cur_line.length()) &&
+                 col_pos + 1 < 1 + int(cur_line.length()) &&
                  cur_line[col_pos] != '.') {  // float number
         state = 3;
         cur_word += cur_line[col_pos - 1];
@@ -273,7 +277,7 @@ bool Lexer::get_token(Token& token) {
       if (isdigit(cur_line[col_pos - 1])) {
         cur_word += cur_line[col_pos - 1];
         col_pos++;
-        if (col_pos == 1+int(cur_line.length())) {
+        if (col_pos == 1 + int(cur_line.length())) {
           token.renew("num", line_pos, last_col_pos, "", atof(cur_word.c_str()),
                       Real);
           state = 0;
@@ -310,7 +314,7 @@ bool Lexer::get_token(Token& token) {
     else if (5 == state) {  // annotation state, in {...}
       if ('}' != cur_line[col_pos - 1]) {
         col_pos++;
-        if (col_pos == 1+int(cur_line.length())) {
+        if (col_pos == 1 + int(cur_line.length())) {
           cur_word = "";
           last_col_pos = -1;
           if (!get_new_line()) {
@@ -328,7 +332,7 @@ bool Lexer::get_token(Token& token) {
       } else {
         state = 0;
         col_pos++;
-        if (col_pos == 1+int(cur_line.length())) {
+        if (col_pos == 1 + int(cur_line.length())) {
           if (!get_new_line()) return false;
           temp_char = get_char();  // get a new char
           while (temp_char == 0) {
@@ -352,35 +356,35 @@ bool Lexer::get_token(Token& token) {
 }
 
 bool Lexer::get_new_line() {
-  while (0 >= col_pos || 1+int(cur_line.length()) == col_pos) {
+  while (0 >= col_pos || 1 + int(cur_line.length()) == col_pos) {
     // current line is empty or reach the end of line
     cur_line = "";
-    while(cur_line.length() == 0) {
+    while (cur_line.length() == 0) {
       string tmp;
-      if (!getline(input, tmp)) 
-        return false; // reach the end of file
+      if (!getline(input, tmp)) return false;  // reach the end of file
       cur_line = "";
       transform(tmp.begin(), tmp.end(), back_inserter(cur_line), ::tolower);
       line_pos++;
       col_pos = 1;
-      if (spdlog::get_level() == spdlog::level::debug)
-        cout << "\t\t line " + to_string(line_pos) + " : " << cur_line << endl;
+      spdlog::set_pattern("\t\t%v");
+      spdlog::debug("\t\t line " + to_string(line_pos) + " : " + cur_line);
+      spdlog::set_pattern("%+");
     }
     return true;
 
-
-  //   string tmp;
-  //   if (!getline(input, tmp)) return false; 
-  //   cur_line = "";
-  //   transform(tmp.begin(), tmp.end(), back_inserter(cur_line), ::tolower);
-  //   line_pos++;
-  //   col_pos = 1;
-  //   if (spdlog::get_level() == spdlog::level::debug)
-  //     cout << "\t\t line " + to_string(line_pos) + " : " << cur_line << endl;
-  //   if (int(cur_line[cur_line.length() - 1]) != 13) {
-  //     cur_line.append("\r");
-  //     return true;
-  //   }
+    //   string tmp;
+    //   if (!getline(input, tmp)) return false;
+    //   cur_line = "";
+    //   transform(tmp.begin(), tmp.end(), back_inserter(cur_line), ::tolower);
+    //   line_pos++;
+    //   col_pos = 1;
+    //   if (spdlog::get_level() == spdlog::level::debug)
+    //     cout << "\t\t line " + to_string(line_pos) + " : " << cur_line <<
+    //     endl;
+    //   if (int(cur_line[cur_line.length() - 1]) != 13) {
+    //     cur_line.append("\r");
+    //     return true;
+    //   }
   }
   return true;
 }
@@ -399,17 +403,21 @@ char Lexer::get_char() {
 void Lexer::print_token_list() {
   // type, value, line, col
   spdlog::debug("Token List:");
+  spdlog::set_pattern("\t\t%v");
   int i = 1;
-  if (spdlog::get_level() == spdlog::level::debug)
-    for (auto it : token_list) {
-      cout << "\t\tToken " << i << ": [" << it.type << " ";
-      if (it.str_value == "")
-        cout << it.num_value << " ";
-      else
-        cout << it.str_value << " ";
-      cout << it.line << " " << it.col << "]" << endl;
-      i++;
-    }
+  // if (spdlog::get_level() == spdlog::level::debug)
+  for (auto it : token_list) {
+    stringstream ss;
+    ss << "\t\tToken " << i << ": [" << it.type << " ";
+    if (it.str_value == "")
+      ss << it.num_value << " ";
+    else
+      ss << it.str_value << " ";
+    ss << it.line << " " << it.col << "]";
+    spdlog::debug(ss.str());
+    i++;
+  }
+  spdlog::set_pattern("%+");
 }
 
 void Lexer::print_error_list() {
@@ -417,9 +425,10 @@ void Lexer::print_error_list() {
     spdlog::debug("[Lexer] No Errors.");
   else {
     spdlog::error("[Lexer] Have Errors:");
+    spdlog::set_pattern("\t\t%v");
     for (auto it : error_list) {
-      cout << "\t\tline " << it.line << ", column " << it.col << ": " << it.content
-           << endl;
+       spdlog::error("\t\tline " + to_string(it.line) + ", column " + to_string(it.col) + ": " + it.content);
     }
+    spdlog::set_pattern("%+");
   }
 }

@@ -1,0 +1,82 @@
+{
+  "projectName": "pas2c",
+  "projectOwner": "ZubinGou",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "ztqakita",
+      "name": "Brandon Zhang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/58379435?v=4",
+      "profile": "https://github.com/ztqakita",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "ZubinGou",
+      "name": "ZubinGou",
+      "avatar_url": "https://avatars.githubusercontent.com/u/27690278?v=4",
+      "profile": "https://github.com/ZubinGou",
+      "contributions": [
+        "code",
+        "test",
+        "design"
+      ]
+    },
+    {
+      "login": "ToheartZhang",
+      "name": "Jason Zhang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25629861?v=4",
+      "profile": "https://github.com/ToheartZhang",
+      "contributions": [
+        "code",
+        "test",
+        "design"
+      ]
+    },
+    {
+      "login": "oneal2000",
+      "name": "Oneal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51199289?v=4",
+      "profile": "https://github.com/oneal2000",
+      "contributions": [
+        "ideas",
+        "code",
+        "doc",
+        "talk"
+      ]
+    },
+    {
+      "login": "EricWang007",
+      "name": "Eric Wang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57973192?v=4",
+      "profile": "https://github.com/EricWang007",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "386681404",
+      "name": "Terence Deng",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45114787?v=4",
+      "profile": "https://github.com/386681404",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}

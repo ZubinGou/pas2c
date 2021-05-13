@@ -2,11 +2,17 @@
 /bin
 /build
 /gui/__pycache__
+<<<<<<< HEAD
 /gui/build
 /gui/dist
 /gui/p2c.exe
 /gui/grammar.json
 /gui/logo.png
+=======
+temp*
+/node_modules
+/package*.json
+>>>>>>> 708d65965a46f26ddc6eb3b808d5cdfc07c25f56
 
 # VSCode
 # /.vscode

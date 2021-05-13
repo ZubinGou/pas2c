@@ -94,6 +94,8 @@
   "terminal.integrated.env.windows": {
     "CHERE_INVOKING": "1"
   },
+  "python.pythonPath": "/usr/bin/python3",
+  "python.formatting.provider": "autopep8",
   // Make it a login shell
   // "terminal.integrated.shellArgs.windows": [
   //   "-l"
