@@ -466,7 +466,7 @@ void CodeGenerator::subprogram_declarations(int node_id) {
   if (son_num == 3) {
     subprogram_declarations(son[0]);
     subprogram(son[1]);
-  } else if (son_num == 3) {
+  } else if (son_num == 1) {
   } else
     spdlog::error("Unexpected Expression[15]");
 }
