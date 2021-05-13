@@ -15,7 +15,7 @@ begin
         read(t,n);
         for i:=1 to n do
         begin
-                read(w[i],v[i]); 
+          read(w[i], v[i]);
         end;
         for i:=1 to n do
                 for j:=0 to t do
