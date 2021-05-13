@@ -28,7 +28,7 @@
 
 # Pas2c
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 Yet Another Pascal to C Compiler.
 
@@ -86,6 +86,7 @@ cmake .. && cmake --build .
     <td align="center"><a href="https://github.com/ztqakita"><img src="https://avatars.githubusercontent.com/u/58379435?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brandon Zhang</b></sub></a><br /><a href="https://github.com/ZubinGou/pas2c/commits?author=ztqakita" title="Code">💻</a> <a href="https://github.com/ZubinGou/pas2c/commits?author=ztqakita" title="Tests">⚠️</a> <a href="https://github.com/ZubinGou/pas2c/commits?author=ztqakita" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/ZubinGou"><img src="https://avatars.githubusercontent.com/u/27690278?v=4?s=100" width="100px;" alt=""/><br /><sub><b>ZubinGou</b></sub></a><br /><a href="https://github.com/ZubinGou/pas2c/commits?author=ZubinGou" title="Code">💻</a> <a href="https://github.com/ZubinGou/pas2c/commits?author=ZubinGou" title="Tests">⚠️</a> <a href="#design-ZubinGou" title="Design">🎨</a></td>
     <td align="center"><a href="https://github.com/ToheartZhang"><img src="https://avatars.githubusercontent.com/u/25629861?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jason Zhang</b></sub></a><br /><a href="https://github.com/ZubinGou/pas2c/commits?author=ToheartZhang" title="Code">💻</a> <a href="https://github.com/ZubinGou/pas2c/commits?author=ToheartZhang" title="Tests">⚠️</a> <a href="#design-ToheartZhang" title="Design">🎨</a></td>
+    <td align="center"><a href="https://github.com/oneal2000"><img src="https://avatars.githubusercontent.com/u/51199289?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Oneal</b></sub></a><br /><a href="#ideas-oneal2000" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/ZubinGou/pas2c/commits?author=oneal2000" title="Code">💻</a> <a href="https://github.com/ZubinGou/pas2c/commits?author=oneal2000" title="Documentation">📖</a></td>
   </tr>
 </table>
 
