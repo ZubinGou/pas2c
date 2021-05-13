@@ -11,91 +11,75 @@
 #include "semantic_analyzer.h"
 #include "syntax_tree.h"
 
-/*
-struct Node {
-  int father;             // 父节点的编号
-  int son_num;            // 子结点的个数
-  int id;                 // 节点编号
-  std::string type;       // 结点代表的符号类型
-  double num_value;       // 节点携带的数值
-  std::string str_value;  // 节点携带的字符串值
-  bool is_terminal;       // 当前节点是否为终结符
-  int line;                // 如果是终结符，终结符的行号
-  int col;                // 如果是终结符，终结符的列号
-  std::vector<int> son;   // 子节点的编号集
-};
-*/
-
 class CodeGenerator {
  public:
   CodeGenerator(const std::vector<Node>& syntax_tree,
                 const SemanticAnalyzer& semantic_analyzer) {
 
-                  
     this->tree = syntax_tree;
     this->table_anal = semantic_analyzer;
     this->table_ctrl = semantic_analyzer.symbol_table_controller;
   }
 
-  std::string run();  // 返回 target_code
+  std::string run();  // 返回目标代码字符串
 
  private:
-  std::vector<Node> tree;  // 语法树的根节点
-  SemanticAnalyzer table_anal;
-  SymbolTableController table_ctrl;     // 符号表控制器
-  std::stack<std::string> state_stack;  // 状态栈，标记作用域
-  std::string target_code;              // 目标代码
-  std::set<std::string> head_file;      // 头文件集合
+  std::vector<Node> tree;                 // 语法分析树根节点，用于访问语法分析接口
+  SemanticAnalyzer table_anal;            // 语义分析器，用于访问语义分析接口
+  SymbolTableController table_ctrl;       // 符号表控制器，用于访问语义分析接口
+  std::stack<std::string> state_stack;    // 状态栈，用于记录作用域
+  std::string target_code;                // 目标代码字符串
+  std::set<std::string> head_file;        // 头文件集合
 
   // target_code manipulate
-  void target_append(std::string code);  // 部分代码到目标代码
-  void add_indent();                     // 为目标代码添加缩进
-  void add_head_file();
+  void target_append(std::string code);   // 添加部分代码到目标代码
+  void add_indent();                      // 为目标代码添加缩进
+  void add_head_file();                   // 按需添加头文件
 
   // debug
-  void print_target_code();  // 打印目标代码
+  void print_target_code();
 
   // Parser interface
-  std::vector<int> get_son(int node_id);       // return tree[node_id].son
-  int get_father(int node_id);                 // return tree[node_id].father
-  void match(int node_id, std::string token);  // match current node and token
-  std::string get_token(int node_id);
-  std::string get_str_value(int node_id);
-  double get_num_value(int node_id);
-  NumType get_num_type(int node_id);
+  std::vector<int> get_son(int node_id);        // 访问语法树节点node_id，获取其所有子节点id
+  int get_father(int node_id);                  // 访问语法树节点node_id，获取其父节点id
+  void match(int node_id, std::string token);   // 验证当前语法树节点node_id的token值
+  std::string get_token(int node_id);           // 访问语法树节点node_id，获取其token值
+  std::string get_str_value(int node_id);       // 访问语法树节点node_id，获取其字符串值
+  double get_num_value(int node_id);            // 访问语法树节点node_id，获取其数值值
+  NumType get_num_type(int node_id);            // 访问语法树节点node_id，获取其数值类型
 
   // Semantic intrface
-  bool is_addr(std::string id);
-  bool is_func(std::string id);
-  std::string get_var_type(std::string id);
-  std::string get_exp_type(int node_id);
-  std::vector<int> get_bound(std::string id);
-  std::vector<bool> get_args(std::string id);
+  bool is_addr(std::string id);                 // 在符号表中查询符号id，判断符号是否为传地址
+  bool is_func(std::string id);                 // 在符号表中查询符号id，判断符号是否为函数名
+  std::string get_var_type(std::string id);     // 在符号表中查询符号id，获取符号的变量类型
+  std::string get_exp_type(int node_id);        // 在符号表中查询语法树节点node_id及其子节点对应的整体表达式类型
+  std::vector<int> get_bound(std::string id);   // 在符号表中查询符号id，获取n维数组所有维度的下界值
+  std::vector<bool> get_args(std::string id);   //
 
   // Production
   /*
-  programstruct -> program_head ; program_body .
-  program_head -> program id ( idlist ) | program id
-  program_body -> const_declarations var_declarations subprogram_declarations
-  compound_statement idlist -> idlist , id | id const_declarations -> const
-  const_declaration ; | e const_declaration -> const_declaration ; id =
-  const_value | id = const_value const_value -> + num | - num | num | 'letter'
-  var_declarations -> var var_declaration ; | e
-  var_declaration -> var_declaration ; idlist : type | idlist : type
-  type -> basic_type | array [ period ] of basic_type ｜ record_type
-  basic_type -> integer | real | boolean | char
-  period -> period , digits .. digits | digits .. digits
-  record_type -> record field_list end
-  field_list -> fixed_fields ;
-  fixed_fields -> idlist : type | fixed_fields ; idlist : type
-  subprogram_declarations -> subprogram_declarations subprogram ; | e
-  subprogram -> subprogram_head ; subprogram_body
-  subprogram_head -> procedure id formal_parameter | function id
-  formal_parameter : basic_type formal_parameter -> ( parameter_list ) | e
-  parameter_list -> parameter_list ; parameter | parameter
-  parameter -> var_parameter | value_parameter
-  var_parameter -> var value_parameter
-  value_parameter -> idlist : basic_type
+    programstruct -> program_head ; program_body .
+    program_head -> program id ( idlist ) | program id
+    program_body -> const_declarations var_declarations subprogram_declarations
+    compound_statement idlist -> idlist , id | id const_declarations -> const
+    const_declaration ; | e const_declaration -> const_declaration ; id =
+    const_value | id = const_value const_value -> + num | - num | num | 'letter'
+    var_declarations -> var var_declaration ; | e
+    var_declaration -> var_declaration ; idlist : type | idlist : type
+    type -> basic_type | array [ period ] of basic_type ｜ record_type
+    basic_type -> integer | real | boolean | char
+    period -> period , digits .. digits | digits .. digits
+    record_type -> record field_list end
+    field_list -> fixed_fields ;
+    fixed_fields -> idlist : type | fixed_fields ; idlist : type
+    subprogram_declarations -> subprogram_declarations subprogram ; | e
+    subprogram -> subprogram_head ; subprogram_body
+    subprogram_head -> procedure id formal_parameter | function id
+    formal_parameter : basic_type formal_parameter -> ( parameter_list ) | e
+    parameter_list -> parameter_list ; parameter | parameter
+    parameter -> var_parameter | value_parameter
+    var_parameter -> var value_parameter
+    value_parameter -> idlist : basic_type
   */
   void programstruct(int node_id);
   void program_head(int node_id);

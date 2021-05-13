@@ -217,7 +217,7 @@ class PascalHighlighter(QSyntaxHighlighter):
         "array",    "begin", "const", "else", "do",        "end",     "for",
         "function", "if",    "not",   "of",   "procedure", "program", "record",
         "then",     "to",    "type",  "var",  "while",     "read",    "write",
-        "uminus",   "and",   "div",   "mod",  "or"
+        "uminus",   "and",   "div",   "mod",  "or",        "#include"
     ]
 
     # Pascal operators
@@ -348,15 +348,16 @@ class PascalHighlighter(QSyntaxHighlighter):
         else:
             return False
 
+
 class CHighlighter(QSyntaxHighlighter):
     """Syntax highlighter for the C language.
     """
     # C keywords
     keywords = [
-        "Auto","Break","Case","Char","Const","Continue","Default","Do","Double","Else","Enum",
-    "Extern","Float","For","Goto","If","Inline","Int","Long","Register","Restrict","Return",
-    "Short","Signed","Sizeof","Static","Struct","Switch","Typedef","Union","Unsigned",
-    "Void","Volatile","While"
+        "Auto", "Break", "Case", "Char", "Const", "Continue", "Default", "Do", "Double", "Else", "Enum",
+        "Extern", "Float", "For", "Goto", "If", "Inline", "Int", "Long", "Register", "Restrict", "Return",
+        "Short", "Signed", "Sizeof", "Static", "Struct", "Switch", "Typedef", "Union", "Unsigned",
+        "Void", "Volatile", "While"
     ]
 
     keywords = [k.lower() for k in keywords]
