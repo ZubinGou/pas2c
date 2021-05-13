@@ -20,6 +20,17 @@
         "test",
         "doc"
       ]
+    },
+    {
+      "login": "ZubinGou",
+      "name": "ZubinGou",
+      "avatar_url": "https://avatars.githubusercontent.com/u/27690278?v=4",
+      "profile": "https://github.com/ZubinGou",
+      "contributions": [
+        "code",
+        "test",
+        "design"
+      ]
     }
   ],
   "contributorsPerLine": 7
