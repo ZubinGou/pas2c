@@ -955,7 +955,7 @@ string CodeGenerator::simple_expression(int node_id) {
     string exp = simple_expression(son[0]);
     match(son[1], "addop");
     string addop = tree[son[1]].str_value;
-    if (addop == "or") addop = "|";
+    if (addop == "or") addop = "||";
     string _term = term(son[2]);
     return exp + addop + _term;
   } else if (son_num == 1)  // term
