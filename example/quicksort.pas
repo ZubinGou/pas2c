@@ -51,14 +51,8 @@ Begin
   While x<5 Do
     Begin
       y := a[x];
-      {writeln(y);}
-		writeln(y);
+      {writeln(y)}
+      writeln(y);
       x := x+1
     End
 End.
-
-{
-
-1024 88888888 -45 0 2147483647
-
-}
