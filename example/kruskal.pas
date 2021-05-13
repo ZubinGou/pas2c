@@ -1,4 +1,4 @@
-{采用并查集实现最小生成树}
+{閲囩敤骞舵煡闆嗗疄鐜版渶灏忕敓鎴愭爲}
 Program kruskal (input,output);
 
 var
