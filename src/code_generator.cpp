@@ -847,7 +847,10 @@ std::string CodeGenerator::id_varpart(int node_id) {
 
     vector<string> elist_trans;
     for (int i = 0; i < (int)elist.size(); i++){
-      elist_trans.push_back("[" + elist[i] + "]");
+      if (blist[i] != 0)
+        elist_trans.push_back("[" + elist[i] + "-" + to_string(blist[i]) + "]");
+      else
+        elist_trans.push_back("[" + elist[i] + "]");
     }
     return join_vec(elist_trans, "");
   } else if (son_num == 1) {
