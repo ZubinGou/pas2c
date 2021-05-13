@@ -53,6 +53,17 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "EricWang007",
+      "name": "Eric Wang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57973192?v=4",
+      "profile": "https://github.com/EricWang007",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
