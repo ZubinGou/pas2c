@@ -1,0 +1,26 @@
+{
+  "projectName": "pas2c",
+  "projectOwner": "ZubinGou",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "ztqakita",
+      "name": "Brandon Zhang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/58379435?v=4",
+      "profile": "https://github.com/ztqakita",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}

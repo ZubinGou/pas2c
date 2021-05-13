@@ -23,10 +23,13 @@
                                                                                                     
                                                                                                     
                                                                                                     
-
+                                                                                                    
 ```
 
 # Pas2c
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 Yet Another Pascal to C Compiler.
 
 ## Requirements
@@ -75,3 +78,16 @@ cmake .. && cmake --build .
 - GUI: robustness
 
 ## Contributors
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/ztqakita"><img src="https://avatars.githubusercontent.com/u/58379435?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brandon Zhang</b></sub></a><br /><a href="https://github.com/ZubinGou/pas2c/commits?author=ztqakita" title="Code">💻</a> <a href="https://github.com/ZubinGou/pas2c/commits?author=ztqakita" title="Tests">⚠️</a> <a href="https://github.com/ZubinGou/pas2c/commits?author=ztqakita" title="Documentation">📖</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
