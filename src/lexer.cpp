@@ -13,6 +13,18 @@
 
 using namespace std;
 
+bool Lexer::is_digit(char c) {
+  if('1' <= c && '9' >= c)
+    return true;
+  else return false;
+}
+bool Lexer::is_alpha(char c) {
+  if('a' <= c && 'z' >= c || 'A' <= c && 'Z' >= c)
+    return true;
+  else return false;
+}
+
+
 Lexer::Lexer(const std::string& inputfile) {
   input = ifstream(inputfile, ios::in);
   cur_line = "";
@@ -59,7 +71,7 @@ bool Lexer::get_token(Token& token) {
 
   while (col_pos < 1 + int(cur_line.length())) {
     if (0 == state) {            // beginning state
-      if (isdigit(temp_char)) {  // 0-9
+      if (is_digit(temp_char)) {  // 0-9
         cur_word = temp_char;
         last_col_pos = col_pos;
         state = 2;
@@ -70,7 +82,7 @@ bool Lexer::get_token(Token& token) {
           state = 0;
           return true;
         }
-      } else if (isalpha(temp_char)) {  // letter
+      } else if (is_alpha(temp_char)) {  // letter
         cur_word = temp_char;
         last_col_pos = col_pos;
         state = 1;
@@ -166,7 +178,7 @@ bool Lexer::get_token(Token& token) {
 
     else if (1 == state) {  // last character is a letter
       char t_char = cur_line[col_pos - 1];
-      if (isdigit(t_char) || isalpha(t_char)) {
+      if (is_digit(t_char) || is_alpha(t_char)) {
         cur_word += t_char;
         col_pos++;
         if (col_pos == 1 + int(cur_line.length())) {
@@ -250,7 +262,7 @@ bool Lexer::get_token(Token& token) {
     }
 
     else if (2 == state) {  // last character is a digit
-      if (isdigit(cur_line[col_pos - 1])) {
+      if (is_digit(cur_line[col_pos - 1])) {
         cur_word += cur_line[col_pos - 1];
         col_pos++;
         if (col_pos == 1 + int(cur_line.length())) {
@@ -293,7 +305,7 @@ bool Lexer::get_token(Token& token) {
 
     else if (4 == state) {  // in '...'
       if ('\'' != cur_line[col_pos - 1]) {
-        if (isalpha(cur_line[col_pos - 1])) {
+        if (is_alpha(cur_line[col_pos - 1])) {
           token.renew("letter", line_pos, col_pos,
                       string(1, cur_line[col_pos - 1]), 0);
           col_pos++;
@@ -399,6 +411,13 @@ char Lexer::get_char() {
   }
   return 0;
 }
+
+// bool Lexer::is_illegal(char c) {
+//   while (!(c > 1 || c < 255)) {
+//     col_pos++;
+//     c = 
+//   }
+// }
 
 void Lexer::print_token_list() {
   // type, value, line, col

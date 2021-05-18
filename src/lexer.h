@@ -47,6 +47,8 @@ class Lexer {
   char get_char();
   void print_token_list();
   void print_error_list();
+  bool is_digit(char c);
+  bool is_alpha(char c);
 
   std::ifstream input;
   std::vector<Token> token_list;
